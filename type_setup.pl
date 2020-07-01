@@ -365,7 +365,7 @@ void option_set_take(pm::perl::OptionSet optset,
 
 sub type_translator_code_jl {
    my ($type_hashes) = @_;
-   my $content = join("\n",map {"(\"$_->{type_string})\", $_->{jltype}),"} @$type_hashes);
+   my $content = join("\n",map {"(\"$_->{type_string}\", $_->{jltype}),"} @$type_hashes);
    return "const C_TYPES=[$content]";
 }
 
