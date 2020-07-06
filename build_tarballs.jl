@@ -3,7 +3,7 @@
 using BinaryBuilder, Pkg
 
 name = "libpolymake_julia"
-version = v"0.0.1"
+version = v"0.0.2"
 
 # Collection of sources required to complete build
 sources = [
@@ -43,7 +43,8 @@ platforms = [
 # The products that we will ensure are always built
 products = [
     LibraryProduct("libpolymake_julia", :libpolymake_julia; dlopen_flags=[:RTLD_GLOBAL]),
-    FileProduct(joinpath("share","libpolymake_julia","type_translator.jl"),:type_translator)
+    FileProduct(joinpath("share","libpolymake_julia","type_translator.jl"),:type_translator),
+    ExecutableProduct("polymake_run_script",:polymake_run_script)
 ]
 
 # Dependencies that must be installed before this package can be built
