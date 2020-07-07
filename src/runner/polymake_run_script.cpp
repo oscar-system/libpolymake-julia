@@ -7,12 +7,14 @@ using namespace polymake;
 
 int main(int argc, const char* argv[])
 {
-   if (argc < 3) {
-      cerr << "usage: " << argv[0] << " SCRIPT_FILE PATH [...]" << endl;
+   if (argc < 2) {
+      cerr << "usage: " << argv[0] << " SCRIPT_FILE [...]" << endl;
       return 1;
    }
    try {
-     Main pm;
+     // avoid reading any configuration
+     Main pm("");
+     pm.shell_enable();
      pm.set_application("common");
      auto funcall = prepare_call_function("script");
      for (int i = 1; i < argc; i++) {
