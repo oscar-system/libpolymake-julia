@@ -258,6 +258,12 @@ my $type_tuples = [
             "Polynomial{Float64,CxxWrap.CxxLong}",
             "to_polynomial_double_int",
         ],
+        [
+            "Map_String_String",
+            "pm::Map<std::string,std::string>",
+            "Map{String,String}",
+            "to_map_string_string",
+        ],
     ];
 
 my @keys = qw(type_string ctype jltype convert_f);
