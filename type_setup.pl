@@ -66,6 +66,12 @@ my $type_tuples = [
             "to_pair_int_int",
         ],
         [
+            "Pair_String_String",
+            "std::pair<std::string, std::string>",
+            "StdPair{String,String}",
+            "to_pair_string_string",
+        ],
+        [
             "List_Pair_Int_Int",
             "std::list<std::pair<pm::Int, pm::Int>>",
             "StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}",
