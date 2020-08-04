@@ -1,5 +1,7 @@
-#ifndef POLYMAKE_WRAP_TOOLS
-#define POLYMAKE_WRAP_TOOLS
+#ifndef POLYMAKE_TOOLS
+#define POLYMAKE_TOOLS
+
+#include "jlpolymake/jlpolymake.h"
 
 namespace pm {
 template <typename PointedT, typename CppT>
@@ -14,9 +16,9 @@ struct iterator_cross_const_helper<jlcxx::array_iterator_base<PointedT, CppT>,
 };
 }    // namespace pm
 
-using namespace polymake;
+namespace jlpolymake {
 
-namespace {
+using namespace polymake;
 
 class PropertyValueHelper : public pm::perl::PropertyValue {
   public:
@@ -38,9 +40,6 @@ class PropertyValueHelper : public pm::perl::PropertyValue {
     using Value::number_is_object;
     using Value::number_is_zero;
 };
-
-}    // namespace
-
 
 struct Polymake_Data {
     polymake::Main*        main_polymake_session;
@@ -66,5 +65,7 @@ template <typename T> struct WrappedStdListIterator {
         iterator = L.begin();
     }
 };
+
+}
 
 #endif

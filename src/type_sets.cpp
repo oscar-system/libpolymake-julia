@@ -1,18 +1,20 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
 template<> struct jlcxx::IsMirroredType<pm::operations::cmp> : std::false_type { };
 
-void polymake_module_add_set(jlcxx::Module& polymake)
-{
-    polymake.add_type<pm::operations::cmp>("operations_cmp");
+namespace jlpolymake {
 
-    polymake
+void add_set(jlcxx::Module& jlpolymake)
+{
+    jlpolymake.add_type<pm::operations::cmp>("operations_cmp");
+
+    jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
             "Set", jlcxx::julia_type("AbstractSet", "Base"))
         .apply<pm::Set<pm::Int>>([](auto wrapped) {
@@ -90,11 +92,11 @@ void polymake_module_add_set(jlcxx::Module& polymake)
                     WrappedT& S){ p.take(s) << S; });
         });
 
-    polymake.method("to_set_int", [](pm::perl::PropertyValue v) {
+    jlpolymake.method("to_set_int", [](pm::perl::PropertyValue v) {
         return to_SmallObject<pm::Set<pm::Int>>(v);
     });
 
-    polymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("SetIterator")
+    jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("SetIterator")
         .apply<WrappedSetIterator<pm::Int>>(
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type WrappedSetIter;
@@ -117,7 +119,9 @@ void polymake_module_add_set(jlcxx::Module& polymake)
                 });
             });
 
-    polymake.method("incl", [](pm::Set<pm::Int> s1, pm::Set<pm::Int> s2) {
+    jlpolymake.method("incl", [](pm::Set<pm::Int> s1, pm::Set<pm::Int> s2) {
         return pm::incl(s1, s2);
     });
+}
+
 }

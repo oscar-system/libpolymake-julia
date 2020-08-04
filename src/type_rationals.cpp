@@ -1,15 +1,17 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-void polymake_module_add_rational(jlcxx::Module& polymake)
+namespace jlpolymake {
+
+void add_rational(jlcxx::Module& jlpolymake)
 {
 
-    polymake
+    jlpolymake
         .add_type<pm::Rational>("Rational",
                                 jlcxx::julia_type("Real", "Base"))
         .constructor<pm::Integer, pm::Integer>()
@@ -64,41 +66,43 @@ void polymake_module_add_rational(jlcxx::Module& polymake)
         .method("//", [](int64_t       a, pm::Rational& b) {
             return static_cast<pm::Int>(a) / b; });
 
-        polymake.set_override_module(polymake.julia_module());
-        polymake.method("==", [](pm::Rational& a, pm::Rational& b) {
+        jlpolymake.set_override_module(jlpolymake.julia_module());
+        jlpolymake.method("==", [](pm::Rational& a, pm::Rational& b) {
             return a == b; });
-        polymake.method("==", [](pm::Rational& a, pm::Integer& b) {
+        jlpolymake.method("==", [](pm::Rational& a, pm::Integer& b) {
             return a == b; });
-        polymake.method("==", [](pm::Integer& a, pm::Rational& b) {
+        jlpolymake.method("==", [](pm::Integer& a, pm::Rational& b) {
             return a == b; });
-        polymake.method("==", [](pm::Rational& a, int64_t b) {
+        jlpolymake.method("==", [](pm::Rational& a, int64_t b) {
             return static_cast<pm::Int>(a) == b; });
-        polymake.method("==", [](int64_t a, pm::Rational& b) {
+        jlpolymake.method("==", [](int64_t a, pm::Rational& b) {
             return a == static_cast<pm::Int>(b); });
         // the symmetric definitions are on the julia side
-        polymake.method("+", [](pm::Rational& a, pm::Rational& b) {
+        jlpolymake.method("+", [](pm::Rational& a, pm::Rational& b) {
             return a + b; });
-        polymake.method("+", [](pm::Rational& a, pm::Integer& b) {
+        jlpolymake.method("+", [](pm::Rational& a, pm::Integer& b) {
             return a + b; });
-        polymake.method("+", [](pm::Integer& a, pm::Rational& b) {
+        jlpolymake.method("+", [](pm::Integer& a, pm::Rational& b) {
             return a + b; });
-        polymake.method("+", [](pm::Rational& a, int64_t b) {
+        jlpolymake.method("+", [](pm::Rational& a, int64_t b) {
             return a + static_cast<pm::Int>(b); });
-        polymake.method("+", [](int64_t a, pm::Rational& b) {
+        jlpolymake.method("+", [](int64_t a, pm::Rational& b) {
             return static_cast<pm::Int>(a) + b; });
-        polymake.method("*", [](pm::Rational& a, pm::Rational& b) {
+        jlpolymake.method("*", [](pm::Rational& a, pm::Rational& b) {
             return a * b; });
-        polymake.method("*", [](pm::Rational& a, pm::Integer& b) {
+        jlpolymake.method("*", [](pm::Rational& a, pm::Integer& b) {
             return a * b; });
-        polymake.method("*", [](pm::Integer& a, pm::Rational& b) {
+        jlpolymake.method("*", [](pm::Integer& a, pm::Rational& b) {
             return a * b; });
-        polymake.method("*", [](pm::Rational& a, int64_t b) {
+        jlpolymake.method("*", [](pm::Rational& a, int64_t b) {
             return a * static_cast<pm::Int>(b); });
-        polymake.method("*", [](int64_t a, pm::Rational& b) {
+        jlpolymake.method("*", [](int64_t a, pm::Rational& b) {
             return static_cast<pm::Int>(a) * b; });
-        polymake.unset_override_module();
+        jlpolymake.unset_override_module();
 
-    polymake.method("to_rational", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Rational>(pv);
     });
+}
+
 }

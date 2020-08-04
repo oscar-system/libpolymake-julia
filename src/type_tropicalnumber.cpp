@@ -1,20 +1,22 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
 template<> struct jlcxx::IsMirroredType<pm::Max> : std::false_type { };
 template<> struct jlcxx::IsMirroredType<pm::Min> : std::false_type { };
 
-void polymake_module_add_tropicalnumber(jlcxx::Module& polymake)
-{
-    polymake.add_type<pm::Max>("Max");
-    polymake.add_type<pm::Min>("Min");
+namespace jlpolymake {
 
-    polymake
+void add_tropicalnumber(jlcxx::Module& jlpolymake)
+{
+    jlpolymake.add_type<pm::Max>("Max");
+    jlpolymake.add_type<pm::Min>("Min");
+
+    jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
             "TropicalNumber", jlcxx::julia_type("Number", "Base"))
             .apply_combination<pm::TropicalNumber,
@@ -38,20 +40,22 @@ void polymake_module_add_tropicalnumber(jlcxx::Module& polymake)
                         return show_small_object<tropType>(S);
                     });
             });
-    polymake.method("to_tropicalnumber_max_rational",
+    jlpolymake.method("to_tropicalnumber_max_rational",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::TropicalNumber<pm::Max,pm::Rational>>(pv);
         });
-    polymake.method("to_tropicalnumber_min_rational",
+    jlpolymake.method("to_tropicalnumber_min_rational",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::TropicalNumber<pm::Min,pm::Rational>>(pv);
     });
-    // polymake.method("to_tropicalnumber_max_integer",
+    // jlpolymake.method("to_tropicalnumber_max_integer",
     //     [](pm::perl::PropertyValue pv) {
     //         return to_SmallObject<pm::TropicalNumber<pm::Max,pm::Integer>>(pv);
     //     });
-    // polymake.method("to_tropicalnumber_min_integer",
+    // jlpolymake.method("to_tropicalnumber_min_integer",
     //     [](pm::perl::PropertyValue pv) {
     //         return to_SmallObject<pm::TropicalNumber<pm::Min,pm::Integer>>(pv);
     //     });
+}
+
 }

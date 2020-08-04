@@ -1,7 +1,7 @@
-#ifndef POLYMAKE_WRAP_INCLUDES
-#define POLYMAKE_WRAP_INCLUDES
+#ifndef JLPOLYMAKE_H
+#define JLPOLYMAKE_H
 
-#include "polymake_jlcxx.h"
+#include <jlcxx/jlcxx.hpp>
 
 #include <string>
 #include <iostream>
@@ -30,5 +30,13 @@
 #include <polymake/perl/wrappers.h>
 
 #pragma clang diagnostic pop
+
+#define JLPOLYMAKE_VERSION_MAJOR 0
+#define JLPOLYMAKE_VERSION_MINOR 1
+#define JLPOLYMAKE_VERSION_PATCH 0
+
+#define __JLPOLYMAKE_STR_HELPER(x) #x
+#define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)
+#define JLPOLYMAKE_VERSION_STRING __JLPOLYMAKE_STR(JLPOLYMAKE_VERSION_MAJOR) "." __JLPOLYMAKE_STR(JLPOLYMAKE_VERSION_MINOR) "." __JLPOLYMAKE_STR(JLPOLYMAKE_VERSION_PATCH)
 
 #endif

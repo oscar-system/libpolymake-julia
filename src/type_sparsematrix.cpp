@@ -1,17 +1,19 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-void polymake_module_add_sparsematrix(jlcxx::Module& polymake)
+namespace jlpolymake {
+
+void add_sparsematrix(jlcxx::Module& jlpolymake)
 {
 
-    polymake.method("_get_global_epsilon", []() { return pm::spec_object_traits<double>::global_epsilon; });
-    polymake.method("_set_global_epsilon", [](double e) { pm::spec_object_traits<double>::global_epsilon = e; });
-    polymake
+    jlpolymake.method("_get_global_epsilon", []() { return pm::spec_object_traits<double>::global_epsilon; });
+    jlpolymake.method("_set_global_epsilon", [](double e) { pm::spec_object_traits<double>::global_epsilon = e; });
+    jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>, jlcxx::ParameterList<jlcxx::TypeVar<1>,int>>(
             "SparseMatrix", jlcxx::julia_type("AbstractSparseMatrix", "SparseArrays"))
             .apply_combination<pm::SparseMatrix, VecOrMat_supported::value_type>(
@@ -42,20 +44,22 @@ void polymake_module_add_sparsematrix(jlcxx::Module& polymake)
                         return show_small_object<matType>(S);
                     });
             });
-    polymake.method("to_sparsematrix_rational",
+    jlpolymake.method("to_sparsematrix_rational",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseMatrix<pm::Rational>>(pv);
     });
-    polymake.method("to_sparsematrix_integer",
+    jlpolymake.method("to_sparsematrix_integer",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseMatrix<pm::Integer>>(pv);
     });
-    polymake.method("to_sparsematrix_int",
+    jlpolymake.method("to_sparsematrix_int",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseMatrix<pm::Int>>(pv);
     });
-    polymake.method("to_sparsematrix_double",
+    jlpolymake.method("to_sparsematrix_double",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseMatrix<double>>(pv);
     });
+}
+
 }

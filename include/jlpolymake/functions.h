@@ -1,6 +1,9 @@
-#ifndef POLYMAKE_WRAP_FUNCTIONS
-#define POLYMAKE_WRAP_FUNCTIONS
+#ifndef JLPOLYMAKE_FUNCTIONS
+#define JLPOLYMAKE_FUNCTIONS
 
+#include "jlpolymake/jlpolymake.h"
+
+namespace jlpolymake {
 
 void initialize_polymake(bool interactive);
 
@@ -33,5 +36,7 @@ struct VecOrMat_supported
 {
     typedef jlcxx::ParameterList<pm::Int, pm::Integer, pm::Rational, double> value_type;
 };
+
+}
 
 #endif

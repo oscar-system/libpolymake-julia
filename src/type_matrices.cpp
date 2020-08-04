@@ -1,15 +1,17 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-void polymake_module_add_matrix(jlcxx::Module& polymake)
+namespace jlpolymake {
+
+void add_matrix(jlcxx::Module& jlpolymake)
 {
 
-    polymake
+    jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
             "Matrix", jlcxx::julia_type("AbstractMatrix", "Base"))
         .apply_combination<pm::Matrix, VecOrMat_supported::value_type>(
@@ -37,16 +39,18 @@ void polymake_module_add_matrix(jlcxx::Module& polymake)
                     return show_small_object<WrappedT>(M);
                 });
             });
-    polymake.method("to_matrix_int", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_matrix_int", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Matrix<pm::Int>>(pv);
     });
-    polymake.method("to_matrix_integer", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_matrix_integer", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Matrix<pm::Integer>>(pv);
     });
-    polymake.method("to_matrix_rational", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_matrix_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Matrix<pm::Rational>>(pv);
     });
-    polymake.method("to_matrix_double", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_matrix_double", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Matrix<double>>(pv);
     });
+}
+
 }

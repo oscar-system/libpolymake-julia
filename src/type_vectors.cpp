@@ -1,15 +1,17 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-void polymake_module_add_vector(jlcxx::Module& polymake)
+namespace jlpolymake {
+
+void add_vector(jlcxx::Module& jlpolymake)
 {
 
-    polymake
+    jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
             "Vector", jlcxx::julia_type("AbstractVector", "Base"))
         .apply_combination<pm::Vector, VecOrMat_supported::value_type>(
@@ -36,16 +38,18 @@ void polymake_module_add_vector(jlcxx::Module& polymake)
                 });
             });
 
-    polymake.method("to_vector_int", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_vector_int", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Vector<pm::Int>>(pv);
     });
-    polymake.method("to_vector_integer", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_vector_integer", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Vector<pm::Integer>>(pv);
     });
-    polymake.method("to_vector_rational", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_vector_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Vector<pm::Rational>>(pv);
     });
-    polymake.method("to_vector_double", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_vector_double", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Vector<double>>(pv);
     });
+}
+
 }

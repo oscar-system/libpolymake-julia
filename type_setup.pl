@@ -295,7 +295,7 @@ sub call_function_feed_argument_code {
 
    return <<"---";
 template <typename T>
-void polymake_call_function_feed_argument(T& function, jl_value_t* value)
+void call_function_feed_argument(T& function, jl_value_t* value)
 {
     jl_value_t* current_type = jl_typeof(value);
     if (jl_is_int64(value)) {
@@ -392,6 +392,8 @@ sub get_type_names_code {
 #include <cxxabi.h>
 #include <typeinfo>
 
+namespace jlpolymake {
+
 jlcxx::ArrayRef<jl_value_t*> get_type_names() {
     int          status;
     char*        realname;
@@ -400,6 +402,8 @@ jlcxx::ArrayRef<jl_value_t*> get_type_names() {
     int          i = 0;
 $type_translations
     return jlcxx::make_julia_array(type_name_tuples, 2 * number_of_types);
+}
+
 }
 ---
 }
@@ -420,14 +424,14 @@ sub get_type_declarations_extern {
 }
 
 my $target = @ARGV > 0 ? $ARGV[0] : dirname(__FILE__);
-my $cpp = "$target/include/generated";
+my $cpp = "$target/include/jlpolymake/generated";
 my $jl = "$target/jl";
 
 make_path($cpp, $jl);
 
 my %generated = ( 
                   "$cpp/map_inserts.h" => \&map_inserts_code,
-                  "$cpp/polymake_call_function_feed_argument.h" => \&call_function_feed_argument_code,
+                  "$cpp/call_function_feed_argument.h" => \&call_function_feed_argument_code,
                   "$cpp/option_set_take.h" => \&option_set_take_code,
                   "$cpp/get_type_names.h" => \&get_type_names_code,
                   "$cpp/type_declarations.h" => \&get_type_declarations,
