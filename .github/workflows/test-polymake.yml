@@ -1,0 +1,59 @@
+name: Run polymake testsuite
+
+on:
+  push:
+    branches:
+      - master
+      - testing/**
+    tags: '*'
+  pull_request:
+
+jobs:
+  test-polymake:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macOS-latest]
+        julia-version: ['1.5', 'nightly']
+        libcxxwrap: [ '' ]
+        include:
+          - os: ubuntu-latest
+            julia-version: 1.3
+          - os: macOS-latest
+            julia-version: 1.4
+          - libcxxwrap: '@0.7'
+            os: ubuntu-latest
+            julia-version: 1.5
+          - os: ubuntu-20.04
+            julia-version: 1.5
+
+      fail-fast: true
+
+    steps:
+      - uses: actions/checkout@v2.1.0
+      - name: "Set up Julia"
+        uses: julia-actions/setup-julia@v1
+        with:
+          version: ${{ matrix.julia-version }}
+      - name: "pin libcxxwrap_julia"
+        run: julia --project=test/ -e 'using Pkg;
+                                       pkg"add libcxxwrap_julia_jll${{ matrix.libcxxwrap }}";
+                                       pkg"pin libcxxwrap_julia_jll";'
+      - name: "Add polymake packages"
+        run: julia --project=test/ -e 'using Pkg;
+                                       pkg"add polymake_jll";
+                                       pkg"add libpolymake_julia_jll";'
+      - name: "Prepare and set override"
+        run: julia --project=test/ test-prepare.jl
+      - name: "Build and install"
+        run: VERBOSE=ON cmake --build build --config Release --target install -- -j2
+      - name: "Work around glibcxx issue"
+        if: matrix.os == 'ubuntu-20.04'
+        run: echo ::set-env name=LD_PRELOAD::/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+      - name: "Test polymake"
+        env:
+           TERM: linux
+        run: julia --project=test/ -e 'using libpolymake_julia_jll;
+                                       polymake_run_script() do exe
+                                          run(`$exe test/run_testcases`);
+                                       end'
