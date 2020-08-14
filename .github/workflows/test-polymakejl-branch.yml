@@ -1,4 +1,4 @@
-name: Run Polymake.jl testsuite for pull request branch
+name: Run Polymake.jl testsuite for pull request branch / master
 
 on:
   pull_request:
@@ -26,6 +26,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2.1.0
+      - name: Cache artifacts
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: |
+            ~/.julia/artifacts
+            !~/.julia/artifacts/Overrides.toml
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v1
         with:
@@ -44,7 +57,9 @@ jobs:
                                        pkg"add polymake_jll";
                                        pkg"add libpolymake_julia_jll";'
       - name: "Prepare and set override"
-        run: julia --project=test/ test-prepare.jl
+        run: |
+          rm -f ~/.julia/artifacts/Overrides.toml
+          julia --project=test/ test-prepare.jl
       - name: "Build and install"
         run: VERBOSE=ON cmake --build build --config Release --target install -- -j2
       - name: "Look for Polymake.jl branch"
@@ -53,10 +68,14 @@ jobs:
         continue-on-error: true
         run: julia --project=test/ -e "using Pkg;
                                        pkg\"add Polymake#${GITHUB_HEAD_REF#refs/heads/}\";"
+      - name: "Test Polymake.jl master"
+        # use master otherwise
+        if: steps.detectbranch.outcome == 'failure'
+        run: julia --project=test/ -e 'using Pkg;
+                                       pkg"add Polymake#master";'
       - name: "Work around glibcxx issue"
         if: matrix.os == 'ubuntu-20.04'
         run: echo ::set-env name=LD_PRELOAD::/usr/lib/x86_64-linux-gnu/libstdc++.so.6
       - name: "Test Polymake.jl branch"
-        if: steps.detectbranch.outcome == 'success'
         run: julia --project=test/ -e 'using Pkg;
                                        pkg"test Polymake";'

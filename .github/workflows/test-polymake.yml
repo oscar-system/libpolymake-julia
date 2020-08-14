@@ -31,6 +31,19 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2.1.0
+      - name: Cache artifacts
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-artifacts
+        with:
+          path: |
+            ~/.julia/artifacts
+            !~/.julia/artifacts/Overrides.toml
+          key: ${{ runner.os }}-test-${{ env.cache-name }}-${{ hashFiles('**/Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-test-${{ env.cache-name }}-
+            ${{ runner.os }}-test-
+            ${{ runner.os }}-
       - name: "Set up Julia"
         uses: julia-actions/setup-julia@v1
         with:
@@ -44,7 +57,9 @@ jobs:
                                        pkg"add polymake_jll";
                                        pkg"add libpolymake_julia_jll";'
       - name: "Prepare and set override"
-        run: julia --project=test/ test-prepare.jl
+        run: |
+          rm -f ~/.julia/artifacts/Overrides.toml
+          julia --project=test/ test-prepare.jl
       - name: "Build and install"
         run: VERBOSE=ON cmake --build build --config Release --target install -- -j2
       - name: "Work around glibcxx issue"
