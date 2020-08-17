@@ -9,7 +9,7 @@ on:
   pull_request:
 
 jobs:
-  test-polymake:
+  test-polymakejl-branch:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
