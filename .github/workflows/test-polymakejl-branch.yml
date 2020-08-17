@@ -1,6 +1,11 @@
 name: Run Polymake.jl testsuite for pull request branch / master
 
 on:
+  push:
+    branches:
+      - master
+      - testing/**
+    tags: '*'
   pull_request:
 
 jobs:
