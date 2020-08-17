@@ -24,17 +24,15 @@ cmake --build build --config Release --target install -- -j${nproc}
 
 Put the following into `~/.julia/artifacts/Overrides.toml` to replace the `libpolymake-julia` artifact:
 
-TODO: add correct uuids 
-
 ```toml
-[libpolymake_julia_jll-uuid]
+[4d8266f6-2b3b-57e3-ad7a-d431eaaac945]
 libpolymake_julia = "/home/user/prefix/for/libpolymake-julia"
 ```
 
 Overrides for `polymake` and `libcxxwrap-julia` with the directories used during the build need to be added as well, e.g.:
 
 ```toml
-[polymake_jll_uuid]
+[7c209550-9012-526c-9264-55ba7a78ba2c]
 polymake = "/home/user/path/to/polymake"
 
 [3eaa8342-bff7-56a5-9981-c04077f7cee7]
