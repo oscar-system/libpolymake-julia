@@ -18,7 +18,11 @@ set(CMAKE_CXX_STANDARD 14)
 SET( CMAKE_CXX_COMPILER "${Polymake_CXX}")
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -std=c++14 ${Polymake_CFLAGS}" )
 SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
-SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
+SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
+
+# to avoid lib64 dirs as binarybuilder uses lib everywhere
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
+set(CMAKE_INSTALL_LIBDIR "lib")
 
 # avoid gcc 9 internal compiler error,
 # see https://gcc.gnu.org/bugzilla/show_bug.cgi?id=90998
@@ -52,12 +56,12 @@ target_link_libraries(${JLPOLYMAKE_RUN_SCRIPT} "${Polymake_LIBS}")
 set(TYPE_TRANSLATOR ${CMAKE_CURRENT_BINARY_DIR}/jl/type_translator.jl)
 
 set(GENERATED_HEADERS
-    ${JLPOLYMAKE_GENERATED}/generated/get_type_names.h
-    ${JLPOLYMAKE_GENERATED}/generated/map_inserts.h
-    ${JLPOLYMAKE_GENERATED}/generated/option_set_take.h
-    ${JLPOLYMAKE_GENERATED}/generated/polymake_call_function_feed_argument.h
-    ${JLPOLYMAKE_GENERATED}/generated/type_declarations_extern.h
-    ${JLPOLYMAKE_GENERATED}/generated/type_declarations.h
+    ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/get_type_names.h
+    ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/map_inserts.h
+    ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/option_set_take.h
+    ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/call_function_feed_argument.h
+    ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/type_declarations_extern.h
+    ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/type_declarations.h
 )
 
 add_custom_command(

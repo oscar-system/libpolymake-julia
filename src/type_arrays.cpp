@@ -1,16 +1,17 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
+namespace jlpolymake {
 
-tparametric1 polymake_module_add_array(jlcxx::Module& polymake)
+tparametric1 add_array(jlcxx::Module& jlpolymake)
 {
 
-    auto type = polymake
+    auto type = jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
             "Array", jlcxx::julia_type("AbstractVector", "Base"));
 
@@ -77,47 +78,49 @@ tparametric1 polymake_module_add_array(jlcxx::Module& polymake)
             });
         });
 
-    polymake.method("to_array_int", [](const pm::perl::PropertyValue& pv) {
+    jlpolymake.method("to_array_int", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<pm::Array<pm::Int>>(pv);
     });
-    polymake.method("to_array_integer",
+    jlpolymake.method("to_array_integer",
                     [](const pm::perl::PropertyValue& pv) {
                         return to_SmallObject<pm::Array<pm::Integer>>(pv);
                     });
-    polymake.method("to_array_string", [](const pm::perl::PropertyValue& pv) {
+    jlpolymake.method("to_array_string", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<pm::Array<std::string>>(pv);
     });
-    polymake.method("to_array_array_int",
+    jlpolymake.method("to_array_array_int",
                     [](const pm::perl::PropertyValue& pv) {
                         return to_SmallObject<pm::Array<pm::Array<pm::Int>>>(pv);
                     });
-    polymake.method(
+    jlpolymake.method(
         "to_array_array_integer", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Array<pm::Integer>>>(pv);
         });
-    polymake.method(
+    jlpolymake.method(
         "to_array_array_rational", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Array<pm::Rational>>>(pv);
         });
-    polymake.method(
+    jlpolymake.method(
         "to_array_set_int", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Set<pm::Int>>>(pv);
         });
-    polymake.method(
+    jlpolymake.method(
         "to_array_pair_int_int", [](const pm::perl::PropertyValue& pv){
                 return to_SmallObject<pm::Array<std::pair<pm::Int, pm::Int>>>(pv);
         });
-    polymake.method(
+    jlpolymake.method(
             "to_array_list_pair_int_int", [](const pm::perl::PropertyValue& pv){
                 return to_SmallObject<pm::Array<std::list<std::pair<pm::Int, pm::Int>>>>(pv);
             });
-    polymake.method(
+    jlpolymake.method(
         "to_array_matrix_integer", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Matrix<pm::Integer>>>(pv);
         });
-    polymake.method(
+    jlpolymake.method(
         "to_array_bigobject", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::perl::BigObject>>(pv);
         });
     return type;
+}
+
 }

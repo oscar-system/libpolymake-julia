@@ -1,14 +1,16 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-void polymake_module_add_polynomial(jlcxx::Module& polymake)
+namespace jlpolymake {
+
+void add_polynomial(jlcxx::Module& jlpolymake)
 {
-    polymake
+    jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
             "Polynomial", jlcxx::julia_type("Any", "Base"))
         .apply_combination<pm::Polynomial, VecOrMat_supported::value_type, jlcxx::ParameterList<pm::Int>>(
@@ -39,16 +41,18 @@ void polymake_module_add_polynomial(jlcxx::Module& polymake)
                         polyT& P){ p.take(s) << P; });
         });
 
-    polymake.method("to_polynomial_int_int", [](pm::perl::PropertyValue v) {
+    jlpolymake.method("to_polynomial_int_int", [](pm::perl::PropertyValue v) {
             return to_SmallObject<pm::Polynomial<pm::Int,pm::Int>>(v);
         });
-    polymake.method("to_polynomial_integer_int", [](pm::perl::PropertyValue v) {
+    jlpolymake.method("to_polynomial_integer_int", [](pm::perl::PropertyValue v) {
             return to_SmallObject<pm::Polynomial<pm::Integer,pm::Int>>(v);
         });
-    polymake.method("to_polynomial_rational_int", [](pm::perl::PropertyValue v) {
+    jlpolymake.method("to_polynomial_rational_int", [](pm::perl::PropertyValue v) {
             return to_SmallObject<pm::Polynomial<pm::Rational,pm::Int>>(v);
         });
-    polymake.method("to_polynomial_double_int", [](pm::perl::PropertyValue v) {
+    jlpolymake.method("to_polynomial_double_int", [](pm::perl::PropertyValue v) {
             return to_SmallObject<pm::Polynomial<double,pm::Int>>(v);
         });
+}
+
 }

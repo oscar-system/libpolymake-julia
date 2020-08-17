@@ -1,10 +1,12 @@
 #define INCLUDED_FROM_CALLER
 
-#include "polymake_caller.h"
+#include "jlpolymake/caller.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
 #include <vector>
+
+namespace jlpolymake {
 
 static auto type_map_translator = new std::map<std::string, jl_value_t**>();
 
@@ -26,7 +28,7 @@ void set_julia_type(std::string name, void* type_address)
     memcpy(address, &type_address, sizeof(jl_value_t*));
 }
 
-#include "generated/polymake_call_function_feed_argument.h"
+#include "jlpolymake/generated/call_function_feed_argument.h"
 
 template <bool VoidContext = false>
 using funcall_type = std::conditional_t<VoidContext,void,pm::perl::PropertyValue>;
@@ -42,7 +44,7 @@ auto polymake_call_function(
 {
     auto   function = polymake::prepare_call_function(function_name, template_vector);
     for (auto arg : arguments)
-        polymake_call_function_feed_argument(function, arg);
+        call_function_feed_argument(function, arg);
     return static_cast<funcall_type<VoidContext>>(function());
 }
 
@@ -57,16 +59,18 @@ auto polymake_call_method(
 {
     auto   function = object.prepare_call_method(function_name);
     for (auto arg : arguments)
-        polymake_call_function_feed_argument(function, arg);
+        call_function_feed_argument(function, arg);
     return static_cast<funcall_type<VoidContext>>(function());
 }
 
-void polymake_module_add_caller(jlcxx::Module& polymake)
+void add_caller(jlcxx::Module& jlpolymake)
 {
-    polymake.method("internal_call_function", &polymake_call_function<false>);
-    polymake.method("internal_call_function_void",
-                    &polymake_call_function<true>);
-    polymake.method("internal_call_method", &polymake_call_method<false>);
-    polymake.method("internal_call_method_void", &polymake_call_method<true>);
-    polymake.method("set_julia_type", &set_julia_type);
+    jlpolymake.method("internal_call_function", &polymake_call_function<false>);
+    jlpolymake.method("internal_call_function_void",
+                      &polymake_call_function<true>);
+    jlpolymake.method("internal_call_method", &polymake_call_method<false>);
+    jlpolymake.method("internal_call_method_void", &polymake_call_method<true>);
+    jlpolymake.method("set_julia_type", &set_julia_type);
+}
+
 }

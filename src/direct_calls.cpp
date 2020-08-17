@@ -1,6 +1,8 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
+
+namespace jlpolymake {
 
 template<typename Scalar>
 pm::Vector<Scalar> direct_call_solve_LP(
@@ -18,8 +20,10 @@ pm::Vector<Scalar> direct_call_solve_LP(
 }
 
 
-void polymake_module_add_direct_calls(jlcxx::Module& polymake)
+void add_direct_calls(jlcxx::Module& jlpolymake)
 {
-    polymake.method("direct_call_solve_LP", &direct_call_solve_LP<pm::Rational>);
-    polymake.method("direct_call_solve_LP_float", &direct_call_solve_LP<double>);
+    jlpolymake.method("direct_call_solve_LP", &direct_call_solve_LP<pm::Rational>);
+    jlpolymake.method("direct_call_solve_LP_float", &direct_call_solve_LP<double>);
+}
+
 }

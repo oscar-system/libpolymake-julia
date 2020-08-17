@@ -34,7 +34,7 @@ if(Polymake_Config_EXECUTABLE)
       OUTPUT_STRIP_TRAILING_WHITESPACE
    )
 
-   set(Polymake_LDFLAGS "${Polymake_CXX}"
+   set(Polymake_CXX "${Polymake_CXX}"
       CACHE PATH "Polymake compiler")
 endif()
 

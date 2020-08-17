@@ -1,14 +1,16 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-void polymake_module_add_sparsevector(jlcxx::Module& polymake)
+namespace jlpolymake {
+
+void add_sparsevector(jlcxx::Module& jlpolymake)
 {
-    polymake
+    jlpolymake
     .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>, jlcxx::ParameterList<jlcxx::TypeVar<1>,int>>(
         "SparseVector", jlcxx::julia_type("AbstractSparseVector", "SparseArrays"))
         .apply_combination<pm::SparseVector, VecOrMat_supported::value_type>(
@@ -34,20 +36,22 @@ void polymake_module_add_sparsevector(jlcxx::Module& polymake)
                         return show_small_object<vecType>(S);
                     });
             });
-    polymake.method("to_sparsevector_rational",
+    jlpolymake.method("to_sparsevector_rational",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseVector<pm::Rational>>(pv);
     });
-    polymake.method("to_sparsevector_integer",
+    jlpolymake.method("to_sparsevector_integer",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseVector<pm::Integer>>(pv);
     });
-    polymake.method("to_sparsevector_int",
+    jlpolymake.method("to_sparsevector_int",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseVector<pm::Int>>(pv);
     });
-    polymake.method("to_sparsevector_double",
+    jlpolymake.method("to_sparsevector_double",
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseVector<double>>(pv);
     });
+}
+
 }

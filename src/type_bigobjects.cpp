@@ -1,30 +1,33 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-#include "polymake_caller.h"
+#include "jlpolymake/caller.h"
 
-#include "generated/option_set_take.h"
 
-#include "generated/polymake_call_function_feed_argument.h"
+namespace jlpolymake {
 
-void polymake_module_add_bigobject(jlcxx::Module& polymake)
+#include "jlpolymake/generated/option_set_take.h"
+
+#include "jlpolymake/generated/call_function_feed_argument.h"
+
+void add_bigobject(jlcxx::Module& jlpolymake)
 {
 
-    polymake.add_type<pm::perl::PropertyValue>("PropertyValue");
-    polymake.add_type<pm::perl::OptionSet>("OptionSet");
+    jlpolymake.add_type<pm::perl::PropertyValue>("PropertyValue");
+    jlpolymake.add_type<pm::perl::OptionSet>("OptionSet");
 
-    polymake.method("option_set_take", option_set_take);
+    jlpolymake.method("option_set_take", option_set_take);
 
-    polymake.add_type<pm::perl::BigObjectType>("BigObjectType")
+    jlpolymake.add_type<pm::perl::BigObjectType>("BigObjectType")
         .constructor<const std::string&>()
         .method("type_name", [](pm::perl::BigObjectType p) { return p.name(); });
 
-    polymake.add_type<pm::perl::BigObject>("BigObject")
+    jlpolymake.add_type<pm::perl::BigObject>("BigObject")
         .constructor<const pm::perl::BigObjectType&>()
         .constructor<const pm::perl::BigObjectType&, const pm::perl::BigObject&>()
         .method("save_bigobject",
@@ -60,43 +63,45 @@ void polymake_module_add_bigobject(jlcxx::Module& polymake)
         .method("attach", [](pm::perl::BigObject p, const std::string& s,
                               jl_value_t* v) {
             auto pv_helper = p.attach(s);
-            polymake_call_function_feed_argument(pv_helper, v);
+            call_function_feed_argument(pv_helper, v);
         })
         ;
 
-    polymake.method("to_bool", [](pm::perl::PropertyValue p) {
+    jlpolymake.method("to_bool", [](pm::perl::PropertyValue p) {
         return static_cast<bool>(p);
     });
-    polymake.method("to_int", [](pm::perl::PropertyValue p) {
+    jlpolymake.method("to_int", [](pm::perl::PropertyValue p) {
         return static_cast<pm::Int>(p);
     });
-    polymake.method("to_double", [](pm::perl::PropertyValue p) {
+    jlpolymake.method("to_double", [](pm::perl::PropertyValue p) {
         return static_cast<double>(p);
     });
-    polymake.method("to_string", [](pm::perl::PropertyValue p) {
+    jlpolymake.method("to_string", [](pm::perl::PropertyValue p) {
         return to_SmallObject<std::string>(p);
     });
-    polymake.method("to_bigobject", &to_bigobject);
+    jlpolymake.method("to_bigobject", &to_bigobject);
 
-    polymake.method("setname!", [](pm::perl::BigObject p, const std::string& s){
+    jlpolymake.method("setname!", [](pm::perl::BigObject p, const std::string& s){
         p.set_name(s);
     });
-    polymake.method("take", [](pm::perl::BigObject p, const std::string& s,
+    jlpolymake.method("take", [](pm::perl::BigObject p, const std::string& s,
                                const std::string& t) { p.take(s) << t; });
-    polymake.method("take",
+    jlpolymake.method("take",
                     [](pm::perl::BigObject p, const std::string& s,
                        const pm::perl::PropertyValue& v) { p.take(s) << v; });
-    polymake.method("take",
+    jlpolymake.method("take",
                     [](pm::perl::BigObject p, const std::string& s,
                        const pm::perl::BigObject& v) { p.take(s) << v; });
-    polymake.method("add", [](pm::perl::BigObject p, const std::string& s,
+    jlpolymake.method("add", [](pm::perl::BigObject p, const std::string& s,
                               const pm::perl::BigObject& v) { p.add(s, v); });
 
-    polymake.method("typeinfo_string",
+    jlpolymake.method("typeinfo_string",
                     [](pm::perl::PropertyValue p, bool demangle) {
                         return typeinfo_helper(p, demangle);
                     });
-    polymake.method("check_defined", [](pm::perl::PropertyValue v) {
+    jlpolymake.method("check_defined", [](pm::perl::PropertyValue v) {
         return PropertyValueHelper(v).is_defined();
     });
+}
+
 }

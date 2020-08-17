@@ -1,12 +1,14 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
-void polymake_module_add_array_polynomial(jlcxx::Module& polymake, tparametric1 array_type)
+namespace jlpolymake {
+
+void add_array_polynomial(jlcxx::Module& jlpolymake, tparametric1 array_type)
 {
     array_type
         .apply<pm::Array<pm::Polynomial<pm::Rational,long>>,
@@ -45,12 +47,14 @@ void polymake_module_add_array_polynomial(jlcxx::Module& polymake, tparametric1 
                            [](pm::perl::BigObject p, const std::string& s,
                               WrappedT& A) { p.take(s) << A; });
         });
-    polymake.method(
+    jlpolymake.method(
         "to_array_polynomial_integer_int", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Polynomial<pm::Integer,long>>>(pv);
         });
-    polymake.method(
+    jlpolymake.method(
         "to_array_polynomial_rational_int", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Polynomial<pm::Rational,long>>>(pv);
         });
+}
+
 }

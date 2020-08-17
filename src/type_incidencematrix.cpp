@@ -1,19 +1,21 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
 template<> struct jlcxx::IsMirroredType<pm::NonSymmetric> : std::false_type { };
 template<> struct jlcxx::IsMirroredType<pm::Symmetric> : std::false_type { };
 
-void polymake_module_add_incidencematrix(jlcxx::Module& polymake)
+namespace jlpolymake {
+
+void add_incidencematrix(jlcxx::Module& jlpolymake)
 {
-    polymake.add_type<pm::NonSymmetric>("NonSymmetric");
-    polymake.add_type<pm::Symmetric>("Symmetric");
-    polymake
+    jlpolymake.add_type<pm::NonSymmetric>("NonSymmetric");
+    jlpolymake.add_type<pm::Symmetric>("Symmetric");
+    jlpolymake
     .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>, jlcxx::ParameterList<bool,int>>(
         "IncidenceMatrix", jlcxx::julia_type("AbstractSparseMatrix", "SparseArrays"))
         .apply_combination<pm::IncidenceMatrix, jlcxx::ParameterList<pm::NonSymmetric,pm::Symmetric>>(
@@ -43,10 +45,12 @@ void polymake_module_add_incidencematrix(jlcxx::Module& polymake)
             return show_small_object<WrappedT>(S);
         });
     });
-    polymake.method("to_incidencematrix_nonsymmetric", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_incidencematrix_nonsymmetric", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::IncidenceMatrix<pm::NonSymmetric>>(pv);
     });
-    polymake.method("to_incidencematrix_symmetric", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_incidencematrix_symmetric", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::IncidenceMatrix<pm::Symmetric>>(pv);
     });
+}
+
 }

@@ -1,20 +1,21 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
+namespace jlpolymake {
 
-void polymake_module_add_map(jlcxx::Module& polymake)
+void add_map(jlcxx::Module& jlpolymake)
 {
 
-    auto type = polymake
+    auto type = jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
             "Map", jlcxx::julia_type("AbstractDict", "Base" ));
 
-        type.apply<pm::Map<std::string, std::string>>([&polymake](auto wrapped) {
+        type.apply<pm::Map<std::string, std::string>>([&jlpolymake](auto wrapped) {
 
             typedef typename decltype(wrapped)::type WrappedT;
             typedef typename decltype(wrapped)::type::key_type keyT;
@@ -38,11 +39,11 @@ void polymake_module_add_map(jlcxx::Module& polymake)
             });
         });
 
-    polymake.method("to_map_string_string", [](pm::perl::PropertyValue pv) {
+    jlpolymake.method("to_map_string_string", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Map<std::string, std::string>>(pv);
     });
 
-    polymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("MapIterator")
+    jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("MapIterator")
         .apply<WrappedMapIterator<std::string, std::string>>(
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type WrappedMapIter;
@@ -65,5 +66,7 @@ void polymake_module_add_map(jlcxx::Module& polymake)
                     return M.end() == state.iterator;
                 });
             });
+
+}
 
 }

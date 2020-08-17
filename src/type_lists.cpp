@@ -1,19 +1,20 @@
-#include "polymake_includes.h"
+#include "jlpolymake/jlpolymake.h"
 
-#include "polymake_tools.h"
+#include "jlpolymake/tools.h"
 
-#include "polymake_functions.h"
+#include "jlpolymake/functions.h"
 
-#include "polymake_type_modules.h"
+#include "jlpolymake/type_modules.h"
 
+namespace jlpolymake {
 
-void polymake_module_add_lists(jlcxx::Module& polymake)
+void add_lists(jlcxx::Module& jlpolymake)
 {
-    auto type = polymake
+    auto type = jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
             "StdList", jlcxx::julia_type("Any", "Base"));
 
-        type.apply<std::list<std::pair<pm::Int,pm::Int>>>([&polymake](auto wrapped) {
+        type.apply<std::list<std::pair<pm::Int,pm::Int>>>([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
             typedef typename decltype(wrapped)::type::value_type elemType;
 
@@ -21,7 +22,7 @@ void polymake_module_add_lists(jlcxx::Module& polymake)
             wrapped.template constructor<WrappedT>();
 
             //Pattern to overwrite function in Base
-            polymake.set_override_module(jl_base_module);
+            jlpolymake.set_override_module(jl_base_module);
 
             wrapped.method("isempty", &WrappedT::empty);
 
@@ -42,18 +43,18 @@ void polymake_module_add_lists(jlcxx::Module& polymake)
 
             wrapped.method("length", &WrappedT::size);
 
-            polymake.unset_override_module();
+            jlpolymake.unset_override_module();
 
             wrapped.method("show_small_obj", [](const WrappedT& S) {
                 return show_small_object<WrappedT>(S);
             });
         });
 
-    polymake.method("to_list_pair_int_int", [](const pm::perl::PropertyValue& pv) {
+    jlpolymake.method("to_list_pair_int_int", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<std::list<std::pair<pm::Int, pm::Int>>>(pv);
     });
 
-    polymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator")
+    jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator")
             .apply<WrappedStdListIterator<std::pair<pm::Int, pm::Int>>>(
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type WrappedT;
@@ -75,5 +76,7 @@ void polymake_module_add_lists(jlcxx::Module& polymake)
                     return L.end() == state.iterator;
                 });
             });
+
+}
 
 }
