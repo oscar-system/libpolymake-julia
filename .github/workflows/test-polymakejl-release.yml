@@ -59,7 +59,7 @@ jobs:
                                        pkg"pin libcxxwrap_julia_jll";'
       - name: "Add polymake packages"
         run: julia --project=test/ -e 'using Pkg;
-                                       pkg"add polymake_jll";
+                                       pkg"add https://github.com/benlorenz/polymake_jll.jl";
                                        pkg"add libpolymake_julia_jll";'
       - name: "Prepare and set override"
         run: |
