@@ -19,6 +19,7 @@ void add_bigobject(jlcxx::Module& jlpolymake)
 {
 
     jlpolymake.add_type<pm::perl::PropertyValue>("PropertyValue");
+    jlpolymake.add_type<pm::perl::ListResult>("ListResult");
     jlpolymake.add_type<pm::perl::OptionSet>("OptionSet");
 
     jlpolymake.method("option_set_take", option_set_take);
