@@ -30,14 +30,14 @@ void set_julia_type(std::string name, void* type_address)
 
 #include "jlpolymake/generated/call_function_feed_argument.h"
 
-struct call_context {
-   using list = pm::perl::ListResult;
+struct context {
+   using list = std::optional<pm::perl::ListResult>;
    using scalar = pm::perl::PropertyValue;
 };
 
 // Visualization in polymake only works if the function is called and
 // then immediately released,i.e. not converted to a property value
-template<typename return_type>
+template<typename return_type=typename context::scalar>
 auto polymake_call_function(
     const std::string&                     function_name,
     const std::vector<std::string>&        template_vector,
@@ -52,7 +52,7 @@ auto polymake_call_function(
 
 // Visualization in polymake only works if the method is called and
 // then immediately released,i.e. not converted to a property value
-template<typename return_type>
+template<typename return_type=typename context::scalar>
 auto polymake_call_method(
     const std::string&                     function_name,
     pm::perl::BigObject             object,
@@ -68,15 +68,15 @@ auto polymake_call_method(
 void add_caller(jlcxx::Module& jlpolymake)
 {
     jlpolymake.method("internal_call_function",
-                      &polymake_call_function<typename call_context::scalar>);
+                      &polymake_call_function<>);
     jlpolymake.method("internal_call_function_list",
-                      &polymake_call_function<typename call_context::list>);
+                      &polymake_call_function<typename context::list>);
     jlpolymake.method("internal_call_function_void",
                       &polymake_call_function<void>);
     jlpolymake.method("internal_call_method",
-                      &polymake_call_method<typename call_context::scalar>);
+                      &polymake_call_method<>);
     jlpolymake.method("internal_call_method_list",
-                      &polymake_call_method<typename call_context::list>);
+                      &polymake_call_method<typename context::list>);
     jlpolymake.method("internal_call_method_void",
                       &polymake_call_method<void>);
     jlpolymake.method("set_julia_type", &set_julia_type);
