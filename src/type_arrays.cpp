@@ -92,7 +92,7 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
         if (!l)
            throw std::runtime_error("ListResult can be unpacked only once.");
         pm::Array<std::string> arr;
-        l.value() >> pm::perl::unroll(arr);
+        *l >> pm::perl::unroll(arr);
         l.reset();
         return arr;
     });
