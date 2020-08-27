@@ -21,7 +21,7 @@ void add_map(jlcxx::Module& jlpolymake)
             typedef typename decltype(wrapped)::type::key_type keyT;
             typedef typename decltype(wrapped)::type::mapped_type valT;
 
-            wrapped.method("_getindex", [](WrappedT& M, keyT& key) {
+            wrapped.method("_getindex", [](const WrappedT& M, keyT& key) {
                 return M[key];
             });
 
@@ -32,9 +32,9 @@ void add_map(jlcxx::Module& jlpolymake)
             wrapped.method("isempty", &WrappedT::empty);
             wrapped.method("length", &WrappedT::size);
 
-            wrapped.method("_isequal", [](WrappedT& S, WrappedT& T) { return S == T; });
+            wrapped.method("_isequal", [](const WrappedT& S, const WrappedT& T) { return S == T; });
 
-            wrapped.method("show_small_obj", [](WrappedT& S) {
+            wrapped.method("show_small_obj", [](const WrappedT& S) {
                 return show_small_object<WrappedT>(S);
             });
         });
@@ -49,7 +49,7 @@ void add_map(jlcxx::Module& jlpolymake)
                 typedef typename decltype(wrapped)::type WrappedMapIter;
                 typedef typename decltype(wrapped)::type::key_type keyT;
                 typedef typename decltype(wrapped)::type::mapped_type valT;
-                wrapped.method("beginiterator", [](pm::Map<keyT, valT>& M) {
+                wrapped.method("beginiterator", [](const pm::Map<keyT, valT>& M) {
                     auto result = WrappedMapIterator<keyT, valT>{M};
                     return result;
                 });
@@ -57,11 +57,11 @@ void add_map(jlcxx::Module& jlpolymake)
                 wrapped.method("increment", [](WrappedMapIter& state) {
                     state.iterator++;
                 });
-                wrapped.method("get_element", [](WrappedMapIter& state) {
+                wrapped.method("get_element", [](const WrappedMapIter& state) {
                     auto elt = *(state.iterator);
                     return std::tuple<keyT, valT>(elt.first, elt.second);
                 });
-                wrapped.method("isdone", [](pm::Map<keyT, valT>& M,
+                wrapped.method("isdone", [](const pm::Map<keyT, valT>& M,
                                             WrappedMapIter&    state) {
                     return M.end() == state.iterator;
                 });
