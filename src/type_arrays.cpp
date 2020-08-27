@@ -88,6 +88,15 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
     jlpolymake.method("to_array_string", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<pm::Array<std::string>>(pv);
     });
+    jlpolymake.method("to_array_string",[](std::optional<pm::perl::ListResult>& l) {
+        if (!l)
+           throw std::runtime_error("ListResult can be unpacked only once.");
+        pm::Array<std::string> arr;
+        *l >> pm::perl::unroll(arr);
+        l.reset();
+        return arr;
+    });
+
     jlpolymake.method("to_array_array_int",
                     [](const pm::perl::PropertyValue& pv) {
                         return to_SmallObject<pm::Array<pm::Array<pm::Int>>>(pv);

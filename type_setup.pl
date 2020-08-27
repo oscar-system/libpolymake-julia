@@ -7,6 +7,9 @@ use File::Path qw(make_path);
 
 my $type_tuples = [
         ["PropertyValue", "pm::perl::PropertyValue", "PropertyValue", undef],
+        # ListResult cannot be used like other scalar based types so this is
+        # commented on purpose, also as a reminder
+        # ["ListResult", "pm::perl::ListResult", "ListResult", undef],
         ["OptionSet", "pm::perl::OptionSet", "OptionSet", undef],
         ["BigObject", "pm::perl::BigObject", "BigObject", "to_bigobject"],
         ["Integer", "pm::Integer", "Integer", "to_integer"],
