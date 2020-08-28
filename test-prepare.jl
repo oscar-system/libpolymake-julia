@@ -24,10 +24,9 @@ run(`cmake \
 
 # add override
 open("$(joinpath(Pkg.depots1(),"artifacts","Overrides.toml"))", "a") do io
-    project = Base.active_project()
-    uuid = Base.project_deps_get(project, "libpolymake_julia_jll")
+    pkgid = Base.identify_package("libpolymake_julia_jll")
     write(io, """
-              [$(uuid.uuid)]
+              [$(pkgid.uuid)]
               libpolymake_julia = "$(joinpath(pwd(),"test","install"))"
               """)
 end;
