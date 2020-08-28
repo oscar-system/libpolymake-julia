@@ -11,6 +11,7 @@ on:
 jobs:
   test-polymakejl-release:
     runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.julia-version == 'nightly' }}
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
