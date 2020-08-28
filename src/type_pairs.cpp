@@ -17,9 +17,11 @@ void add_pairs(jlcxx::Module& jlpolymake)
 
         type.apply<std::pair<pm::Int,pm::Int>>([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
+            typedef typename decltype(wrapped)::type::first_type firstT;
+            typedef typename decltype(wrapped)::type::second_type secondT;
 
             wrapped.template constructor();
-            wrapped.template constructor<int64_t, int64_t>();
+            wrapped.template constructor<firstT, secondT>();
 
             //Pattern to overwrite function in Base
             jlpolymake.set_override_module(jl_base_module);
