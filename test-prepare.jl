@@ -14,27 +14,9 @@ open(joinpath("test","run_testcases"), write=true) do out
     end
 end
 
-# FIXME: we need to fix polymake-config in polymake_jll
-# to allow building against that artifact
-# for now we copy and patch this here
-open(joinpath("test","polymake-config"), write=true) do out
-    open(joinpath(polymake_jll.artifact_dir,"bin","polymake-config")) do in
-        for line in eachline(in, keep=true) # keep so the new line isn't chomped
-            write(out, line)
-            if startswith(line,"my \$root=")
-                write(out,"""
-                          \$root = "\$ENV{POLYMAKE_DEPS_TREE}/share/polymake";
-                          \$InstallArch = "\$ENV{POLYMAKE_DEPS_TREE}/lib/polymake";
-                          """)
-            end
-        end
-    end
-end
-chmod(joinpath("test","polymake-config"),0o755);
-
 # configure libpolymake-julia with artifact dirs
 run(`cmake \
-     -DPolymake_Config_EXECUTABLE=$(pwd())/test/polymake-config \
+     -DPolymake_PREFIX=$(ENV["POLYMAKE_DEPS_TREE"]) \
      -DJlCxx_DIR=$(libcxxwrap_julia_jll.artifact_dir)/lib/cmake/JlCxx \
      -DCMAKE_INSTALL_PREFIX=$(pwd())/test/install \
      -DCMAKE_BUILD_TYPE=Release \
