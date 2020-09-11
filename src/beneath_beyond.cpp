@@ -231,13 +231,13 @@ void beneath_beyond_algo_for_ml<E>::clear(){
     }
 }
 
-}
-}
-
+} // of namespace polytope
+} // of namespace polymake
 
 template<> struct jlcxx::IsMirroredType<
     polymake::polytope::beneath_beyond_algo<pm::Rational>> : std::false_type { };
 
+namespace jlpolymake {
 
 void add_beneath_beyond(jlcxx::Module& polymake)
 {
@@ -280,3 +280,5 @@ void add_beneath_beyond(jlcxx::Module& polymake)
             wrapped.method("getTriangulation", &WrappedT::getTriangulation);
         });
 }
+
+} // of namespace jlpolymake
