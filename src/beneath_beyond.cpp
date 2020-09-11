@@ -15,6 +15,19 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
             initialized = false;
         };
 
+        beneath_beyond_algo_for_ml(const beneath_beyond_algo_for_ml<E>& bb) :
+            Base(bb),
+            initialized{bb.initialized},
+            points_added{bb.points_added}
+        {
+            this->dual_graph.attach(this->facets);
+            this->dual_graph.attach(this->ridges);
+            if (bb.points != bb.source_points)
+                this->points = &(this->transformed_points);
+            if (bb.linealities != bb.source_linealities)
+                this->linealities = &(this->linealities_so_far);
+        };
+
         template <typename Iterator>
         void initialize(const Matrix<E>& rays, const Matrix<E>& lins, Iterator perm);
         void initialize(const Matrix<E>& rays, const Matrix<E>& lins)
@@ -29,6 +42,10 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
 
         void clear();
 
+        Int triangulation_size()
+        {
+            return triangulation.size();
+        };
 
         // TODO: bundle all results in a structure, move all numbers into it
         template <typename Iterator>
