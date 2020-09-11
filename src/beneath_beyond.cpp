@@ -252,32 +252,32 @@ void add_beneath_beyond(jlcxx::Module& polymake)
             typedef typename decltype(wrapped)::type::value_type E;
             wrapped.template constructor();
 
-            wrapped.method("bb_expecting_redundant", &WrappedT::expecting_redundant);
-            wrapped.method("bb_for_cone", &WrappedT::for_cone);
-            wrapped.method("bb_making_triangulation", &WrappedT::making_triangulation);
-            wrapped.method("bb_computing_vertices", &WrappedT::computing_vertices);
+            wrapped.method("_bb_expecting_redundant", &WrappedT::expecting_redundant);
+            wrapped.method("_bb_for_cone", &WrappedT::for_cone);
+            wrapped.method("_bb_making_triangulation", &WrappedT::making_triangulation);
+            wrapped.method("_bb_computing_vertices", &WrappedT::computing_vertices);
 
-            wrapped.method("bb_compute!", static_cast<
+            wrapped.method("_bb_compute!", static_cast<
                 void (polymake::polytope::beneath_beyond_algo_for_ml<E>::*)(const pm::Matrix<E>&, const pm::Matrix<E>&)
             >(&WrappedT::compute));
 
-            wrapped.method("bb_initialize!", static_cast<
+            wrapped.method("_bb_initialize!", static_cast<
                 void (polymake::polytope::beneath_beyond_algo_for_ml<E>::*)(const pm::Matrix<E>&, const pm::Matrix<E>&)
             >(&WrappedT::initialize));
 
-            // wrapped.method("initialize", &WrappedT::initialize);
-            wrapped.method("bb_add_point!", &WrappedT::process_point);
-            wrapped.method("bb_clear!", &WrappedT::clear);
+            wrapped.method("_bb_add_point!", &WrappedT::process_point);
+            wrapped.method("_bb_clear!", &WrappedT::clear);
 
-            wrapped.method("getFacets", &WrappedT::getFacets);
-            wrapped.method("getVertexFacetIncidence", &WrappedT::getVertexFacetIncidence);
-            wrapped.method("getAffineHull", &WrappedT::getAffineHull);
-            wrapped.method("getVertices", &WrappedT::getVertices);
+            wrapped.method("facets", &WrappedT::getFacets);
+            wrapped.method("vertex_facet_incidence", &WrappedT::getVertexFacetIncidence);
+            wrapped.method("affine_hull", &WrappedT::getAffineHull);
+            wrapped.method("vertices", &WrappedT::getVertices);
             // wrapped.method("getNonRedundantPoints", &WrappedT::getNonRedundantPoints);
-            wrapped.method("getNonRedundantLinealities", &WrappedT::getNonRedundantLinealities);
-            wrapped.method("getLinealities", &WrappedT::getLinealities);
+            wrapped.method("non_redundant_linealities", &WrappedT::getNonRedundantLinealities);
+            wrapped.method("linealities", &WrappedT::getLinealities);
             // wrapped.method("getDualGraph", &WrappedT::getDualGraph);
-            wrapped.method("getTriangulation", &WrappedT::getTriangulation);
+            wrapped.method("triangulation", &WrappedT::getTriangulation);
+            wrapped.method("triangulation_size", &WrappedT::triangulation_size);
         });
 }
 
