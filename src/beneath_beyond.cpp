@@ -20,12 +20,36 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
             initialized{bb.initialized},
             points_added{bb.points_added}
         {
+            pm::cout << "copying bb" << pm::endl;
             this->dual_graph.attach(this->facets);
             this->dual_graph.attach(this->ridges);
             if (bb.points != bb.source_points)
                 this->points = &(this->transformed_points);
             if (bb.linealities != bb.source_linealities)
                 this->linealities = &(this->linealities_so_far);
+
+            if (this->make_triangulation)
+            {
+                using T = typename Base::Triangulation::value_type;
+                std::unordered_map<const T*, const T*> triangulation_map;
+                auto new_triangulation_iter = this->triangulation.begin();
+                for (const auto& simplex : bb.triangulation)
+                {
+                    triangulation_map[&simplex] = &*new_triangulation_iter;
+                    new_triangulation_iter++;
+                }
+
+                for (auto& fct_info : this->facets)
+                {
+                    pm::cout << " b " << "fct_info" << pm::endl;
+                    for (auto& s : fct_info.simplices)
+                    {
+                        auto new_simplex = triangulation_map[s.simplex];
+                        pm::cout << " replacing " << s.simplex << "with " << new_simplex << pm::endl;
+                        s.simplex = new_simplex;
+                    }
+                }
+            }
         };
 
         template <typename Iterator>
@@ -46,6 +70,11 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
         {
             return triangulation.size();
         };
+
+        std::vector<Int> added_points()
+        {
+            return std::vector<Int>(points_added.begin(), points_added.end());
+        }
 
         // TODO: bundle all results in a structure, move all numbers into it
         template <typename Iterator>
@@ -85,10 +114,10 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
         using Base::facets;
         using compute_state = typename Base::compute_state;
         using Base::state;
+        using stop_calculation = typename Base::stop_calculation;
+        using Base::incident_simplex;
 
-        class stop_calculation {};
-
-    private:
+    private :
         bool initialized;
         Bitset points_added;
 };
@@ -278,6 +307,7 @@ void add_beneath_beyond(jlcxx::Module& polymake)
             // wrapped.method("getDualGraph", &WrappedT::getDualGraph);
             wrapped.method("triangulation", &WrappedT::getTriangulation);
             wrapped.method("triangulation_size", &WrappedT::triangulation_size);
+            wrapped.method("state", &WrappedT::added_points);
         });
 }
 
