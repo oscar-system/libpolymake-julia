@@ -20,9 +20,16 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
             initialized{bb.initialized},
             points_added{bb.points_added}
         {
-            pm::cout << "copying bb" << pm::endl;
-            this->dual_graph.attach(this->facets);
-            this->dual_graph.attach(this->ridges);
+            //pm::cout << "copying bb" << pm::endl;
+
+            // we need this slightly weird copy to make sure to get a proper new graph
+            // instead of just an alias
+            Int dim = bb.dual_graph.dim();
+            this->dual_graph = bb.dual_graph.copy_permuted(sequence(0,dim),sequence(0,dim));
+
+            this->dual_graph.attach(this->facets,entire(bb.facets));
+            this->dual_graph.attach(this->ridges,entire(bb.ridges));
+
             if (bb.points != bb.source_points)
                 this->points = &(this->transformed_points);
             if (bb.linealities != bb.source_linealities)
@@ -30,26 +37,29 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
 
             if (this->make_triangulation)
             {
+                //pm::cout << "copying bb step2" << pm::endl;
                 using T = typename Base::Triangulation::value_type;
                 std::unordered_map<const T*, const T*> triangulation_map;
                 auto new_triangulation_iter = this->triangulation.begin();
                 for (const auto& simplex : bb.triangulation)
                 {
+
+                    //pm::cout << "copying bb map: " << (void*) &simplex << " -> " << (void*) &*new_triangulation_iter << pm::endl;
                     triangulation_map[&simplex] = &*new_triangulation_iter;
                     new_triangulation_iter++;
                 }
-
                 for (auto& fct_info : this->facets)
                 {
-                    pm::cout << " b " << "fct_info" << pm::endl;
+                    //pm::cout << " b " << "fct_info" << pm::endl;
                     for (auto& s : fct_info.simplices)
                     {
                         auto new_simplex = triangulation_map[s.simplex];
-                        pm::cout << " replacing " << s.simplex << "with " << new_simplex << pm::endl;
+                        //pm::cout << " replacing " << s.simplex << "with " << new_simplex << pm::endl;
                         s.simplex = new_simplex;
                     }
                 }
             }
+            //pm::cout << "copying bb done" << pm::endl;
         };
 
         template <typename Iterator>
@@ -116,6 +126,12 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
         using Base::state;
         using stop_calculation = typename Base::stop_calculation;
         using Base::incident_simplex;
+#if POLYMAKE_DEBUG
+        using Base::enable_debug_output;
+        using Base::do_dump;
+        using Base::debug;
+        using Base::dump;
+#endif
 
     private :
         bool initialized;
