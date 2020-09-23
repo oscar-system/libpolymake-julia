@@ -125,7 +125,7 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
         using compute_state = typename Base::compute_state;
         using Base::state;
         using stop_calculation = typename Base::stop_calculation;
-        using Base::incident_simplex;
+        using typename Base::incident_simplex;
 #if POLYMAKE_DEBUG
         using Base::enable_debug_output;
         using Base::do_dump;
