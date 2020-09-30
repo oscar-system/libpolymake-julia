@@ -3,7 +3,8 @@
 This is the C++ library accompanying [Polymake.jl](https://github.com/oscar-system/Polymake.jl).
 It implements the C++ interface from julia to polymake using [CxxWrap.jl](https://github.com/JuliaInterop/CxxWrap.jl) and [libcxxwrap-julia](https://github.com/JuliaInterop/libcxxwrap-julia).
 
-For Polymake.jl versions less than 0.5 this was included in Polymake.jl but version 0.5 will probably use this library as a separate artifact.
+For Polymake.jl versions before 0.5 this was included in Polymake.jl but since version 0.5 this library is installed as a separate artifact
+via [libpolymake_julia_jll](https://github.com/JuliaBinaryWrappers/libpolymake_julia_jll.jl).
 
 ## Building
 
