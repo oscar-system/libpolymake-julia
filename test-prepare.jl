@@ -23,11 +23,16 @@ run(`cmake \
      -S . -B build`);
 
 # add override
-open("$(joinpath(Pkg.depots1(),"artifacts","Overrides.toml"))", "a") do io
-    pkgid = Base.identify_package("libpolymake_julia_jll")
-    write(io, """
-              [$(pkgid.uuid)]
-              libpolymake_julia = "$(joinpath(pwd(),"test","install"))"
-              """)
-end;
 
+let file = joinpath(Pkg.depots1(),"artifacts","Overrides.toml")
+    lines = readlines(file)
+    pkgid = Base.identify_package("libpolymake_julia_jll")
+    k = findfirst(==("[$(pkgid.uuid)]"), lines)
+    if !isnothing(k)
+        @assert k < length(lines) "Overrides.toml seem to be ill formatted"
+        lines[k+1] = "libpolymake_julia = \"$(joinpath(pwd(),"test","install"))\""
+    else
+        append!(lines, ["[$(pkgid.uuid)]", "libpolymake_julia = \"$(joinpath(pwd(),"test","install"))\""])
+    end
+    write(file, join(lines, "\n"))
+end
