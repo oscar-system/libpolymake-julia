@@ -25,6 +25,10 @@ run(`cmake \
 # add override
 
 let file = joinpath(Pkg.depots1(),"artifacts","Overrides.toml")
+    if !isfile(file)
+        mkpath(dirname(file))
+        touch(file)
+    end
     lines = readlines(file)
     pkgid = Base.identify_package("libpolymake_julia_jll")
     k = findfirst(==("[$(pkgid.uuid)]"), lines)
@@ -34,5 +38,10 @@ let file = joinpath(Pkg.depots1(),"artifacts","Overrides.toml")
     else
         append!(lines, ["[$(pkgid.uuid)]", "libpolymake_julia = \"$(joinpath(pwd(),"test","install"))\""])
     end
-    write(file, join(lines, "\n"))
+    if !("--override" in ARGS)
+        @info "$file to be written:\n$(join(lines, "\n"))\nTo actually write the file run julia --project test-prepare.jl --override"
+    else
+        write(file, join(lines, "\n"))
+        @info "$file written."
+    end
 end
