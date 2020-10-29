@@ -50,26 +50,19 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
       - name: "pin libcxxwrap_julia"
-        run: julia --project=test/ -e 'using Pkg;
-                                       pkg"add libcxxwrap_julia_jll${{ matrix.libcxxwrap }}";
-                                       pkg"pin libcxxwrap_julia_jll";'
-      - name: "Add polymake packages"
-        run: julia --project=test/ -e 'using Pkg;
-                                       pkg"add polymake_jll";
-                                       pkg"add libpolymake_julia_jll";'
-      - name: "Prepare and set override"
+        run: julia --project=. -e 'using Pkg;
+                                   pkg"instantiate";
+                                   pkg"pin libcxxwrap_julia_jll${{ matrix.libcxxwrap }}";'
+      - name: "Build and set override"
         run: |
-          rm -f ~/.julia/artifacts/Overrides.toml
-          julia --project=test/ test-prepare.jl
-      - name: "Build and install"
-        run: VERBOSE=ON cmake --build build --config Release --target install -- -j2
+          julia --project=. test-prepare.jl --override --build
       - name: "Work around glibcxx issue"
         if: matrix.os == 'ubuntu-20.04'
         run: echo ::set-env name=LD_PRELOAD::/usr/lib/x86_64-linux-gnu/libstdc++.so.6
       - name: "Test polymake"
         env:
            TERM: linux
-        run: julia --project=test/ -e 'using libpolymake_julia_jll;
-                                       polymake_run_script() do exe
-                                          run(`$exe test/run_testcases`);
-                                       end'
+        run: julia --project=. -e 'using libpolymake_julia_jll;
+                                   polymake_run_script() do exe
+                                       run(`$exe test/run_testcases`);
+                                   end'

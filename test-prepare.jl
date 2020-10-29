@@ -3,6 +3,13 @@ using polymake_jll
 using libcxxwrap_julia_jll
 
 # we need to adjust the test-driver to running from the callable library
+let file = joinpath("test","run_testcases")
+    if !isfile(file)
+        mkpath(dirname(file))
+        touch(file)
+    end
+end
+
 open(joinpath("test","run_testcases"), write=true) do out
     open(joinpath(polymake_jll.artifact_dir,"share","polymake","scripts","run_testcases")) do in
         for line in eachline(in, keep=true) # keep so the new line isn't chomped
@@ -44,4 +51,8 @@ let file = joinpath(Pkg.depots1(),"artifacts","Overrides.toml")
         write(file, join(lines, "\n"))
         @info "$file written."
     end
+end
+
+if "--build" in ARGS
+    run(`cmake --build build --config Release --target install -- -j2`)
 end
