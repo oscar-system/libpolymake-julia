@@ -39,3 +39,16 @@ polymake = "/home/user/path/to/polymake"
 [3eaa8342-bff7-56a5-9981-c04077f7cee7]
 libcxxwrap_julia = "/home/user/path/to/libcxxwrap-julia"
 ```
+
+### Convenience script
+
+For convenience we provide `test-prepare.jl` script which can be used to compile and place overrides at once.
+First execute
+```julia
+julia --project test-prepare.jl
+```
+If the compilation succeeds and the displayed overrides seem correct run
+```julia
+julia --project test-prepare.jl --override
+```
+

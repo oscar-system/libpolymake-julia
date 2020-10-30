@@ -1,0 +1,4 @@
+[deps]
+libcxxwrap_julia_jll = "3eaa8342-bff7-56a5-9981-c04077f7cee7"
+libpolymake_julia_jll = "4d8266f6-2b3b-57e3-ad7a-d431eaaac945"
+polymake_jll = "7c209550-9012-526c-9264-55ba7a78ba2c"
