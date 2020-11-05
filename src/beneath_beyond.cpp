@@ -5,23 +5,21 @@
 namespace polymake { namespace polytope {
 
 template <typename E>
-class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
+class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
     public:
         typedef E value_type;
         typedef const beneath_beyond_algo<E> Base;
 
-        beneath_beyond_algo_for_ml(): Base()
+        beneath_beyond_algo_stepwise(): Base()
         {
             initialized = false;
         };
 
-        beneath_beyond_algo_for_ml(const beneath_beyond_algo_for_ml<E>& bb) :
+        beneath_beyond_algo_stepwise(const beneath_beyond_algo_stepwise<E>& bb) :
             Base(bb),
             initialized{bb.initialized},
             points_added{bb.points_added}
         {
-            //pm::cout << "copying bb" << pm::endl;
-
             // we need this slightly weird copy to make sure to get a proper new graph
             // instead of just an alias
             Int dim = bb.dual_graph.dim();
@@ -37,29 +35,23 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
 
             if (this->make_triangulation)
             {
-                //pm::cout << "copying bb step2" << pm::endl;
                 using T = typename Base::Triangulation::value_type;
                 std::unordered_map<const T*, const T*> triangulation_map;
                 auto new_triangulation_iter = this->triangulation.begin();
                 for (const auto& simplex : bb.triangulation)
                 {
-
-                    //pm::cout << "copying bb map: " << (void*) &simplex << " -> " << (void*) &*new_triangulation_iter << pm::endl;
                     triangulation_map[&simplex] = &*new_triangulation_iter;
                     new_triangulation_iter++;
                 }
                 for (auto& fct_info : this->facets)
                 {
-                    //pm::cout << " b " << "fct_info" << pm::endl;
                     for (auto& s : fct_info.simplices)
                     {
                         auto new_simplex = triangulation_map[s.simplex];
-                        //pm::cout << " replacing " << s.simplex << "with " << new_simplex << pm::endl;
                         s.simplex = new_simplex;
                     }
                 }
             }
-            //pm::cout << "copying bb done" << pm::endl;
         };
 
         template <typename Iterator>
@@ -141,7 +133,7 @@ class beneath_beyond_algo_for_ml: public beneath_beyond_algo<E>{
 
 template <typename E>
 template <typename Iterator>
-void beneath_beyond_algo_for_ml<E>::initialize(const Matrix<E>& rays, const Matrix<E>& lins, Iterator perm)
+void beneath_beyond_algo_stepwise<E>::initialize(const Matrix<E>& rays, const Matrix<E>& lins, Iterator perm)
 {
     source_points = &rays;
     source_linealities = &lins;
@@ -186,7 +178,7 @@ void beneath_beyond_algo_for_ml<E>::initialize(const Matrix<E>& rays, const Matr
 };
 
 template <typename E>
-void beneath_beyond_algo_for_ml<E>::process_point(Int p){
+void beneath_beyond_algo_stepwise<E>::process_point(Int p){
     if ( !points_added.contains(p) ){
         Base::process_point(p);
         points_added += p;
@@ -198,7 +190,7 @@ void beneath_beyond_algo_for_ml<E>::process_point(Int p){
 
 template <typename E>
 template <typename Iterator>
-void beneath_beyond_algo_for_ml<E>::compute(const Matrix<E>& rays, const Matrix<E>& lins, Iterator perm){
+void beneath_beyond_algo_stepwise<E>::compute(const Matrix<E>& rays, const Matrix<E>& lins, Iterator perm){
 
     initialize(rays, lins);
 
@@ -226,7 +218,7 @@ void beneath_beyond_algo_for_ml<E>::compute(const Matrix<E>& rays, const Matrix<
 };
 
 template <typename E>
-void beneath_beyond_algo_for_ml<E>::stop_cleanup(){
+void beneath_beyond_algo_stepwise<E>::stop_cleanup(){
     state = compute_state::zero;
     dual_graph.clear();
     vertices_so_far.clear();
@@ -239,7 +231,7 @@ void beneath_beyond_algo_for_ml<E>::stop_cleanup(){
 }
 
 template <typename E>
-void beneath_beyond_algo_for_ml<E>::clear(){
+void beneath_beyond_algo_stepwise<E>::clear(){
 
     switch (state) {
     case compute_state::zero:
@@ -292,7 +284,7 @@ void add_beneath_beyond(jlcxx::Module& polymake)
 
     polymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("BeneathBeyondAlgo")
-        .apply<polymake::polytope::beneath_beyond_algo_for_ml<pm::Rational>>([](auto wrapped) {
+        .apply<polymake::polytope::beneath_beyond_algo_stepwise<pm::Rational>>([](auto wrapped) {
             typedef typename decltype(wrapped)::type             WrappedT;
             typedef typename decltype(wrapped)::type::value_type E;
             wrapped.template constructor();
@@ -303,11 +295,11 @@ void add_beneath_beyond(jlcxx::Module& polymake)
             wrapped.method("_bb_computing_vertices", &WrappedT::computing_vertices);
 
             wrapped.method("_bb_compute!", static_cast<
-                void (polymake::polytope::beneath_beyond_algo_for_ml<E>::*)(const pm::Matrix<E>&, const pm::Matrix<E>&)
+                void (polymake::polytope::beneath_beyond_algo_stepwise<E>::*)(const pm::Matrix<E>&, const pm::Matrix<E>&)
             >(&WrappedT::compute));
 
             wrapped.method("_bb_initialize!", static_cast<
-                void (polymake::polytope::beneath_beyond_algo_for_ml<E>::*)(const pm::Matrix<E>&, const pm::Matrix<E>&)
+                void (polymake::polytope::beneath_beyond_algo_stepwise<E>::*)(const pm::Matrix<E>&, const pm::Matrix<E>&)
             >(&WrappedT::initialize));
 
             wrapped.method("_bb_add_point!", &WrappedT::process_point);
