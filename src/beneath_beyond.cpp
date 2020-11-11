@@ -66,7 +66,7 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
 
         void process_point(Int p);
 
-        void clear();
+        void finish();
 
         Int triangulation_size()
         {
@@ -206,7 +206,7 @@ void beneath_beyond_algo_stepwise<E>::compute(const Matrix<E>& rays, const Matri
         stop_cleanup();
     }
 
-    clear();
+    finish();
 
 #if POLYMAKE_DEBUG
     if (debug >= do_dump) {
@@ -231,7 +231,7 @@ void beneath_beyond_algo_stepwise<E>::stop_cleanup(){
 }
 
 template <typename E>
-void beneath_beyond_algo_stepwise<E>::clear(){
+void beneath_beyond_algo_stepwise<E>::finish(){
 
     switch (state) {
     case compute_state::zero:
@@ -303,7 +303,7 @@ void add_beneath_beyond(jlcxx::Module& polymake)
             >(&WrappedT::initialize));
 
             wrapped.method("_bb_add_point!", &WrappedT::process_point);
-            wrapped.method("_bb_clear!", &WrappedT::clear);
+            wrapped.method("_bb_finish!", &WrappedT::finish);
 
             wrapped.method("facets", &WrappedT::getFacets);
             wrapped.method("vertex_facet_incidence", &WrappedT::getVertexFacetIncidence);
