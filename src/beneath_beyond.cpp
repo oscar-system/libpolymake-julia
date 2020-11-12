@@ -4,6 +4,16 @@
 
 namespace polymake { namespace polytope {
 
+template <typename T>
+T deepcopy(const T& x){
+    return T{entire(x)};
+}
+
+template <typename Scalar>
+Vector<Scalar> deepcopy(const Vector<Scalar>& v){
+    return Vector<Scalar>(v.dim(), entire(v));
+}
+
 template <typename E>
 class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
     public:
@@ -17,9 +27,19 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
 
         beneath_beyond_algo_stepwise(const beneath_beyond_algo_stepwise<E>& bb) :
             Base(bb),
+            // TODO:
+            // dual_graph
+            // AH
+            // facet_nullspace
+
             initialized{bb.initialized},
             points_added{bb.points_added}
         {
+            this->interior_points = deepcopy(bb.interior_points);
+            this->source_lineality_basis = deepcopy(bb.source_lineality_basis);
+            this->points_in_lineality_basis = deepcopy(bb.points_in_lineality_basis);
+            this->vertices_so_far = deepcopy(bb.vertices_so_far);
+
             // we need this slightly weird copy to make sure to get a proper new graph
             // instead of just an alias
             Int dim = bb.dual_graph.dim();
@@ -33,6 +53,11 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
             if (bb.linealities != bb.source_linealities)
                 this->linealities = &(this->linealities_so_far);
 
+            for (auto ridge = entire(this->ridges); !ridge.at_end(); ++ridge)
+            {
+                *ridge = deepcopy(*ridge);
+            }
+
             if (this->make_triangulation)
             {
                 using T = typename Base::Triangulation::value_type;
@@ -40,11 +65,15 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
                 auto new_triangulation_iter = this->triangulation.begin();
                 for (const auto& simplex : bb.triangulation)
                 {
+                    auto new_simplex = deepcopy(simplex);
+                    *new_triangulation_iter = new_simplex;
                     triangulation_map[&simplex] = &*new_triangulation_iter;
                     new_triangulation_iter++;
                 }
                 for (auto& fct_info : this->facets)
                 {
+                    fct_info.normal = deepcopy(fct_info.normal);
+                    fct_info.vertices = deepcopy(fct_info.vertices);
                     for (auto& s : fct_info.simplices)
                     {
                         auto new_simplex = triangulation_map[s.simplex];
