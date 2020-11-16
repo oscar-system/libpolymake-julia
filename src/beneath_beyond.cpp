@@ -41,6 +41,11 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
             this->interior_points = deepcopy(bb.interior_points);
             this->source_lineality_basis = deepcopy(bb.source_lineality_basis);
             this->points_in_lineality_basis = deepcopy(bb.points_in_lineality_basis);
+            this->vertices_this_step = Bitset{};
+            this->interior_points_this_step = Bitset{};
+            this->visited_facets = Bitset{};
+            this->facet_queue = std::deque<Int>{};
+
             this->vertices_so_far = deepcopy(bb.vertices_so_far);
 
             // we need this slightly weird copy to make sure to get a proper new graph
