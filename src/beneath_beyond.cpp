@@ -14,6 +14,12 @@ Vector<Scalar> deepcopy(const Vector<Scalar>& v){
     return Vector<Scalar>(v.dim(), entire(v));
 }
 
+template <typename Row>
+ListMatrix<Row> deepcopy(const ListMatrix<Row>& m){
+    return ListMatrix<Row>(Matrix<typename Row::value_type>(m));
+}
+
+
 template <typename E>
 class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
     public:
@@ -27,14 +33,11 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
 
         beneath_beyond_algo_stepwise(const beneath_beyond_algo_stepwise<E>& bb) :
             Base(bb),
-            // TODO:
-            // dual_graph
-            // AH
-            // facet_nullspace
-
             initialized{bb.initialized},
             points_added{bb.points_added}
         {
+            this->AH = deepcopy(bb.AH);
+            this->facet_nullspace = deepcopy(bb.facet_nullspace);
             this->interior_points = deepcopy(bb.interior_points);
             this->source_lineality_basis = deepcopy(bb.source_lineality_basis);
             this->points_in_lineality_basis = deepcopy(bb.points_in_lineality_basis);
