@@ -58,7 +58,7 @@ jobs:
           julia --project=. test-prepare.jl --override --build
       - name: "Work around glibcxx issue"
         if: matrix.os == 'ubuntu-20.04'
-        run: echo ::set-env name=LD_PRELOAD::/usr/lib/x86_64-linux-gnu/libstdc++.so.6
+        run: echo "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6" >> $GITHUB_ENV
       - name: "Test polymake"
         env:
            TERM: linux
