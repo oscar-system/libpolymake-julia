@@ -2,6 +2,10 @@ using Pkg
 using polymake_jll
 using libcxxwrap_julia_jll
 
+include(polymake_jll.generate_deps_tree)
+
+const polymake_deps_tree = prepare_deps_tree()
+
 # we need to adjust the test-driver to running from the callable library
 let file = joinpath("test","run_testcases")
     if !isfile(file)
@@ -23,7 +27,7 @@ end
 
 # configure libpolymake-julia with artifact dirs
 run(`cmake \
-     -DPolymake_PREFIX=$(ENV["POLYMAKE_DEPS_TREE"]) \
+     -DPolymake_PREFIX=$(polymake_deps_tree) \
      -DJlCxx_DIR=$(libcxxwrap_julia_jll.artifact_dir)/lib/cmake/JlCxx \
      -DCMAKE_INSTALL_PREFIX=$(pwd())/test/install \
      -DCMAKE_BUILD_TYPE=Release \
