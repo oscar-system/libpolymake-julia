@@ -19,6 +19,11 @@ ListMatrix<Row> deepcopy(const ListMatrix<Row>& m){
     return ListMatrix<Row>(Matrix<typename Row::value_type>(m));
 }
 
+template <typename Scalar>
+Matrix<Scalar> deepcopy(const Matrix<Scalar>& m) {
+    return Matrix<Scalar>(m.rows(),m.cols(),entire(concat_rows(m)));
+}
+
 
 template <typename E>
 class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
@@ -34,7 +39,9 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
         beneath_beyond_algo_stepwise(const beneath_beyond_algo_stepwise<E>& bb) :
             Base(bb),
             initialized{bb.initialized},
-            points_added{bb.points_added}
+            points_added{bb.points_added},
+            full_points{deepcopy(bb.full_points)},
+            full_linealities{deepcopy(bb.full_linealities)}
         {
             this->AH = deepcopy(bb.AH);
             this->facet_nullspace = deepcopy(bb.facet_nullspace);
@@ -46,6 +53,10 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
             this->visited_facets = Bitset{};
             this->facet_queue = std::deque<Int>{};
 
+            this->transformed_points = deepcopy(bb.transformed_points);
+            this->linealities_so_far = deepcopy(bb.linealities_so_far);
+            this->lineality_transform = deepcopy(bb.lineality_transform);
+
             this->vertices_so_far = deepcopy(bb.vertices_so_far);
 
             // we need this slightly weird copy to make sure to get a proper new graph
@@ -56,10 +67,17 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
             this->dual_graph.attach(this->facets,entire(bb.facets));
             this->dual_graph.attach(this->ridges,entire(bb.ridges));
 
+            this->source_points = &(this->full_points);
             if (bb.points != bb.source_points)
                 this->points = &(this->transformed_points);
+            else
+                this->points = &(this->full_points);
+
+            this->source_linealities = &(this->full_linealities);
             if (bb.linealities != bb.source_linealities)
                 this->linealities = &(this->linealities_so_far);
+            else
+                this->linealities = &(this->full_linealities);
 
             for (auto ridge = entire(this->ridges); !ridge.at_end(); ++ridge)
             {
@@ -165,6 +183,8 @@ class beneath_beyond_algo_stepwise: public beneath_beyond_algo<E>{
     private :
         bool initialized;
         Bitset points_added;
+        Matrix<E> full_points;
+        Matrix<E> full_linealities;
 };
 
 
@@ -172,16 +192,18 @@ template <typename E>
 template <typename Iterator>
 void beneath_beyond_algo_stepwise<E>::initialize(const Matrix<E>& rays, const Matrix<E>& lins, Iterator perm)
 {
-    source_points = &rays;
-    source_linealities = &lins;
+    full_points = deepcopy(rays);
+    full_linealities = deepcopy(lins);
+    source_points = &full_points;
+    source_linealities = &full_linealities;
 
-    linealities_so_far.resize(0,rays.cols());
+    linealities_so_far.resize(0,full_points.cols());
 
     try {
-        if (lins.rows() != 0) {
+        if (full_linealities.rows() != 0) {
             if (expect_redundant) {
-                source_lineality_basis = basis_rows(lins);
-                linealities_so_far = lins.minor(source_lineality_basis, All);
+                source_lineality_basis = basis_rows(full_linealities);
+                linealities_so_far = full_linealities.minor(source_lineality_basis, All);
                 linealities = &linealities_so_far;
             } else {
                 linealities = source_linealities;
@@ -220,7 +242,7 @@ void beneath_beyond_algo_stepwise<E>::process_point(Int p){
         Base::process_point(p);
         points_added += p;
 #if POLYMAKE_DEBUG
-        std::cout << "processed point p = " << p << std::endl;
+        if (debug >= do_dump) std::cout << "processed point p = " << p << std::endl;
 #endif
     };
 };
