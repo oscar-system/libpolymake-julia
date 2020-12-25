@@ -33,8 +33,10 @@
 #pragma clang diagnostic pop
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
-#define JLPOLYMAKE_VERSION_MINOR 3
-#define JLPOLYMAKE_VERSION_PATCH 1
+#define JLPOLYMAKE_VERSION_MINOR 4
+// we should not use the patch version for now as this is used in the jll for the different julia versions
+// until we drop support for julia < 1.6
+#define JLPOLYMAKE_VERSION_PATCH 0
 
 #define __JLPOLYMAKE_STR_HELPER(x) #x
 #define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)
