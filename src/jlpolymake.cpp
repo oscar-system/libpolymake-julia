@@ -71,6 +71,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_array_polynomial(jlpolymake, array_type);
 
+    add_beneath_beyond(jlpolymake);
+
     add_map(jlpolymake);
 
     jlpolymake.method("initialize_polymake", &initialize_polymake);

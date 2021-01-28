@@ -12,6 +12,7 @@ void add_array_polynomial(jlcxx::Module& jlpolymake, tparametric1 arrayt);
 
 void add_bigobject(jlcxx::Module& jlpolymake);
 void add_direct_calls(jlcxx::Module&);
+void add_beneath_beyond(jlcxx::Module& jlpolymake);
 void add_incidencematrix(jlcxx::Module& jlpolymake);
 void add_integer(jlcxx::Module& jlpolymake);
 void add_matrix(jlcxx::Module& jlpolymake);
