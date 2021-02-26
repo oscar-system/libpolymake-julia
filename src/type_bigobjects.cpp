@@ -27,11 +27,14 @@ void add_bigobject(jlcxx::Module& jlpolymake)
 
     jlpolymake.add_type<pm::perl::BigObjectType>("BigObjectType")
         .constructor<const std::string&>()
-        .method("type_name", [](pm::perl::BigObjectType p) { return p.name(); });
+        .method("type_name", [](const pm::perl::BigObjectType& p) { return p.name(); });
 
     jlpolymake.add_type<pm::perl::BigObject>("BigObject")
         .constructor<const pm::perl::BigObjectType&>()
         .constructor<const pm::perl::BigObjectType&, const pm::perl::BigObject&>()
+        .method("internal_copy", [](const pm::perl::BigObject& p) {
+                    return p.copy();
+                })
         .method("save_bigobject",
                 [](const pm::perl::BigObject& p, const std::string& s) {
                     return p.save(s);
