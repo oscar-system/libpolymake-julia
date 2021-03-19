@@ -52,3 +52,13 @@ If the compilation succeeds and the displayed overrides seem correct run
 julia --project test-prepare.jl --override
 ```
 
+
+### Wrapping a new type (TYPE)
+
+In general you will need to complete the following steps:
+
+  - In `src/` add a new file `type_TYPE.cpp`
+  - Setup your type in `type_setup.pl`
+  - Add your `add_TYPE` to both `include/jlpolymake/type_modules.h` and `src/jlpolymake.cpp`
+
+Please use the existing types for a first reference on the exact details.
