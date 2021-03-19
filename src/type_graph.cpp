@@ -17,7 +17,7 @@ void add_graph(jlcxx::Module& jlpolymake)
     jlpolymake.add_type<pm::graph::Directed>("Directed");
     jlpolymake
     .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>, jlcxx::ParameterList<bool,int>>(
-        "Graph", jlcxx::julia_type("AbstractSparseMatrix", "SparseArrays"))
+        "Graph")
         .apply_combination<pm::graph::Graph, jlcxx::ParameterList<pm::graph::Undirected,pm::graph::Directed>>(
             [](auto wrapped) {
         typedef typename decltype(wrapped)::type WrappedT;
