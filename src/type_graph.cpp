@@ -16,36 +16,17 @@ void add_graph(jlcxx::Module& jlpolymake)
     jlpolymake.add_type<pm::graph::Undirected>("Undirected");
     jlpolymake.add_type<pm::graph::Directed>("Directed");
     jlpolymake
-    .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>, jlcxx::ParameterList<bool,int>>(
+    .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>, jlcxx::ParameterList<bool>>(
         "Graph")
         .apply_combination<pm::graph::Graph, jlcxx::ParameterList<pm::graph::Undirected,pm::graph::Directed>>(
             [](auto wrapped) {
         typedef typename decltype(wrapped)::type WrappedT;
-        // wrapped.template constructor<int64_t, int64_t>();
-        // wrapped.method("_getindex",
-        //     [](WrappedT& M, int64_t i, int64_t j) {
-        //         return bool(M(i - 1, j - 1));
-        // });
-        // wrapped.method("_setindex!",
-        //     [](WrappedT& M, bool r, int64_t i,
-        //     int64_t j) {
-        //         M(i - 1, j - 1) = r;
-        // });
-        wrapped.method("nv", &WrappedT::nodes);
-        wrapped.method("ne", &WrappedT::edges);
-        wrapped.method("inneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
-        wrapped.method("outneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
-
-        // wrapped.method("nrows", &WrappedT::rows);
-        // wrapped.method("_row", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.row(i - 1)); });
-        // wrapped.method("ncols", &WrappedT::cols);
-        // wrapped.method("_col", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.col(i - 1)); });
-        // wrapped.method("_resize!", [](WrappedT& M, int64_t i,
-        //                             int64_t j) { M.resize(i, j); });
-        // wrapped.method("take",
-        //                [](pm::perl::BigObject p, const std::string& s,
-        //                   WrappedT& M) { p.take(s) << M; });
-
+        wrapped.method("_nv", &WrappedT::nodes);
+        wrapped.method("_ne", &WrappedT::edges);
+        wrapped.method("_inneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
+        wrapped.method("_outneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
+        wrapped.method("_has_vertex", [](WrappedT& M, int64_t i) { return M.node_exists(i); });
+        wrapped.method("_has_edge", [](WrappedT& M, int64_t tail, int64_t head) { return M.edge_exists(tail, head); });
         wrapped.method("show_small_obj", [](WrappedT& S) {
             return show_small_object<WrappedT>(S);
         });
