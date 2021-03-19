@@ -24,6 +24,7 @@
 #include <polymake/polytope/solve_LP.h>
 #include <polymake/SparseVector.h>
 #include <polymake/Map.h>
+#include <polymake/Graph.h>
 
 #include <polymake/perl/calls.h>
 

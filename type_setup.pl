@@ -267,6 +267,18 @@ my $type_tuples = [
             "Map{String,String}",
             "to_map_string_string",
         ],
+        [
+            "Graph_Undirected",
+            "pm::graph::Graph<pm::graph::Undirected>",
+            "Graph{Undirected}",
+            "to_graph_undirected",
+        ],
+        [
+            "Graph_Directed",
+            "pm::graph::Graph<pm::graph::Directed>",
+            "Graph{Directed}",
+            "to_graph_directed",
+        ],
     ];
 
 my @keys = qw(type_string ctype jltype convert_f);
