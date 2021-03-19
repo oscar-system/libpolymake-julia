@@ -31,8 +31,11 @@ void add_graph(jlcxx::Module& jlpolymake)
         //     int64_t j) {
         //         M(i - 1, j - 1) = r;
         // });
-        wrapped.method("nnodes", &WrappedT::nodes);
-        wrapped.method("nedges", &WrappedT::edges);
+        wrapped.method("nv", &WrappedT::nodes);
+        wrapped.method("ne", &WrappedT::edges);
+        wrapped.method("inneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
+        wrapped.method("outneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
+
         // wrapped.method("nrows", &WrappedT::rows);
         // wrapped.method("_row", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.row(i - 1)); });
         // wrapped.method("ncols", &WrappedT::cols);
