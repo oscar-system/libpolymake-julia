@@ -27,20 +27,23 @@ void add_bigobject(jlcxx::Module& jlpolymake)
 
     jlpolymake.add_type<pm::perl::BigObjectType>("BigObjectType")
         .constructor<const std::string&>()
-        .method("type_name", [](pm::perl::BigObjectType p) { return p.name(); });
+        .method("type_name", [](const pm::perl::BigObjectType& p) { return p.name(); });
 
     jlpolymake.add_type<pm::perl::BigObject>("BigObject")
         .constructor<const pm::perl::BigObjectType&>()
         .constructor<const pm::perl::BigObjectType&, const pm::perl::BigObject&>()
+        .method("internal_copy", [](const pm::perl::BigObject& p) {
+                    return p.copy();
+                })
         .method("save_bigobject",
-                [](pm::perl::BigObject p, const std::string& s) {
+                [](const pm::perl::BigObject& p, const std::string& s) {
                     return p.save(s);
                 })
         .method(
             "load_bigobject",
             [](const std::string& s) { return pm::perl::BigObject::load(s); })
         .method("internal_give",
-                [](pm::perl::BigObject p, const std::string& s) {
+                [](pm::perl::BigObject& p, const std::string& s) {
                     return p.give(s);
                 })
         .method("exists", [](pm::perl::BigObject& p,
@@ -49,20 +52,20 @@ void add_bigobject(jlcxx::Module& jlpolymake)
                           const pm::perl::BigObjectType& t) { return p.isa(t); })
         .method("cast!", [](pm::perl::BigObject& p,
                             const pm::perl::BigObjectType& t) { return p.cast(t); })
-        .method("bigobject_type", [](pm::perl::BigObject p) { return p.type(); })
+        .method("bigobject_type", [](const pm::perl::BigObject& p) { return p.type(); })
         .method("type_name",
-                [](pm::perl::BigObject p) { return p.type().name(); })
-        .method("properties", [](pm::perl::BigObject p) {
+                [](const pm::perl::BigObject& p) { return p.type().name(); })
+        .method("properties", [](const pm::perl::BigObject& p) {
             std::string x = p.call_method("properties");
             return x;
         })
-        .method("_get_attachment", [](pm::perl::BigObject p, const std::string& s) {
+        .method("_get_attachment", [](const pm::perl::BigObject& p, const std::string& s) {
             return p.get_attachment(s);
         })
-        .method("remove_attachment", [](pm::perl::BigObject p, const std::string& s) {
+        .method("remove_attachment", [](pm::perl::BigObject& p, const std::string& s) {
             return p.remove_attachment(s);
         })
-        .method("attach", [](pm::perl::BigObject p, const std::string& s,
+        .method("attach", [](pm::perl::BigObject& p, const std::string& s,
                               jl_value_t* v) {
             auto pv_helper = p.attach(s);
             call_function_feed_argument(pv_helper, v);
@@ -83,18 +86,18 @@ void add_bigobject(jlcxx::Module& jlpolymake)
     });
     jlpolymake.method("to_bigobject", &to_bigobject);
 
-    jlpolymake.method("setname!", [](pm::perl::BigObject p, const std::string& s){
+    jlpolymake.method("setname!", [](pm::perl::BigObject& p, const std::string& s){
         p.set_name(s);
     });
-    jlpolymake.method("take", [](pm::perl::BigObject p, const std::string& s,
+    jlpolymake.method("take", [](pm::perl::BigObject& p, const std::string& s,
                                const std::string& t) { p.take(s) << t; });
     jlpolymake.method("take",
-                    [](pm::perl::BigObject p, const std::string& s,
+                    [](pm::perl::BigObject& p, const std::string& s,
                        const pm::perl::PropertyValue& v) { p.take(s) << v; });
     jlpolymake.method("take",
-                    [](pm::perl::BigObject p, const std::string& s,
+                    [](pm::perl::BigObject& p, const std::string& s,
                        const pm::perl::BigObject& v) { p.take(s) << v; });
-    jlpolymake.method("add", [](pm::perl::BigObject p, const std::string& s,
+    jlpolymake.method("add", [](pm::perl::BigObject& p, const std::string& s,
                               const pm::perl::BigObject& v) { p.add(s, v); });
 
     jlpolymake.method("typeinfo_string",
