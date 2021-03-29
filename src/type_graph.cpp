@@ -41,7 +41,7 @@ void add_graph(jlcxx::Module& jlpolymake)
     });
 
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("GraphEdgeIterator")
-      .apply<WrappedGraphEdgeIterator<pm::graph::Directed>>(
+      .apply<WrappedGraphEdgeIterator<pm::graph::Directed>, WrappedGraphEdgeIterator<pm::graph::Undirected>>(
          [](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedGraphEdgeIter;
             typedef typename decltype(wrapped)::type::dir TDir;
@@ -62,7 +62,7 @@ void add_graph(jlcxx::Module& jlpolymake)
       );
 
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("GraphNodeIterator")
-      .apply<WrappedGraphNodeIterator<pm::graph::Directed>>(
+      .apply<WrappedGraphNodeIterator<pm::graph::Directed>, WrappedGraphNodeIterator<pm::graph::Undirected>>(
          [](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedGraphNodeIter;
             typedef typename decltype(wrapped)::type::dir TDir;
