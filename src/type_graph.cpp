@@ -39,6 +39,49 @@ void add_graph(jlcxx::Module& jlpolymake)
     jlpolymake.method("to_graph_directed", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::graph::Graph<pm::graph::Directed>>(pv);
     });
+
+    jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("GraphEdgeIterator")
+      .apply<WrappedGraphEdgeIterator<pm::graph::Directed>>(
+         [](auto wrapped) {
+            typedef typename decltype(wrapped)::type WrappedGraphEdgeIter;
+            typedef typename decltype(wrapped)::type::dir TDir;
+            wrapped.method("edgeiterator", [](pm::graph::Graph<TDir>& G) {
+               auto result = WrappedGraphEdgeIterator<TDir>{G};
+               return result;
+            });
+            wrapped.method("increment", [](WrappedGraphEdgeIter& state) {
+               ++state.iterator;
+            });
+            wrapped.method("get_element", [](WrappedGraphEdgeIter& state) {
+               return std::pair<Int, Int>(state.iterator.from_node(), state.iterator.to_node());
+            });
+            wrapped.method("isdone", [](WrappedGraphEdgeIter& state) {
+               return state.iterator.at_end();
+            });
+         }
+      );
+
+    jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("GraphNodeIterator")
+      .apply<WrappedGraphNodeIterator<pm::graph::Directed>>(
+         [](auto wrapped) {
+            typedef typename decltype(wrapped)::type WrappedGraphNodeIter;
+            typedef typename decltype(wrapped)::type::dir TDir;
+            wrapped.method("nodeiterator", [](pm::graph::Graph<TDir>& G) {
+               auto result = WrappedGraphNodeIterator<TDir>{G};
+               return result;
+            });
+            wrapped.method("increment", [](WrappedGraphNodeIter& state) {
+               ++state.iterator;
+            });
+            wrapped.method("get_element", [](WrappedGraphNodeIter& state) {
+               auto elt = *(state.iterator);
+               return elt;
+            });
+            wrapped.method("isdone", [](WrappedGraphNodeIter& state) {
+               return state.iterator.at_end();
+            });
+         }
+      );
 }
 
 }
