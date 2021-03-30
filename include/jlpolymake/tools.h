@@ -57,6 +57,26 @@ template <typename T> struct WrappedSetIterator {
     }
 };
 
+template<typename TDir>
+struct WrappedGraphNodeIterator {
+   typename pm::Nodes<pm::graph::Graph<TDir>>::const_iterator iterator;
+   using dir = TDir;
+   WrappedGraphNodeIterator<TDir>(const pm::graph::Graph<TDir>& G)
+   {
+      iterator = pm::entire(pm::nodes(G));
+   }
+};
+
+template<typename TDir>
+struct WrappedGraphEdgeIterator {
+   typename pm::Edges<pm::graph::Graph<TDir>>::const_iterator iterator;
+   using dir = TDir;
+   WrappedGraphEdgeIterator<TDir>(const pm::graph::Graph<TDir>& G)
+   {
+      iterator = pm::entire(pm::edges(G));
+   }
+};
+
 template <typename T> struct WrappedStdListIterator {
     typename std::list<T>::const_iterator iterator;
     using value_type = T;

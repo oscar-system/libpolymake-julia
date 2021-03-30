@@ -55,6 +55,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_set(jlpolymake);
 
+    add_graph(jlpolymake);
+
     add_sparsevector(jlpolymake);;
 
     auto array_type = add_array(jlpolymake);
