@@ -22,8 +22,8 @@ void add_graph(jlcxx::Module& jlpolymake)
             [](auto wrapped) {
         typedef typename decltype(wrapped)::type WrappedT;
         
-        wrapped.method("nv", [](const WrappedT& M){ return M.nodes(); });
-        wrapped.method("ne", [](const WrappedT& M){ return M.edges(); });
+        wrapped.method("nv", &WrappedT::nodes);
+        wrapped.method("ne", &WrappedT::edges);
         wrapped.method("_inneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
         wrapped.method("_outneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
         wrapped.method("_has_vertex", [](const WrappedT& M, int64_t i) { return M.node_exists(i); });
