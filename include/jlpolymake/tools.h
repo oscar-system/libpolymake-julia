@@ -61,7 +61,7 @@ template<typename TDir>
 struct WrappedGraphNodeIterator {
    typename pm::Nodes<pm::graph::Graph<TDir>>::const_iterator iterator;
    using dir = TDir;
-   WrappedGraphNodeIterator<TDir>(pm::graph::Graph<TDir>& G)
+   WrappedGraphNodeIterator<TDir>(const pm::graph::Graph<TDir>& G)
    {
       iterator = pm::entire(pm::nodes(G));
    }
@@ -71,7 +71,7 @@ template<typename TDir>
 struct WrappedGraphEdgeIterator {
    typename pm::Edges<pm::graph::Graph<TDir>>::const_iterator iterator;
    using dir = TDir;
-   WrappedGraphEdgeIterator<TDir>(pm::graph::Graph<TDir>& G)
+   WrappedGraphEdgeIterator<TDir>(const pm::graph::Graph<TDir>& G)
    {
       iterator = pm::entire(pm::edges(G));
    }

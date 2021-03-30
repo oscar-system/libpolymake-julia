@@ -22,12 +22,12 @@ void add_graph(jlcxx::Module& jlpolymake)
             [](auto wrapped) {
         typedef typename decltype(wrapped)::type WrappedT;
         
-        wrapped.method("nv", &WrappedT::nodes);
-        wrapped.method("ne", &WrappedT::edges);
-        wrapped.method("_inneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
-        wrapped.method("_outneighbors", [](WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
-        wrapped.method("_has_vertex", [](WrappedT& M, int64_t i) { return M.node_exists(i); });
-        wrapped.method("_has_edge", [](WrappedT& M, int64_t tail, int64_t head) { return M.edge_exists(tail, head); });
+        wrapped.method("nv", [](const WrappedT& M){ return M.nodes(); });
+        wrapped.method("ne", [](const WrappedT& M){ return M.edges(); });
+        wrapped.method("_inneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
+        wrapped.method("_outneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
+        wrapped.method("_has_vertex", [](const WrappedT& M, int64_t i) { return M.node_exists(i); });
+        wrapped.method("_has_edge", [](const WrappedT& M, int64_t tail, int64_t head) { return M.edge_exists(tail, head); });
 
         wrapped.method("show_small_obj", [](WrappedT& S) {
             return show_small_object<WrappedT>(S);
@@ -45,17 +45,17 @@ void add_graph(jlcxx::Module& jlpolymake)
          [](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedGraphEdgeIter;
             typedef typename decltype(wrapped)::type::dir TDir;
-            wrapped.method("edgeiterator", [](pm::graph::Graph<TDir>& G) {
+            wrapped.method("edgeiterator", [](const pm::graph::Graph<TDir>& G) {
                auto result = WrappedGraphEdgeIterator<TDir>{G};
                return result;
             });
             wrapped.method("increment", [](WrappedGraphEdgeIter& state) {
                ++state.iterator;
             });
-            wrapped.method("get_element", [](WrappedGraphEdgeIter& state) {
+            wrapped.method("get_element", [](const WrappedGraphEdgeIter& state) {
                return std::pair<Int, Int>(state.iterator.from_node(), state.iterator.to_node());
             });
-            wrapped.method("isdone", [](WrappedGraphEdgeIter& state) {
+            wrapped.method("isdone", [](const WrappedGraphEdgeIter& state) {
                return state.iterator.at_end();
             });
          }
@@ -66,18 +66,18 @@ void add_graph(jlcxx::Module& jlpolymake)
          [](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedGraphNodeIter;
             typedef typename decltype(wrapped)::type::dir TDir;
-            wrapped.method("nodeiterator", [](pm::graph::Graph<TDir>& G) {
+            wrapped.method("nodeiterator", [](const pm::graph::Graph<TDir>& G) {
                auto result = WrappedGraphNodeIterator<TDir>{G};
                return result;
             });
             wrapped.method("increment", [](WrappedGraphNodeIter& state) {
                ++state.iterator;
             });
-            wrapped.method("get_element", [](WrappedGraphNodeIter& state) {
+            wrapped.method("get_element", [](const WrappedGraphNodeIter& state) {
                auto elt = *(state.iterator);
                return elt;
             });
-            wrapped.method("isdone", [](WrappedGraphNodeIter& state) {
+            wrapped.method("isdone", [](const WrappedGraphNodeIter& state) {
                return state.iterator.at_end();
             });
          }
