@@ -13,7 +13,7 @@ void add_pairs(jlcxx::Module& jlpolymake)
 
     auto type = jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
-            "StdPair", jlcxx::julia_type("Any", "Base" ));
+            "StdPair");
 
         type.apply<std::pair<pm::Int,pm::Int>>([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;

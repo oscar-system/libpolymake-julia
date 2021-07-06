@@ -12,7 +12,7 @@ void add_polynomial(jlcxx::Module& jlpolymake)
 {
     jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
-            "Polynomial", jlcxx::julia_type("Any", "Base"))
+            "Polynomial")
         .apply_combination<pm::Polynomial, VecOrMat_supported::value_type, jlcxx::ParameterList<pm::Int>>(
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type polyT;
