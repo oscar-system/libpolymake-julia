@@ -12,7 +12,7 @@ void add_lists(jlcxx::Module& jlpolymake)
 {
     auto type = jlpolymake
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
-            "StdList", jlcxx::julia_type("Any", "Base"));
+            "StdList");
 
         type.apply<std::list<std::pair<pm::Int,pm::Int>>>([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
