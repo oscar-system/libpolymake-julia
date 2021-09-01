@@ -62,6 +62,15 @@ void add_bigobject(jlcxx::Module& jlpolymake)
         .method("remove_attachment", [](pm::perl::BigObject p, const std::string& s) {
             return p.remove_attachment(s);
         })
+        .method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name, const std::string subobj_name) {
+            return p.lookup_multi(name, subobj_name);
+        })
+        .method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name, const Int subobj_index) {
+            return BigObject(p.lookup_multi(name, All)[subobj_index]);
+        })
+        // .method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name) -> pm::Array<pm::perl::BigObject> {
+        //     return p.lookup_multi(name, All);
+        // })
         .method("attach", [](pm::perl::BigObject p, const std::string& s,
                               jl_value_t* v) {
             auto pv_helper = p.attach(s);
@@ -96,6 +105,11 @@ void add_bigobject(jlcxx::Module& jlpolymake)
                        const pm::perl::BigObject& v) { p.take(s) << v; });
     jlpolymake.method("add", [](pm::perl::BigObject p, const std::string& s,
                               const pm::perl::BigObject& v) { p.add(s, v); });
+    jlpolymake.method("add", [](pm::perl::BigObject p, const std::string& name,
+                              const std::string& sub_name, pm::perl::BigObject& v) 
+                              { 
+                                 v.set_name(sub_name);
+                                 p.add(name, v); });
 
     jlpolymake.method("typeinfo_string",
                     [](pm::perl::PropertyValue p, bool demangle) {
