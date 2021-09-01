@@ -78,6 +78,11 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
             });
         });
 
+    // this must be here instead of type_bigobject to have the array available
+    jlpolymake.method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name) -> pm::Array<pm::perl::BigObject> {
+        return p.lookup_multi(name, All);
+    });
+
     jlpolymake.method("to_array_int", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<pm::Array<pm::Int>>(pv);
     });
