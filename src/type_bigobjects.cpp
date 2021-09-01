@@ -68,9 +68,6 @@ void add_bigobject(jlcxx::Module& jlpolymake)
         .method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name, const Int subobj_index) {
             return BigObject(p.lookup_multi(name, All)[subobj_index]);
         })
-        // .method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name) -> pm::Array<pm::perl::BigObject> {
-        //     return p.lookup_multi(name, All);
-        // })
         .method("attach", [](pm::perl::BigObject p, const std::string& s,
                               jl_value_t* v) {
             auto pv_helper = p.attach(s);
