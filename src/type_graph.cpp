@@ -28,7 +28,7 @@ void add_graph(jlcxx::Module& jlpolymake)
         wrapped.method("ne", &WrappedT::edges);
         wrapped.method("_inneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
         wrapped.method("_outneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
-        wrapped.method("_has_vertex", [](const WrappedT& M, int64_t i) { return M.node_exists(i); });
+        wrapped.method("_has_vertex", [](const WrappedT& M, int64_t i) { return !M.invalid_node(i) && M.node_exists(i); });
         wrapped.method("_has_edge", [](const WrappedT& M, int64_t tail, int64_t head) { return M.edge_exists(tail, head); });
         wrapped.method("_add_edge", [](WrappedT& M, int64_t tail, int64_t head) { return M.add_edge(tail, head); });
 
