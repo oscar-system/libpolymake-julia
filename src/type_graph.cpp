@@ -26,11 +26,15 @@ void add_graph(jlcxx::Module& jlpolymake)
 
         wrapped.method("nv", &WrappedT::nodes);
         wrapped.method("ne", &WrappedT::edges);
-        wrapped.method("_inneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.in_adjacent_nodes(i)); });
-        wrapped.method("_outneighbors", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.out_adjacent_nodes(i)); });
-        wrapped.method("_has_vertex", [](const WrappedT& M, int64_t i) { return !M.invalid_node(i) && M.node_exists(i); });
-        wrapped.method("_has_edge", [](const WrappedT& M, int64_t tail, int64_t head) { return M.edge_exists(tail, head); });
-        wrapped.method("_add_edge", [](WrappedT& M, int64_t tail, int64_t head) { return M.add_edge(tail, head); });
+        wrapped.method("_inneighbors", [](const WrappedT& G, int64_t i) { return pm::Set<pm::Int>(G.in_adjacent_nodes(i)); });
+        wrapped.method("_outneighbors", [](const WrappedT& G, int64_t i) { return pm::Set<pm::Int>(G.out_adjacent_nodes(i)); });
+        wrapped.method("_has_vertex", [](const WrappedT& G, int64_t i) { return !G.invalid_node(i) && G.node_exists(i); });
+        wrapped.method("_has_edge", [](const WrappedT& G, int64_t tail, int64_t head) { return G.edge_exists(tail, head); });
+        wrapped.method("_add_edge", [](WrappedT& G, int64_t tail, int64_t head) { return G.add_edge(tail, head); });
+        wrapped.method("_add_vertex", [](WrappedT& G) { return G.add_node(); });
+        wrapped.method("_squeeze", [](WrappedT& G) { return G.squeeze(); });
+        wrapped.method("_rem_vertex", [](WrappedT& G, int64_t i) { return G.delete_node(i); });
+        wrapped.method("_rem_edge", [](WrappedT& G, int64_t tail, int64_t head) { return G.delete_edge(tail, head); });
 
         wrapped.method("show_small_obj", [](WrappedT& S) {
             return show_small_object<WrappedT>(S);
