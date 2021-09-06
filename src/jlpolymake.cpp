@@ -102,8 +102,27 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
         return ctx_help;
     });
 
+    jlpolymake.add_type<polymake::Scope>("Scope_internal");
+    jlpolymake.add_type<std::optional<polymake::Scope>>("Scope");
+
     jlpolymake.method("set_preference", [](const std::string x) {
         return data.main_polymake_session->set_preference(x);
+    });
+
+    jlpolymake.method("scope_begin", []() {
+        return std::optional<polymake::Scope>(
+                // allocate new scope object
+                std::move(data.main_polymake_session->newScope())
+            );
+    });
+    jlpolymake.method("scope_end", [](std::optional<polymake::Scope>& scope) {
+        // destroy scope object to force immediate reset of any temporary changes
+        scope.reset();
+    });
+    jlpolymake.method("internal_prefer_now", [](const std::optional<polymake::Scope>& scope, const std::string& label) {
+        if (!scope)
+           throw std::runtime_error("attempt to use polymake::Scope after destruction");
+        scope->prefer_now(label);
     });
 
 #include "jlpolymake/generated/map_inserts.h"
