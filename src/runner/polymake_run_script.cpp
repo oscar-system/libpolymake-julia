@@ -12,16 +12,22 @@ int main(int argc, const char* argv[])
       return 1;
    }
    try {
-     // avoid reading any configuration
-     Main pm("");
-     pm.shell_enable();
-     pm.set_application("common");
-     auto funcall = prepare_call_function("script");
-     for (int i = 1; i < argc; i++) {
-        // extra arguments
-        funcall << std::string(argv[i]);
-     }
-     funcall();
+      int i = 1;
+      // avoid reading any configuration by default
+      std::string settings{"none"};
+      if (argc > 2 && strncmp(argv[1], "--config=", 9) == 0) {
+         i++;
+         settings = std::string(argv[1]+9);
+      }
+      Main pm(settings);
+      pm.shell_enable();
+      pm.set_application("common");
+      auto funcall = prepare_call_function("script");
+      for (; i < argc; i++) {
+         // extra arguments
+         funcall << std::string(argv[i]);
+      }
+      funcall();
    }
    catch (const std::exception& ex) {
       cerr << "ERROR: " << ex.what() << endl;
