@@ -62,11 +62,17 @@ void add_bigobject(jlcxx::Module& jlpolymake)
         .method("remove_attachment", [](pm::perl::BigObject p, const std::string& s) {
             return p.remove_attachment(s);
         })
-        .method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name, const std::string subobj_name) {
-            return p.lookup_multi(name, subobj_name);
+        .method("_lookup_multi", [](const pm::perl::BigObject& p, const std::string& name, const std::string subobj_name) {
+            auto obj = p.lookup_multi(name, subobj_name);
+            if (!obj.valid())
+                throw std::runtime_error("BigObject: no such subobject");
+            return obj;
         })
-        .method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name, const Int subobj_index) {
-            return BigObject(p.lookup_multi(name, All)[subobj_index]);
+        .method("_lookup_multi", [](const pm::perl::BigObject& p, const std::string& name, int64_t subobj_index) {
+            auto arr = p.lookup_multi(name, All);
+            if (subobj_index < 0 || subobj_index >= arr.size())
+                throw std::runtime_error("BigObject: no such subobject");
+            return BigObject(arr[subobj_index]);
         })
         .method("attach", [](pm::perl::BigObject p, const std::string& s,
                               jl_value_t* v) {
