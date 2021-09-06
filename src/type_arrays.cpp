@@ -62,7 +62,7 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
             typedef typename decltype(wrapped)::type WrappedT;
             typedef pm::perl::BigObject elemType;
 
-            wrapped.template constructor<int64_t>();
+            wrapped.template constructor<pm::perl::BigObjectType, int64_t>();
 
             wrapped.method("_getindex", [](const WrappedT& A, int64_t n) {
                 return elemType(A[static_cast<pm::Int>(n) - 1]);
@@ -77,6 +77,11 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
                 return A;
             });
         });
+
+    // this must be here instead of type_bigobject to have the array available
+    jlpolymake.method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name) -> pm::Array<pm::perl::BigObject> {
+        return p.lookup_multi(name, All);
+    });
 
     jlpolymake.method("to_array_int", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<pm::Array<pm::Int>>(pv);

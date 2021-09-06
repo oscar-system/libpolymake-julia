@@ -28,6 +28,7 @@ end
 # configure libpolymake-julia with artifact dirs
 run(`cmake \
      -DPolymake_PREFIX=$(polymake_deps_tree) \
+     -DJulia_PREFIX=$(joinpath(Sys.BINDIR,"..")) \
      -DJlCxx_DIR=$(libcxxwrap_julia_jll.artifact_dir)/lib/cmake/JlCxx \
      -DCMAKE_INSTALL_PREFIX=$(pwd())/test/install \
      -DCMAKE_BUILD_TYPE=Release \
