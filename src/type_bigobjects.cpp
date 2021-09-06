@@ -50,6 +50,7 @@ void add_bigobject(jlcxx::Module& jlpolymake)
         .method("cast!", [](pm::perl::BigObject& p,
                             const pm::perl::BigObjectType& t) { return p.cast(t); })
         .method("bigobject_type", [](const pm::perl::BigObject& p) { return p.type(); })
+        .method("_is_valid", [](const pm::perl::BigObject& p) { return p.valid(); })
         .method("type_name",
                 [](const pm::perl::BigObject& p) { return p.type().name(); })
         .method("properties", [](const pm::perl::BigObject& p) {
