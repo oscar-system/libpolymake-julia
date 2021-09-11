@@ -62,6 +62,7 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
             typedef typename decltype(wrapped)::type WrappedT;
             typedef pm::perl::BigObject elemType;
 
+            wrapped.template constructor<int64_t>();
             wrapped.template constructor<pm::perl::BigObjectType, int64_t>();
 
             wrapped.method("_getindex", [](const WrappedT& A, int64_t n) {
