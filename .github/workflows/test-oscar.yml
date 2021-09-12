@@ -96,6 +96,7 @@ jobs:
       - name: "Build and set override"
         run: |
           julia --project=oscar-dev/project/ test-prepare.jl --override --build
+          touch ~/.julia/packages/libpolymake_julia_jll/*/src/*.jl
       - name: "Run tests"
         run: |
           echo '${{ env.oscar_run_tests }}'

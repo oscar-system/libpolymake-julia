@@ -53,11 +53,12 @@ jobs:
           version: ${{ matrix.julia-version }}
       - name: "pin libcxxwrap_julia"
         run: julia --project=. -e 'using Pkg;
-                                   pkg"instantiate";
+                                   Pkg.instantiate();
                                    pkg"pin libcxxwrap_julia_jll${{ matrix.libcxxwrap }}";'
       - name: "Build and set override"
         run: |
           julia --project=. test-prepare.jl --override --build
+          touch ~/.julia/packages/libpolymake_julia_jll/*/src/*.jl
       - name: "Work around glibcxx issue"
         if: matrix.os == 'ubuntu-20.04'
         run: echo "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6" >> $GITHUB_ENV
