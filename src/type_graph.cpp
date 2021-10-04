@@ -89,6 +89,14 @@ void add_graph(jlcxx::Module& jlpolymake)
             });
          }
       );
+    jlpolymake.method("take",
+                    [](pm::perl::BigObject& p, const std::string& s,
+                       const pm::graph::Graph<pm::graph::Undirected>& G) { p.take(s) << G; });
+    jlpolymake.method("take",
+                    [](pm::perl::BigObject& p, const std::string& s,
+                       const pm::graph::Graph<pm::graph::Directed>& G) { p.take(s) << G; });
 }
+
+
 
 }
