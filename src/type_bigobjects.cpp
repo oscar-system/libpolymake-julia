@@ -106,7 +106,7 @@ void add_bigobject(jlcxx::Module& jlpolymake)
                                const std::string& t) { p.take(s) << t; });
     jlpolymake.method("take",
                     [](pm::perl::BigObject& p, const std::string& s,
-                       int64_t n) { p.take(s) << n; });
+                       int64_t n) { p.take(s) << static_cast<pm::Int>(n); });
     jlpolymake.method("take",
                     [](pm::perl::BigObject& p, const std::string& s,
                        const pm::perl::PropertyValue& v) { p.take(s) << v; });
