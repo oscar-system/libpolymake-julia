@@ -1,0 +1,54 @@
+title = "metadata for oscar CI run"
+
+[env]
+os = [ "ubuntu-latest", "macos-latest" ]
+# 1.6 is done with some extra combinations in include
+# also to avoid some weird behaviour by github actions which seems to merge
+# the includes with the normal matrix entries
+julia-version = [ "1.4", "1.5", "~1.7.0-0", "nightly" ]
+branches = [ "release", "<matching>" ]
+
+[pkgs]
+  [pkgs.Polymake]
+  test = true
+  testoptions = []
+
+  # will not add it to the matrix but enable testing for includes
+  [pkgs.Oscar]
+  test = true
+  branches = []
+
+[include]
+  [include.matching]
+  Polymake = "<matching>"
+  julia-version = "1.6"
+  os = "ubuntu-latest"
+
+  [include.matchingmac]
+  Polymake = "<matching>"
+  julia-version = "1.6"
+  os = "macos-latest"
+
+  [include.oscar]
+  Oscar = "<matching>"
+  Polymake = "<matching>"
+  julia-version = "1.6"
+  os = "ubuntu-latest"
+
+  [include.oscarmac]
+  Oscar = "<matching>"
+  Polymake = "<matching>"
+  julia-version = "1.6"
+  os = "macos-latest"
+
+  [include.oscarstable]
+  Oscar = "release"
+  Polymake = "release"
+  julia-version = "1.6"
+  os = "ubuntu-latest"
+
+  [include.oscarstablemac]
+  Oscar = "release"
+  Polymake = "release"
+  julia-version = "1.6"
+  os = "macos-latest"
