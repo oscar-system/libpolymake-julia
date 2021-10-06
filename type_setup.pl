@@ -264,7 +264,7 @@ my $type_tuples = [
         [
             "Map_String_String",
             "pm::Map<std::string,std::string>",
-            "Map{String,String}",
+            "Map{CxxWrap.StdString,CxxWrap.StdString}",
             "to_map_string_string",
         ],
         [
