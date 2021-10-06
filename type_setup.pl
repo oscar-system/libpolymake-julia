@@ -90,7 +90,7 @@ my $type_tuples = [
         [
             "Array_String",
             "pm::Array<std::string>",
-            "Array{String}",
+            "Array{CxxWrap.StdString}",
             "to_array_string",
         ],
         [
@@ -404,7 +404,7 @@ sub type_translator {
 sub get_type_names_code {
    my ($type_hashes) = @_;
    my @non_nothing_types = grep { defined $_->{convert_f} } @$type_hashes;
-   
+
 
    my $type_translations = join("\n",
         map { type_translator($_->{ctype}, $_->{convert_f}) } @non_nothing_types);
@@ -450,7 +450,7 @@ my $jl = "$target/jl";
 
 make_path($cpp, $jl);
 
-my %generated = ( 
+my %generated = (
                   "$cpp/map_inserts.h" => \&map_inserts_code,
                   "$cpp/call_function_feed_argument.h" => \&call_function_feed_argument_code,
                   "$cpp/option_set_take.h" => \&option_set_take_code,
