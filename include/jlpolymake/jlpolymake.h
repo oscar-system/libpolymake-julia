@@ -34,9 +34,9 @@
 #pragma clang diagnostic pop
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
-#define JLPOLYMAKE_VERSION_MINOR 4
+#define JLPOLYMAKE_VERSION_MINOR 5
 // the yggdrasil patch level will be patchlevel*100+julia_version.minor
-#define JLPOLYMAKE_VERSION_PATCH 4
+#define JLPOLYMAKE_VERSION_PATCH 0
 
 #define __JLPOLYMAKE_STR_HELPER(x) #x
 #define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)

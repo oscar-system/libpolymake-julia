@@ -15,20 +15,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        julia-version: ['1.5', '~1.6.0-0', 'nightly']
+        julia-version: ['~1.6.0-0', 'nightly']
         libcxxwrap: [ '' ]
         include:
           - os: ubuntu-latest
             julia-version: '~1.7.0-0'
           - os: macOS-11.0
             julia-version: '~1.7.0-0'
-          - os: macOS-latest
-            julia-version: 1.4
-          - libcxxwrap: '@0.7'
-            os: ubuntu-18.04
-            julia-version: 1.5
-          - os: ubuntu-20.04
-            julia-version: 1.5
 
       fail-fast: true
 
@@ -67,5 +60,5 @@ jobs:
            TERM: linux
         run: julia --project=. -e 'using libpolymake_julia_jll;
                                    polymake_run_script() do exe
-                                       run(`$exe test/run_testcases`);
+                                       run(`$exe test/run_testcases --emacs-style`);
                                    end'
