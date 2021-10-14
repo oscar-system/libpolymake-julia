@@ -112,6 +112,12 @@ my $type_tuples = [
             "to_array_array_integer",
         ],
         [
+            "Array_Array_Set_Int",
+            "pm::Array<pm::Array<pm::Set<long>>>",
+            "Array{Array{Set{CxxWrap.CxxLong}}}",
+            "to_array_array_set_int",
+        ],
+        [
             "Array_Array_Rational",
             "pm::Array<pm::Array<pm::Rational>>",
             "Array{Array{Rational}}",

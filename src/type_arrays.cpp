@@ -18,6 +18,7 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
         type.apply<pm::Array<pm::Int>, pm::Array<pm::Integer>,
                pm::Array<pm::Rational>,
                pm::Array<std::string>, pm::Array<pm::Set<pm::Int>>,
+               pm::Array<pm::Array<pm::Set<pm::Int>>>,
                pm::Array<pm::Array<pm::Int>>,
                pm::Array<pm::Array<pm::Integer>>,
                pm::Array<pm::Array<pm::Rational>>,
@@ -110,6 +111,10 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
     jlpolymake.method(
         "to_array_array_integer", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Array<pm::Integer>>>(pv);
+        });
+    jlpolymake.method(
+        "to_array_array_set_int", [](const pm::perl::PropertyValue& pv) {
+            return to_SmallObject<pm::Array<pm::Array<pm::Set<pm::Int>>>>(pv);
         });
     jlpolymake.method(
         "to_array_array_rational", [](const pm::perl::PropertyValue& pv) {
