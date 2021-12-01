@@ -99,6 +99,9 @@ void add_bigobject(jlcxx::Module& jlpolymake)
     });
     jlpolymake.method("to_bigobject", &to_bigobject);
 
+    jlpolymake.method("getname", [](const pm::perl::BigObject& p){
+        static_cast<std::string>(p.name());
+    });
     jlpolymake.method("setname!", [](pm::perl::BigObject& p, const std::string& s){
         p.set_name(s);
     });
