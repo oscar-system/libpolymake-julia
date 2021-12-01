@@ -4,7 +4,7 @@ using libcxxwrap_julia_jll
 
 include(polymake_jll.generate_deps_tree)
 
-const polymake_deps_tree = prepare_deps_tree()
+const polymake_deps_tree = prepare_deps_tree(mktempdir(;cleanup=false))
 
 # we need to adjust the test-driver to running from the callable library
 let file = joinpath("test","run_testcases")
@@ -60,4 +60,5 @@ end
 
 if "--build" in ARGS
     run(`cmake --build build --config Release --target install -- -j2`)
+    run(`$(polymake()) --iscript $(pwd())/src/polymake/apptojson.pl $(pwd())/test/install/share/libpolymake_julia/appsjson/`)
 end
