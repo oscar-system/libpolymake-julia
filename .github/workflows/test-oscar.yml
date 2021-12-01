@@ -6,6 +6,13 @@ on:
        - master
    workflow_dispatch:
 
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the master branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
 jobs:
   generatematrix:
     runs-on: ubuntu-latest
@@ -94,6 +101,8 @@ jobs:
                                    Pkg.add("libcxxwrap_julia_jll");
                                    Pkg.add("libpolymake_julia_jll");'
       - name: "Build and set override"
+        env:
+          TERM: linux
         run: |
           julia --project=oscar-dev/project/ test-prepare.jl --override --build
           touch ~/.julia/packages/libpolymake_julia_jll/*/src/*.jl
