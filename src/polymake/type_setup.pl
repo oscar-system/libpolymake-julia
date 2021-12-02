@@ -320,8 +320,6 @@ void call_function_feed_argument(T& function, jl_value_t* value)
 {
     jl_value_t* current_type = jl_typeof(value);
     if (jl_is_int64(value)) {
-        // check size of long, to be sure
-        static_assert(sizeof(long) == 8, "long must be 64 bit");
         function << static_cast<long>(jl_unbox_int64(value));
     } else if (jl_is_bool(value)) {
         function << jl_unbox_bool(value);
@@ -360,8 +358,6 @@ void option_set_take(pm::perl::OptionSet optset,
 {
     jl_value_t* current_type = jl_typeof(value);
     if (jl_is_int64(value)) {
-        // check size of long, to be sure
-        static_assert(sizeof(long) == 8, "long must be 64 bit");
         optset[key] << static_cast<long>(jl_unbox_int64(value));
     } else if (jl_is_bool(value)) {
         optset[key] << jl_unbox_bool(value);

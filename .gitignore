@@ -3,3 +3,4 @@ CMakeFiles/*
 Makefile
 generated/*
 build/*
+Manifest.toml

@@ -6,6 +6,13 @@ on:
        - master
    workflow_dispatch:
 
+concurrency:
+  # group by workflow and ref; the last slightly strange component ensures that for pull
+  # requests, we limit to 1 concurrent job, but for the master branch we don't
+  group: ${{ github.workflow }}-${{ github.ref }}-${{ github.ref != 'refs/heads/master' || github.run_number }}
+  # Cancel intermediate builds, but only if it is a pull request build.
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
 jobs:
   generatematrix:
     runs-on: ubuntu-latest
@@ -74,6 +81,11 @@ jobs:
           julia --project=oscar-dev -e "using Pkg;
                                         Pkg.add(PackageSpec(name=\"OscarDevTools\",version=\"0.2\"));
                                         Pkg.instantiate();"
+      - name: "Build and set override"
+        env:
+          TERM: linux
+        run: |
+          julia --project=oscar-dev/project/ test-prepare.jl --override --build --ignore-compat
       - name: "Set up Oscar-dev configuration"
         env:
           MATRIX_CONTEXT: ${{ toJSON(matrix) }}
@@ -88,15 +100,6 @@ jobs:
                    github_env_runtests(meta;
                                        varname=\"oscar_run_tests\",
                                        filename=\"${GITHUB_ENV}\");"
-      - name: "add binaries"
-        run: julia --project=oscar-dev/project/ -e 'using Pkg;
-                                   Pkg.add("polymake_jll");
-                                   Pkg.add("libcxxwrap_julia_jll");
-                                   Pkg.add("libpolymake_julia_jll");'
-      - name: "Build and set override"
-        run: |
-          julia --project=oscar-dev/project/ test-prepare.jl --override --build
-          touch ~/.julia/packages/libpolymake_julia_jll/*/src/*.jl
       - name: "Run tests"
         run: |
           echo '${{ env.oscar_run_tests }}'

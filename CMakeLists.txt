@@ -66,8 +66,8 @@ set(GENERATED_HEADERS
 
 add_custom_command(
    OUTPUT ${GENERATED_HEADERS} ${TYPE_TRANSLATOR}
-   COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/type_setup.pl ${CMAKE_CURRENT_BINARY_DIR}
-   DEPENDS type_setup.pl
+   COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/src/polymake/type_setup.pl ${CMAKE_CURRENT_BINARY_DIR}
+   DEPENDS src/polymake/type_setup.pl
 )
 
 add_custom_target(generated_header ALL DEPENDS ${GENERATED_HEADERS})
