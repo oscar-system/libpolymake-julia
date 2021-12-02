@@ -42,12 +42,6 @@ run(`cmake \
 
 if "--build" in ARGS
     run(`cmake --build build --config Release --target install -- -j2`)
-    mktempdir() do path
-        ENV["POLYMAKE_USER_DIR"] = path
-        jsondir = joinpath(installdir,"share","libpolymake_julia","appsjson")
-        mkpath(jsondir)
-        run(`$(polymake()) --iscript "$(pwd())/src/polymake/apptojson.pl" "$(jsondir)"`)
-    end
 end
 
 # add override
@@ -85,4 +79,16 @@ if "--ignore-compat" in ARGS
     Pkg.develop(path="$(jlldir)")
 else
     Pkg.add("libpolymake_julia_jll")
+end
+
+if "--build" in ARGS
+    using libpolymake_julia_jll
+    mktempdir() do path
+        ENV["POLYMAKE_USER_DIR"] = path
+        jsondir = joinpath(installdir,"share","libpolymake_julia","appsjson")
+        mkpath(jsondir)
+        polymake_run_script() do exe
+            run(`$exe "$(pwd())/src/polymake/apptojson.pl" "$(jsondir)"`)
+        end
+    end
 end
