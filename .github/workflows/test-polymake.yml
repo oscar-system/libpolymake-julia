@@ -52,20 +52,20 @@ jobs:
         with:
           version: ${{ matrix.julia-version }}
       - name: "pin libcxxwrap_julia"
-        run: julia --project=. -e 'using Pkg;
-                                   Pkg.instantiate();
-                                   pkg"pin libcxxwrap_julia_jll${{ matrix.libcxxwrap }}";'
+        run: julia --project=test/project -e 'using Pkg;
+                                              Pkg.instantiate();
+                                              Pkg.add("libcxxwrap_julia_jll${{ matrix.libcxxwrap }}");
+                                              Pkg.pin("libcxxwrap_julia_jll");'
       - name: "Build and set override"
         run: |
-          julia --project=. test-prepare.jl --override --build
-          touch ~/.julia/packages/libpolymake_julia_jll/*/src/*.jl
+          julia --project=test/project test-prepare.jl --override --build --ignore-compat
       - name: "Work around glibcxx issue"
         if: matrix.os == 'ubuntu-20.04'
         run: echo "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6" >> $GITHUB_ENV
       - name: "Test polymake"
         env:
            TERM: linux
-        run: julia --project=. -e 'using libpolymake_julia_jll;
-                                   polymake_run_script() do exe
-                                       run(`$exe test/run_testcases --emacs-style`);
-                                   end'
+        run: julia --project=test/project -e 'using libpolymake_julia_jll;
+                                              polymake_run_script() do exe
+                                                  run(`$exe test/run_testcases --emacs-style`);
+                                              end'
