@@ -82,13 +82,25 @@ else
 end
 
 if "--build" in ARGS
+    # we need the binary wrappers for the dependencies (topcom+4ti2)
+    # for the relevant functions to appear in the json
+    Pkg.add(["TOPCOM_jll", "lib4ti2_jll", "BinaryWrappers"])
+    using TOPCOM_jll
+    using lib4ti2_jll
+    using BinaryWrappers
+    binpaths = [
+             BinaryWrappers.generate_wrappers(lib4ti2_jll, nothing),
+             BinaryWrappers.generate_wrappers(TOPCOM_jll, nothing),
+           ]
+
+    ENV["PATH"] = join([binpaths...,ENV["PATH"]], ":")
     using libpolymake_julia_jll
-    mktempdir() do path
-        ENV["POLYMAKE_USER_DIR"] = path
+    mktempdir() do userpath
         jsondir = joinpath(installdir,"share","libpolymake_julia","appsjson")
         mkpath(jsondir)
         polymake_run_script() do exe
-            run(`$exe "$(pwd())/src/polymake/apptojson.pl" "$(jsondir)"`)
+            run(`env`)
+            run(`$exe --config=user=$userpath "$(pwd())/src/polymake/apptojson.pl" "$(jsondir)"`)
         end
     end
 end
