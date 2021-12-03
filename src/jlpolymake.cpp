@@ -68,6 +68,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_tropicalnumber(jlpolymake);
 
     add_polynomial(jlpolymake);
+    
+    add_unipolynomial(jlpolymake);
 
     add_direct_calls(jlpolymake);
 
