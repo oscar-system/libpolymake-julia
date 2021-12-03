@@ -244,6 +244,24 @@ my $type_tuples = [
         #     "to_tropicalnumber_min_Integer",
         # ],
         [
+            "UniPolynomial_Int_Int",
+            "pm::UniPolynomial<long,long>",
+            "UniPolynomial{CxxWrap.CxxLong,CxxWrap.CxxLong}",
+            "to_unipolynomial_int_int",
+        ],
+        [
+            "UniPolynomial_Integer_Int",
+            "pm::UniPolynomial<pm::Integer,long>",
+            "UniPolynomial{Integer,CxxWrap.CxxLong}",
+            "to_unipolynomial_integer_int",
+        ],
+        [
+            "UniPolynomial_Rational_Int",
+            "pm::UniPolynomial<pm::Rational,long>",
+            "UniPolynomial{Rational,CxxWrap.CxxLong}",
+            "to_unipolynomial_rational_int",
+        ],
+        [
             "Polynomial_Int_Int",
             "pm::Polynomial<long,long>",
             "Polynomial{CxxWrap.CxxLong,CxxWrap.CxxLong}",

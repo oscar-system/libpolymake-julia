@@ -19,6 +19,7 @@ void add_lists(jlcxx::Module& jlpolymake);
 void add_map(jlcxx::Module& jlpolymake);
 void add_matrix(jlcxx::Module& jlpolymake);
 void add_polynomial(jlcxx::Module& jlpolymake);
+void add_unipolynomial(jlcxx::Module& jlpolymake);
 void add_rational(jlcxx::Module& jlpolymake);
 void add_pairs(jlcxx::Module& jlpolymake);
 void add_set(jlcxx::Module& jlpolymake);
