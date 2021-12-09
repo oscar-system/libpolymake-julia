@@ -76,7 +76,7 @@ void add_rational(jlcxx::Module& jlpolymake)
         jlpolymake.method("==", [](pm::Rational& a, int64_t b) {
             return a == static_cast<pm::Int>(b); });
         jlpolymake.method("==", [](int64_t a, pm::Rational& b) {
-        return static_cast<pm::Int>(a) == b; });
+            return static_cast<pm::Int>(a) == b; });
         // the symmetric definitions are on the julia side
         jlpolymake.method("+", [](pm::Rational& a, pm::Rational& b) {
             return a + b; });
