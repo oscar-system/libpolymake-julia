@@ -69,10 +69,22 @@ my $type_tuples = [
             "to_pair_int_int",
         ],
         [
+            "Pair_Integer_Int",
+            "std::pair<pm::Integer, pm::Int>",
+            "StdPair{Integer,CxxWrap.CxxLong}",
+            "to_pair_integer_int",
+        ],
+        [
             "List_Pair_Int_Int",
             "std::list<std::pair<pm::Int, pm::Int>>",
             "StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}",
             "to_list_pair_int_int",
+        ],
+        [
+            "List_Pair_Integer_Int",
+            "std::list<std::pair<pm::Integer, pm::Int>>",
+            "StdList{StdPair{Integer,CxxWrap.CxxLong}}",
+            "to_list_pair_integer_int",
         ],
         ["Set_Int", "pm::Set<long>", "Set{CxxWrap.CxxLong}", "to_set_int"],
         [
@@ -290,6 +302,12 @@ my $type_tuples = [
             "pm::Map<std::string,std::string>",
             "Map{CxxWrap.StdString,CxxWrap.StdString}",
             "to_map_string_string",
+        ],
+        [
+            "HomologyGroup_Integer",
+            "polymake::topaz::HomologyGroup<pm::Integer>",
+            "HomologyGroup{Integer}",
+            "to_homologygroup_integer",
         ],
         [
             "Graph_Undirected",

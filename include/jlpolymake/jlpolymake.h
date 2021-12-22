@@ -25,6 +25,7 @@
 #include <polymake/SparseVector.h>
 #include <polymake/Map.h>
 #include <polymake/Graph.h>
+#include "polymake/topaz/HomologyComplex.h"
 
 #include <polymake/perl/calls.h>
 
