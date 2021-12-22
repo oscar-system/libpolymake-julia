@@ -24,7 +24,8 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
                pm::Array<pm::Array<pm::Rational>>,
                pm::Array<std::pair<pm::Int, pm::Int>>,
                pm::Array<std::list<std::pair<pm::Int, pm::Int>>>,
-               pm::Array<pm::Matrix<pm::Integer>>>([](auto wrapped) {
+               pm::Array<pm::Matrix<pm::Integer>>,
+               pm::Array<polymake::topaz::HomologyGroup<pm::Integer>>>([](auto wrapped) {
             typedef typename decltype(wrapped)::type             WrappedT;
             typedef typename decltype(wrapped)::type::value_type elemType;
 
@@ -135,6 +136,10 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
     jlpolymake.method(
         "to_array_matrix_integer", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Matrix<pm::Integer>>>(pv);
+        });
+    jlpolymake.method(
+        "to_array_homologygroup_integer", [](const pm::perl::PropertyValue& pv) {
+            return to_SmallObject<pm::Array<polymake::topaz::HomologyGroup<pm::Integer>>>(pv);
         });
     jlpolymake.method(
         "to_array_bigobject", [](const pm::perl::PropertyValue& pv) {

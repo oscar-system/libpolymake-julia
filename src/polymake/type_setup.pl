@@ -154,6 +154,12 @@ my $type_tuples = [
             "to_array_matrix_integer",
         ],
         [
+            "Array_HomologyGroup_Integer",
+            "pm::Array<polymake::topaz::HomologyGroup<pm::Integer>>",
+            "Array{HomologyGroup{Integer}}",
+            "to_array_homologygroup_integer",
+        ],
+        [
             "Array_BigObject",
             "pm::Array<pm::perl::BigObject>",
             "Array{BigObject}",
