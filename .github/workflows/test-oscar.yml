@@ -99,8 +99,18 @@ jobs:
                                  active_repo=\"${GITHUB_REPOSITORY}\");
                    github_env_runtests(meta;
                                        varname=\"oscar_run_tests\",
-                                       filename=\"${GITHUB_ENV}\");"
+                                       filename=\"${GITHUB_ENV}\");
+                   github_env_run_doctests(meta;
+                                           varname=\"oscar_run_doctests\",
+                                           filename=\"${GITHUB_ENV}\");"
+
       - name: "Run tests"
         run: |
           echo '${{ env.oscar_run_tests }}'
           julia --project=oscar-dev/project/ -e '${{ env.oscar_run_tests }}'
+      - name: "Run doctests"
+        if: matrix.julia-version == '~1.6.0-0' || matrix.julia-version == '1.6'
+        run: |
+          echo '${{ env.oscar_run_doctests }}'
+          rm -rf $HOME/.julia/scratchspaces/*/polymake_*
+          julia --project=oscar-dev/project/ -e '${{ env.oscar_run_doctests }}'
