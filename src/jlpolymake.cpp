@@ -58,6 +58,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_graph(jlpolymake);
 
     add_sparsevector(jlpolymake);;
+    
+    add_homologygroup(jlpolymake);
 
     auto array_type = add_array(jlpolymake);
 

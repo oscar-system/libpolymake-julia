@@ -15,7 +15,7 @@ void add_pairs(jlcxx::Module& jlpolymake)
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
             "StdPair");
 
-        type.apply<std::pair<pm::Int,pm::Int>>([&jlpolymake](auto wrapped) {
+        type.apply<std::pair<pm::Int,pm::Int>, std::pair<pm::Integer, pm::Int>>([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
             typedef typename decltype(wrapped)::type::first_type firstT;
             typedef typename decltype(wrapped)::type::second_type secondT;
@@ -43,6 +43,10 @@ void add_pairs(jlcxx::Module& jlpolymake)
 
     jlpolymake.method("to_pair_int_int", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<std::pair<pm::Int, pm::Int>>(pv);
+    });
+    
+    jlpolymake.method("to_pair_integer_int", [](const pm::perl::PropertyValue& pv) {
+        return to_SmallObject<std::pair<pm::Integer, pm::Int>>(pv);
     });
 
 }

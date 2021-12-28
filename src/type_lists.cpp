@@ -14,7 +14,7 @@ void add_lists(jlcxx::Module& jlpolymake)
         .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
             "StdList");
 
-        type.apply<std::list<std::pair<pm::Int,pm::Int>>>([&jlpolymake](auto wrapped) {
+        type.apply<std::list<std::pair<pm::Int,pm::Int>>, std::list<std::pair<pm::Integer, pm::Int>>>([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
             typedef typename decltype(wrapped)::type::value_type elemType;
 
@@ -53,9 +53,13 @@ void add_lists(jlcxx::Module& jlpolymake)
     jlpolymake.method("to_list_pair_int_int", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<std::list<std::pair<pm::Int, pm::Int>>>(pv);
     });
+    
+    jlpolymake.method("to_list_pair_integer_int", [](const pm::perl::PropertyValue& pv) {
+        return to_SmallObject<std::list<std::pair<pm::Integer, pm::Int>>>(pv);
+    });
 
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator")
-            .apply<WrappedStdListIterator<std::pair<pm::Int, pm::Int>>>(
+            .apply<WrappedStdListIterator<std::pair<pm::Int, pm::Int>>, WrappedStdListIterator<std::pair<pm::Integer, pm::Int>>>(
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type WrappedT;
                 typedef typename decltype(wrapped)::type::value_type elemType;
