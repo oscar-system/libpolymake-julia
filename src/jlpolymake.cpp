@@ -47,9 +47,11 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_matrix(jlpolymake);
 
-    add_pairs(jlpolymake);
+    auto pair_type = add_pairs(jlpolymake);
 
     add_lists(jlpolymake);
+    
+    add_pair_list(jlpolymake, pair_type);
 
     add_vector(jlpolymake);
 

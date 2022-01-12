@@ -69,6 +69,12 @@ my $type_tuples = [
             "to_pair_int_int",
         ],
         [
+            "Pair_Int_List_List_Pair_Int_Int",
+            "std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>",
+            "StdPair{CxxWrap.CxxLong, StdList{StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}}}",
+            "to_pair_int_list_list_pair_int_int",
+        ],
+        [
             "Pair_Integer_Int",
             "std::pair<pm::Integer, pm::Int>",
             "StdPair{Integer,CxxWrap.CxxLong}",
@@ -79,6 +85,12 @@ my $type_tuples = [
             "std::list<std::pair<pm::Int, pm::Int>>",
             "StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}",
             "to_list_pair_int_int",
+        ],
+        [
+            "List_List_Pair_Int_Int",
+            "std::list<std::list<std::pair<pm::Int, pm::Int>>>",
+            "StdList{StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}}",
+            "to_list_list_pair_int_int",
         ],
         [
             "List_Pair_Integer_Int",

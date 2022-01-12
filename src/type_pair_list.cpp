@@ -8,14 +8,10 @@
 
 namespace jlpolymake {
 
-tparametric2 add_pairs(jlcxx::Module& jlpolymake)
+void add_pair_list(jlcxx::Module& jlpolymake, tparametric2 pair_type)
 {
-
-    auto type = jlpolymake
-        .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
-            "StdPair");
-
-        type.apply<std::pair<pm::Int,pm::Int>, std::pair<pm::Integer, pm::Int>>([&jlpolymake](auto wrapped) {
+    pair_type
+        .apply<std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>>([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
             typedef typename decltype(wrapped)::type::first_type firstT;
             typedef typename decltype(wrapped)::type::second_type secondT;
@@ -40,16 +36,11 @@ tparametric2 add_pairs(jlcxx::Module& jlpolymake)
                 return show_small_object<WrappedT>(S);
             });
         });
-
-    jlpolymake.method("to_pair_int_int", [](const pm::perl::PropertyValue& pv) {
-        return to_SmallObject<std::pair<pm::Int, pm::Int>>(pv);
-    });
     
-    jlpolymake.method("to_pair_integer_int", [](const pm::perl::PropertyValue& pv) {
-        return to_SmallObject<std::pair<pm::Integer, pm::Int>>(pv);
+    jlpolymake.method("to_pair_int_list_list_pair_int_int", [](const pm::perl::PropertyValue& pv) {
+        return to_SmallObject<std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>>(pv);
     });
 
-    return type;
 }
 
 }
