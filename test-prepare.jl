@@ -65,6 +65,9 @@ let file = joinpath(Pkg.depots1(),"artifacts","Overrides.toml")
     else
         write(file, join(lines, "\n"))
         @info "$file written."
+
+        # make sure our override is already active for this session
+        Artifacts.load_overrides(;force=true)
     end
 end
 
