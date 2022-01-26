@@ -51,7 +51,7 @@ target_link_libraries(${JLPOLYMAKE_TARGET} JlCxx::cxxwrap_julia "${Polymake_LIBS
 
 file(GLOB JLPOLYMAKE_RUNNER "${JLPOLYMAKE_SOURCE_DIR}/runner/*.cpp")
 add_executable(${JLPOLYMAKE_RUN_SCRIPT} ${JLPOLYMAKE_RUNNER})
-target_link_libraries(${JLPOLYMAKE_RUN_SCRIPT} "${Polymake_LIBS}")
+target_link_libraries(${JLPOLYMAKE_RUN_SCRIPT} "${Polymake_LIBS}" "${EXTRA_LIBRARIES}")
 
 set(TYPE_TRANSLATOR ${CMAKE_CURRENT_BINARY_DIR}/jl/type_translator.jl)
 
