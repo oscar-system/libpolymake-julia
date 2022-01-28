@@ -45,7 +45,7 @@ include_directories(${JlCxx_DIR}/../../../include/)
 
 file(GLOB JLPOLYMAKE_SRC "${JLPOLYMAKE_SOURCE_DIR}/*.cpp")
 add_library(${JLPOLYMAKE_TARGET} SHARED ${JLPOLYMAKE_SRC})
-target_link_libraries(${JLPOLYMAKE_TARGET} JlCxx::cxxwrap_julia "${Polymake_LIBS}")
+target_link_libraries(${JLPOLYMAKE_TARGET} JlCxx::cxxwrap_julia "${Polymake_LIBS}" "${EXTRA_LIBRARIES}")
 
 set(TYPE_TRANSLATOR ${CMAKE_CURRENT_BINARY_DIR}/jl/type_translator.jl)
 

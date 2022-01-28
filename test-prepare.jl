@@ -10,6 +10,16 @@ include(polymake_jll.generate_deps_tree)
 
 const polymake_deps_tree = prepare_deps_tree(mktempdir(;cleanup=false))
 
+extraldflags=""
+extralibs=""
+
+if isdefined(polymake_jll.FLINT_jll,:OpenBLAS32_jll)
+    blasdepsdir = joinpath(polymake_deps_tree,"deps","OpenBLAS32_jll")
+    force_symlink(polymake_jll.FLINT_jll.OpenBLAS32_jll.artifact_dir,blasdepsdir)
+    extraldflags="-L$(joinpath(blasdepsdir,"lib"))"
+    extralibs="-lopenblas"
+end
+
 # we need to adjust the test-driver to running from the callable library
 let file = joinpath("test","run_testcases")
     if !isfile(file)
@@ -37,6 +47,7 @@ run(`cmake \
      -DJulia_PREFIX=$(joinpath(Sys.BINDIR,"..")) \
      -DJlCxx_DIR=$(libcxxwrap_julia_jll.artifact_dir)/lib/cmake/JlCxx \
      -DCMAKE_INSTALL_PREFIX=$(installdir) \
+     -DCMAKE_SHARED_LINKER_FLAGS="$(extraldflags)" \
      -DCMAKE_BUILD_TYPE=Release \
      -S . -B build`);
 
