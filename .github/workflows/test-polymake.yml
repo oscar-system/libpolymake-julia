@@ -66,6 +66,10 @@ jobs:
         env:
            TERM: linux
         run: julia --project=test/project -e 'using libpolymake_julia_jll;
-                                              polymake_run_script() do exe
-                                                  run(`$exe test/run_testcases --emacs-style`);
+                                              using libpolymake_julia_jll.polymake_jll;
+                                              using polymake_jll.Perl_jll;
+                                              perl() do perl
+                                                polymake() do polymake
+                                                  run(`$perl $polymake --iscript test/run_testcases --emacs-style`);
+                                                end
                                               end'
