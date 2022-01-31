@@ -16,7 +16,7 @@ extralibs=""
 if isdefined(polymake_jll.FLINT_jll,:OpenBLAS32_jll)
     blasdepsdir = joinpath(polymake_deps_tree,"deps","OpenBLAS32_jll")
     force_symlink(polymake_jll.FLINT_jll.OpenBLAS32_jll.artifact_dir,blasdepsdir)
-    extraldflags="-L$(joinpath(blasdepsdir,"lib"))"
+    extraldflags="-L$(joinpath(blasdepsdir,"lib")) -L$(joinpath(Sys.BINDIR,Base.LIBDIR,"julia"))"
     extralibs="-lopenblas"
 end
 
