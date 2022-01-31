@@ -10,6 +10,16 @@ include(polymake_jll.generate_deps_tree)
 
 const polymake_deps_tree = prepare_deps_tree(mktempdir(;cleanup=false))
 
+extraldflags=""
+extralibs=""
+
+if isdefined(polymake_jll.FLINT_jll,:OpenBLAS32_jll)
+    blasdepsdir = joinpath(polymake_deps_tree,"deps","OpenBLAS32_jll")
+    force_symlink(polymake_jll.FLINT_jll.OpenBLAS32_jll.artifact_dir,blasdepsdir)
+    extraldflags="-L$(joinpath(blasdepsdir,"lib")) -L$(joinpath(Sys.BINDIR,Base.LIBDIR,"julia"))"
+    extralibs="-lopenblas"
+end
+
 # we need to adjust the test-driver to running from the callable library
 let file = joinpath("test","run_testcases")
     if !isfile(file)
@@ -37,6 +47,7 @@ run(`cmake \
      -DJulia_PREFIX=$(joinpath(Sys.BINDIR,"..")) \
      -DJlCxx_DIR=$(libcxxwrap_julia_jll.artifact_dir)/lib/cmake/JlCxx \
      -DCMAKE_INSTALL_PREFIX=$(installdir) \
+     -DCMAKE_SHARED_LINKER_FLAGS="$(extraldflags)" \
      -DCMAKE_BUILD_TYPE=Release \
      -S . -B build`);
 
@@ -101,9 +112,10 @@ if "--build" in ARGS
     mktempdir() do userpath
         jsondir = joinpath(installdir,"share","libpolymake_julia","appsjson")
         mkpath(jsondir)
-        polymake_run_script() do exe
-            run(`env`)
-            run(`$exe --config=user=$userpath "$(pwd())/src/polymake/apptojson.pl" "$(jsondir)"`)
+        polymake_jll.Perl_jll.perl() do perl
+          polymake() do polymake
+            run(`$perl $polymake --config-path=user=$userpath --iscript "$(pwd())/src/polymake/apptojson.pl" "$(jsondir)"`)
+          end
         end
     end
 end
