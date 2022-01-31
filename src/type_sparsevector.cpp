@@ -52,6 +52,10 @@ void add_sparsevector(jlcxx::Module& jlpolymake)
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseVector<double>>(pv);
     });
+    jlpolymake.method("to_sparsevector_quadraticextension_rational",
+        [](pm::perl::PropertyValue pv) {
+            return to_SmallObject<pm::SparseVector<pm::QuadraticExtension<pm::Rational>>>(pv);
+    });
 }
 
 }

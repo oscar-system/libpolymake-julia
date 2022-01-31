@@ -60,6 +60,10 @@ void add_sparsematrix(jlcxx::Module& jlpolymake)
         [](pm::perl::PropertyValue pv) {
             return to_SmallObject<pm::SparseMatrix<double>>(pv);
     });
+    jlpolymake.method("to_sparsematrix_quadraticextension_rational",
+        [](pm::perl::PropertyValue pv) {
+            return to_SmallObject<pm::SparseMatrix<pm::QuadraticExtension<pm::Rational>>>(pv);
+    });
 }
 
 }

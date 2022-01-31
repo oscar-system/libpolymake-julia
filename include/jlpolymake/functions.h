@@ -34,7 +34,7 @@ std::string show_small_object(const T& obj, bool print_typename = true)
 
 struct VecOrMat_supported
 {
-    typedef jlcxx::ParameterList<pm::Int, pm::Integer, pm::Rational, double> value_type;
+    typedef jlcxx::ParameterList<pm::Int, pm::Integer, pm::Rational, double, pm::QuadraticExtension<pm::Rational>> value_type;
 };
 
 }

@@ -53,6 +53,9 @@ void add_polynomial(jlcxx::Module& jlpolymake)
     jlpolymake.method("to_polynomial_double_int", [](pm::perl::PropertyValue v) {
             return to_SmallObject<pm::Polynomial<double,pm::Int>>(v);
         });
+    jlpolymake.method("to_polynomial_quadraticextension_rational_int", [](pm::perl::PropertyValue v) {
+            return to_SmallObject<pm::Polynomial<pm::QuadraticExtension<pm::Rational>,pm::Int>>(v);
+        });
 }
 
 }

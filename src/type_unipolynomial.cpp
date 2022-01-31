@@ -50,6 +50,9 @@ void add_unipolynomial(jlcxx::Module& jlpolymake)
     jlpolymake.method("to_unipolynomial_rational_int", [](pm::perl::PropertyValue v) {
             return to_SmallObject<pm::UniPolynomial<pm::Rational,pm::Int>>(v);
         });
+    jlpolymake.method("to_unipolynomial_quadraticextension_rational_int", [](pm::perl::PropertyValue v) {
+            return to_SmallObject<pm::UniPolynomial<pm::QuadraticExtension<pm::Rational>,pm::Int>>(v);
+        });
 }
 
 }
