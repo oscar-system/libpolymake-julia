@@ -339,6 +339,18 @@ my $type_tuples = [
             "Graph{Directed}",
             "to_graph_directed",
         ],
+        [
+            "EdgeMap_Directed_Int",
+            "pm::graph::EdgeMap<pm::graph::Directed, pm::Int>",
+            "EdgeMap{Directed, CxxWrap.CxxLong}",
+            "to_edgemap_directed_int",
+        ],
+        [
+            "EdgeMap_Undirected_Int",
+            "pm::graph::EdgeMap<pm::graph::Undirected, pm::Int>",
+            "EdgeMap{Undirected, CxxWrap.CxxLong}",
+            "to_edgemap_undirected_int",
+        ],
     ];
 
 my @keys = qw(type_string ctype jltype convert_f);

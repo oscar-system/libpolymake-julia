@@ -14,6 +14,7 @@ void add_array_polynomial(jlcxx::Module& jlpolymake, tparametric1 arrayt);
 void add_bigobject(jlcxx::Module& jlpolymake);
 void add_direct_calls(jlcxx::Module&);
 void add_graph(jlcxx::Module& jlpolymake);
+void add_edgemap(jlcxx::Module& jlpolymake);
 void add_homologygroup(jlcxx::Module& jlpolymake);
 void add_incidencematrix(jlcxx::Module& jlpolymake);
 void add_integer(jlcxx::Module& jlpolymake);
