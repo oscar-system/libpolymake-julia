@@ -67,6 +67,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_edgemap(jlpolymake);
 
+    add_nodemap(jlpolymake);
+
     add_incidencematrix(jlpolymake);
 
     add_sparsematrix(jlpolymake);

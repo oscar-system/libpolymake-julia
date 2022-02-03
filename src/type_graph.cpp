@@ -117,7 +117,8 @@ void add_edgemap(jlcxx::Module& jlpolymake)
                 wrapped.template constructor<GType>();
 
 
-                wrapped.method("_set_entry", [](WrappedT& EM, int64_t tail, int64_t head, E e) { EM(tail, head) = e; });
+                wrapped.method("_set_entry", [](WrappedT& EM, int64_t tail, int64_t head, const E& val) { EM(tail, head) = val; });
+                wrapped.method("_get_entry", [](WrappedT& EM, int64_t tail, int64_t head) { return EM(tail, head); });
                 wrapped.method("show_small_obj", [](WrappedT& S) {
                     return show_small_object<WrappedT>(S);
                 });
@@ -144,5 +145,44 @@ void add_edgemap(jlcxx::Module& jlpolymake)
 }
 
 
+
+void add_nodemap(jlcxx::Module& jlpolymake)
+{
+    auto type = jlpolymake
+        .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
+                "NodeMap");
+
+    type.apply<pm::graph::NodeMap<pm::graph::Undirected, pm::Int>,
+        pm::graph::NodeMap<pm::graph::Directed, pm::Int>,
+        pm::graph::NodeMap<pm::graph::Undirected, pm::Set<pm::Int>>,
+        pm::graph::NodeMap<pm::graph::Directed, pm::Set<pm::Int>>>
+            ([](auto wrapped){
+                typedef typename decltype(wrapped)::type WrappedT;
+                typedef typename decltype(wrapped)::type::graph_type GType;
+                typedef typename decltype(wrapped)::type::graph_type::dir TDir;
+                typedef typename decltype(wrapped)::type::value_type E;
+                wrapped.template constructor<GType>();
+
+
+                wrapped.method("_set_entry", [](WrappedT& EM, int64_t node, const E& val) { EM[node] = val; });
+                wrapped.method("_get_entry", [](WrappedT& EM, int64_t node) { return EM[node]; });
+                wrapped.method("show_small_obj", [](WrappedT& S) {
+                    return show_small_object<WrappedT>(S);
+                });
+                
+            });
+    jlpolymake.method("to_nodemap_undirected_int", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<pm::graph::NodeMap<pm::graph::Undirected, pm::Int>>(pv);
+    });
+    jlpolymake.method("to_nodemap_directed_int", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<pm::graph::NodeMap<pm::graph::Directed, pm::Int>>(pv);
+    });
+    jlpolymake.method("to_nodemap_undirected_set_int", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<pm::graph::NodeMap<pm::graph::Undirected, pm::Set<pm::Int>>>(pv);
+    });
+    jlpolymake.method("to_nodemap_directed_set_int", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<pm::graph::NodeMap<pm::graph::Directed, pm::Set<pm::Int>>>(pv);
+    });
+}
 
 }
