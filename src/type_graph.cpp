@@ -118,8 +118,8 @@ void add_edgemap(jlcxx::Module& jlpolymake)
 
 
                 wrapped.method("_set_entry", [](WrappedT& EM, int64_t tail, int64_t head, const E& val) { EM(tail, head) = val; });
-                wrapped.method("_get_entry", [](WrappedT& EM, int64_t tail, int64_t head) { return EM(tail, head); });
-                wrapped.method("show_small_obj", [](WrappedT& S) {
+                wrapped.method("_get_entry", [](const WrappedT& EM, int64_t tail, int64_t head) { return EM(tail, head); });
+                wrapped.method("show_small_obj", [](const WrappedT& S) {
                     return show_small_object<WrappedT>(S);
                 });
 
@@ -165,8 +165,8 @@ void add_nodemap(jlcxx::Module& jlpolymake)
 
 
                 wrapped.method("_set_entry", [](WrappedT& EM, int64_t node, const E& val) { EM[node] = val; });
-                wrapped.method("_get_entry", [](WrappedT& EM, int64_t node) { return EM[node]; });
-                wrapped.method("show_small_obj", [](WrappedT& S) {
+                wrapped.method("_get_entry", [](const WrappedT& EM, int64_t node) { return EM[node]; });
+                wrapped.method("show_small_obj", [](const WrappedT& S) {
                     return show_small_object<WrappedT>(S);
                 });
                 
