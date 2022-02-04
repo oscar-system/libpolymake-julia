@@ -339,6 +339,42 @@ my $type_tuples = [
             "Graph{Directed}",
             "to_graph_directed",
         ],
+        [
+            "EdgeMap_Directed_Int",
+            "pm::graph::EdgeMap<pm::graph::Directed, pm::Int>",
+            "EdgeMap{Directed, CxxWrap.CxxLong}",
+            "to_edgemap_directed_int",
+        ],
+        [
+            "EdgeMap_Undirected_Int",
+            "pm::graph::EdgeMap<pm::graph::Undirected, pm::Int>",
+            "EdgeMap{Undirected, CxxWrap.CxxLong}",
+            "to_edgemap_undirected_int",
+        ],
+        [
+            "NodeMap_Directed_Int",
+            "pm::graph::NodeMap<pm::graph::Directed, pm::Int>",
+            "NodeMap{Directed, CxxWrap.CxxLong}",
+            "to_nodemap_directed_int",
+        ],
+        [
+            "NodeMap_Undirected_Int",
+            "pm::graph::NodeMap<pm::graph::Undirected, pm::Int>",
+            "NodeMap{Undirected, CxxWrap.CxxLong}",
+            "to_nodemap_undirected_int",
+        ],
+        [
+            "NodeMap_Directed_Set_Int",
+            "pm::graph::NodeMap<pm::graph::Directed, pm::Set<pm::Int>>",
+            "NodeMap{Directed, Set{CxxWrap.CxxLong}}",
+            "to_nodemap_directed_set_int",
+        ],
+        [
+            "NodeMap_Undirected_Set_Int",
+            "pm::graph::NodeMap<pm::graph::Undirected, pm::Set<pm::Int>>",
+            "NodeMap{Undirected, Set{CxxWrap.CxxLong}}",
+            "to_nodemap_undirected_set_int",
+        ],
     ];
 
 my @keys = qw(type_string ctype jltype convert_f);
