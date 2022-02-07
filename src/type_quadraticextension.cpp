@@ -20,23 +20,23 @@ void add_quadraticextension(jlcxx::Module& jlpolymake)
 
             wrapped.template constructor<fieldType, fieldType, fieldType>();
             
-            wrapped.method("<", [](WrappedT& a, WrappedT& b) { return a < b; });
-            wrapped.method("==", [](WrappedT& a, WrappedT& b) { return a == b; });
+            wrapped.method("<", [](const WrappedT& a, const WrappedT& b) { return a < b; });
+            wrapped.method("==", [](const WrappedT& a, const WrappedT& b) { return a == b; });
             
-            wrapped.method("-", [](WrappedT& a) { return -a; });
+            wrapped.method("-", [](const WrappedT& a) { return -a; });
             
-            wrapped.method("+", [](WrappedT& a, WrappedT& b) { return a + b; });
-            wrapped.method("-", [](WrappedT& a, WrappedT& b) { return a - b; });
-            wrapped.method("*", [](WrappedT& a, WrappedT& b) { return a * b; });
-            wrapped.method("//", [](WrappedT& a, WrappedT& b) { return a / b; });
+            wrapped.method("+", [](const WrappedT& a, const WrappedT& b) { return a + b; });
+            wrapped.method("-", [](const WrappedT& a, const WrappedT& b) { return a - b; });
+            wrapped.method("*", [](const WrappedT& a, const WrappedT& b) { return a * b; });
+            wrapped.method("//", [](const WrappedT& a, const WrappedT& b) { return a / b; });
             
-            wrapped.method("_a", [](WrappedT& a) { return a.a(); });
-            wrapped.method("_b", [](WrappedT& a) { return a.b(); });
-            wrapped.method("_r", [](WrappedT& a) { return a.r(); });
+            wrapped.method("_a", [](const WrappedT& a) { return a.a(); });
+            wrapped.method("_b", [](const WrappedT& a) { return a.b(); });
+            wrapped.method("_r", [](const WrappedT& a) { return a.r(); });
             
-            wrapped.method("conjugate", [](WrappedT& a) { return conjugate(a); });
+            wrapped.method("conjugate", [](const WrappedT& a) { return conjugate(a); });
             
-            wrapped.method("show_small_obj", [](WrappedT& S) {
+            wrapped.method("show_small_obj", [](const WrappedT& S) {
                 return show_small_object<WrappedT>(S);
             });
         });
