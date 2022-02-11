@@ -20,6 +20,15 @@ SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -std=c++14 ${Polymake_CFLAGS}" )
 SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
 
+# this works around a design issue in polymake where the corresponding symbol is
+# defined in a bundled extension and thus not available at link-time
+# this can be removed once flint is a core-dependency of polymake
+if(APPLE)
+   SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-U,__ZN2pm18QuadraticExtensionINS_8RationalEE9normalizeEv" )
+else()
+   SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} -Wl,--undefined,__ZN2pm18QuadraticExtensionINS_8RationalEE9normalizeEv" )
+endif()
+
 # to avoid lib64 dirs as binarybuilder uses lib everywhere
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_INSTALL_LIBDIR "lib")
