@@ -25,6 +25,7 @@ void add_matrix(jlcxx::Module& jlpolymake);
 void add_polynomial(jlcxx::Module& jlpolymake);
 void add_unipolynomial(jlcxx::Module& jlpolymake);
 void add_rational(jlcxx::Module& jlpolymake);
+void add_quadraticextension(jlcxx::Module& jlpolymake);
 tparametric2 add_pairs(jlcxx::Module& jlpolymake);
 void add_pair_list(jlcxx::Module& jlpolymake, tparametric2 pairt);
 void add_set(jlcxx::Module& jlpolymake);

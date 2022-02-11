@@ -15,6 +15,12 @@ my $type_tuples = [
         ["Integer", "pm::Integer", "Integer", "to_integer"],
         ["Rational", "pm::Rational", "Rational", "to_rational"],
         [
+            "QuadraticExtension_Rational",
+            "pm::QuadraticExtension<pm::Rational>",
+            "QuadraticExtension{Rational}",
+            "to_quadraticextension_rational",
+        ],
+        [
             "Matrix_Int",
             "pm::Matrix<long>",
             "Matrix{CxxWrap.CxxLong}",
@@ -39,6 +45,12 @@ my $type_tuples = [
             "to_matrix_double",
         ],
         [
+            "Matrix_QuadraticExtension_Rational",
+            "pm::Matrix<pm::QuadraticExtension<pm::Rational>>",
+            "Matrix{QuadraticExtension{Rational}}",
+            "to_matrix_quadraticextension_rational",
+        ],
+        [
             "Vector_Int",
             "pm::Vector<long>",
             "Vector{CxxWrap.CxxLong}",
@@ -61,6 +73,12 @@ my $type_tuples = [
             "pm::Vector<double>",
             "Vector{Float64}",
             "to_vector_double",
+        ],
+        [
+            "Vector_QuadraticExtension_Rational",
+            "pm::Vector<pm::QuadraticExtension<pm::Rational>>",
+            "Vector{QuadraticExtension{Rational}}",
+            "to_vector_quadraticextension_rational",
         ],
         [
             "Pair_Int_Int",
@@ -110,6 +128,12 @@ my $type_tuples = [
             "pm::Array<pm::Integer>",
             "Array{Integer}",
             "to_array_integer",
+        ],
+        [
+            "Array_QuadraticExtension_Rational",
+            "pm::Array<pm::QuadraticExtension<pm::Rational>>",
+            "Array{QuadraticExtension{Rational}}",
+            "to_array_quadraticextension_rational",
         ],
         [
             "Array_String",
@@ -214,6 +238,12 @@ my $type_tuples = [
             "to_sparsematrix_double",
         ],
         [
+            "SparseMatrix_QuadraticExtension_Rational",
+            "pm::SparseMatrix<pm::QuadraticExtension<pm::Rational>>",
+            "SparseMatrix{QuadraticExtension{Rational}}",
+            "to_sparsematrix_quadraticextension_rational",
+        ],
+        [
             "SparseVector_Integer",
             "pm::SparseVector<pm::Integer>",
             "SparseVector{Integer}",
@@ -236,6 +266,12 @@ my $type_tuples = [
             "pm::SparseVector<double>",
             "SparseVector{Float64}",
             "to_sparsevector_double",
+        ],
+        [
+            "SparseVector_QuadraticExtension_Rational",
+            "pm::SparseVector<pm::QuadraticExtension<pm::Rational>>",
+            "SparseVector{QuadraticExtension{Rational}}",
+            "to_sparsevector_quadraticextension_rational",
         ],
         [
             "IncidenceMatrix_NonSymmetric",
@@ -292,6 +328,12 @@ my $type_tuples = [
             "to_unipolynomial_rational_int",
         ],
         [
+            "UniPolynomial_QuadraticExtension_Rational_Int",
+            "pm::UniPolynomial<pm::QuadraticExtension<pm::Rational>,long>",
+            "UniPolynomial{QuadraticExtension{Rational},CxxWrap.CxxLong}",
+            "to_unipolynomial_quadraticextension_rational_int",
+        ],
+        [
             "Polynomial_Int_Int",
             "pm::Polynomial<long,long>",
             "Polynomial{CxxWrap.CxxLong,CxxWrap.CxxLong}",
@@ -314,6 +356,12 @@ my $type_tuples = [
             "pm::Polynomial<double,long>",
             "Polynomial{Float64,CxxWrap.CxxLong}",
             "to_polynomial_double_int",
+        ],
+        [
+            "Polynomial_QuadraticExtension_Rational_Int",
+            "pm::Polynomial<pm::QuadraticExtension<pm::Rational>,long>",
+            "Polynomial{QuadraticExtension{Rational},CxxWrap.CxxLong}",
+            "to_polynomial_quadraticextension_rational_int",
         ],
         [
             "Map_String_String",

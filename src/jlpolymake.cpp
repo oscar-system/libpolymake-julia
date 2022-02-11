@@ -44,6 +44,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_integer(jlpolymake);
 
     add_rational(jlpolymake);
+    
+    add_quadraticextension(jlpolymake);
 
     add_matrix(jlpolymake);
 

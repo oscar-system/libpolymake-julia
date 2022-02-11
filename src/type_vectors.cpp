@@ -50,6 +50,9 @@ void add_vector(jlcxx::Module& jlpolymake)
     jlpolymake.method("to_vector_double", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Vector<double>>(pv);
     });
+    jlpolymake.method("to_vector_quadraticextension_rational", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<pm::Vector<pm::QuadraticExtension<pm::Rational>>>(pv);
+    });
 }
 
 }

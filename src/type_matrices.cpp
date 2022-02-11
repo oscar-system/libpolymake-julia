@@ -51,6 +51,9 @@ void add_matrix(jlcxx::Module& jlpolymake)
     jlpolymake.method("to_matrix_double", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Matrix<double>>(pv);
     });
+    jlpolymake.method("to_matrix_quadraticextension_rational", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<pm::Matrix<pm::QuadraticExtension<pm::Rational>>>(pv);
+    });
 }
 
 }
