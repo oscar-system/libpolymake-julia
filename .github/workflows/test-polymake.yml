@@ -22,13 +22,13 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        julia-version: ['~1.6.0-0', 'nightly']
+        julia-version: ['~1.6.0-0', '~1.7.0-0', 'nightly']
         libcxxwrap: [ '' ]
         include:
           - os: ubuntu-latest
-            julia-version: '~1.7.0-0'
+            julia-version: '~1.8.0-0'
           - os: macOS-11.0
-            julia-version: '~1.7.0-0'
+            julia-version: '~1.8.0-0'
 
       fail-fast: true
 
