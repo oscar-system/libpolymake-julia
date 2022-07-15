@@ -90,6 +90,7 @@ if "--ignore-compat" in ARGS
         run(`git clone --depth 1 https://github.com/JuliaBinaryWrappers/libpolymake_julia_jll.jl $(jlldir)`)
     end
     run(`sed -i -e '/^polymake_jll = "~/d' $(jlldir)/Project.toml`)
+    run(`sed -i -e '/^FLINT_jll = "~/d' $(jlldir)/Project.toml`)
     Pkg.develop(path="$(jlldir)")
 else
     Pkg.add("libpolymake_julia_jll")
