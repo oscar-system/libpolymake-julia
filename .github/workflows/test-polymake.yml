@@ -19,6 +19,8 @@ jobs:
   test-polymake:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
+    env:
+      JULIA_PKG_SERVER: ""
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
