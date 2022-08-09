@@ -7,6 +7,18 @@
 #include "jlpolymake/type_modules.h"
 
 namespace jlpolymake {
+    
+pm::Rational new_rational_from_fmpq(jl_value_t* rational)
+{
+    mpq_t x;
+    mpq_init(x);
+    fmpq_t* r;
+    r = reinterpret_cast<fmpq_t*>(rational);
+    fmpq_get_mpq(x, *r);
+    pm::Rational res(x);
+    mpq_clear(x);
+    return res;
+}
 
 void add_rational(jlcxx::Module& jlpolymake)
 {
@@ -100,6 +112,7 @@ void add_rational(jlcxx::Module& jlpolymake)
             return static_cast<pm::Int>(a) * b; });
         jlpolymake.unset_override_module();
 
+    jlpolymake.method("new_rational_from_fmpq", new_rational_from_fmpq);
     jlpolymake.method("to_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Rational>(pv);
     });

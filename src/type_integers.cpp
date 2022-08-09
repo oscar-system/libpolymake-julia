@@ -85,11 +85,6 @@ void add_integer(jlcxx::Module& jlpolymake)
         jlpolymake.method("*", [](int64_t a, pm::Integer& b) {
             return static_cast<pm::Int>(a) * b; });
         jlpolymake.unset_override_module();
-        
-    jlpolymake.method("_integer_from_fmpz", [](void * ptr) {
-        pm::Integer i;
-        return i.copy_from(reinterpret_cast<__mpz_struct *>(ptr));
-    });
 
     jlpolymake.method("new_integer_from_bigint", new_integer_from_bigint);
     jlpolymake.method("to_integer", [](pm::perl::PropertyValue pv) {
