@@ -7,17 +7,16 @@
 #include "jlpolymake/type_modules.h"
 
 namespace jlpolymake {
-    
+
 pm::Rational new_rational_from_fmpq(jl_value_t* rational)
 {
-    mpq_t x;
-    mpq_init(x);
     fmpq_t* r;
     r = reinterpret_cast<fmpq_t*>(rational);
-    fmpq_get_mpq(x, *r);
-    pm::Rational res(x);
-    mpq_clear(x);
-    return res;
+    mpz_t n, d;
+    mpz_init(n);
+    mpz_init(d);
+    fmpq_get_mpz_frac(n, d, *r);
+    return pm::Rational(std::move(n), std::move(d));
 }
 
 void add_rational(jlcxx::Module& jlpolymake)
