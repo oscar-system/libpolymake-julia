@@ -19,6 +19,16 @@ pm::Rational new_rational_from_fmpq(jl_value_t* rational)
     return pm::Rational(std::move(n), std::move(d));
 }
 
+pm::Rational new_rational_from_fmpz(jl_value_t* integer)
+{
+    fmpz_t* z;
+    z = reinterpret_cast<fmpz_t*>(integer);
+    mpz_t z_mp;
+    mpz_init(z_mp);
+    fmpz_get_mpz(z_mp, *z);
+    return pm::Rational(std::move(z_mp));
+}
+
 void add_rational(jlcxx::Module& jlpolymake)
 {
 
@@ -112,6 +122,7 @@ void add_rational(jlcxx::Module& jlpolymake)
         jlpolymake.unset_override_module();
 
     jlpolymake.method("new_rational_from_fmpq", new_rational_from_fmpq);
+    jlpolymake.method("new_rational_from_fmpz", new_rational_from_fmpz);
     jlpolymake.method("to_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Rational>(pv);
     });
