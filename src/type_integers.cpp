@@ -17,6 +17,16 @@ pm::Integer new_integer_from_bigint(jl_value_t* integer)
 
 //fmpz_get_mpz
 
+pm::Integer new_integer_from_fmpz(jl_value_t* integer)
+{
+    fmpz_t* z;
+    z = reinterpret_cast<fmpz_t*>(integer);
+    mpz_t z_mp;
+    mpz_init(z_mp);
+    fmpz_get_mpz(z_mp, *z);
+    return pm::Integer(std::move(z_mp));
+}
+
 void add_integer(jlcxx::Module& jlpolymake)
 {
     jlpolymake
@@ -89,6 +99,7 @@ void add_integer(jlcxx::Module& jlpolymake)
         jlpolymake.unset_override_module();
 
     jlpolymake.method("new_integer_from_bigint", new_integer_from_bigint);
+    jlpolymake.method("new_integer_from_fmpz", new_integer_from_fmpz);
     jlpolymake.method("to_integer", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Integer>(pv);
     });
