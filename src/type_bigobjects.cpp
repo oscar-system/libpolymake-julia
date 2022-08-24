@@ -24,6 +24,9 @@ void add_bigobject(jlcxx::Module& jlpolymake)
     jlpolymake.add_type<pm::perl::OptionSet>("OptionSet");
 
     jlpolymake.method("option_set_take", option_set_take);
+    
+    // workaround for Symbol type binding
+    jlcxx::set_julia_type<jl_sym_t*>(jl_symbol_type, false);
 
     jlpolymake.add_type<pm::perl::BigObjectType>("BigObjectType")
         .constructor<const std::string&>()
@@ -45,6 +48,10 @@ void add_bigobject(jlcxx::Module& jlpolymake)
         .method("internal_give",
                 [](pm::perl::BigObject& p, const std::string& s) {
                     return p.give(s);
+                })
+        .method("internal_give",
+                [](pm::perl::BigObject& p, jl_sym_t* s) {
+                    return p.give(AnyString(jl_symbol_name(s)));
                 })
         .method("exists", [](const pm::perl::BigObject& p,
                              const std::string& s) { return p.exists(s); })
