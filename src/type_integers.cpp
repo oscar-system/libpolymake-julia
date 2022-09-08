@@ -15,8 +15,6 @@ pm::Integer new_integer_from_bigint(jl_value_t* integer)
     return *p;
 }
 
-//fmpz_get_mpz
-
 pm::Integer new_integer_from_fmpz(jl_value_t* integer)
 {
     fmpz_t* z;
