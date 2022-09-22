@@ -19,7 +19,7 @@ jobs:
     outputs:
       matrix: ${{ steps.set-matrix.outputs.matrix }}
     env:
-      PR_NUMBER: ${{github.event.number}}
+      PR_NUMBER: ${{ github.event.number || 0 }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       JULIA_PKG_SERVER: ""
     steps:
@@ -56,7 +56,7 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
     env:
-      PR_NUMBER: ${{github.event.number}}
+      PR_NUMBER: ${{ github.event.number || 0 }}
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       JULIA_PKG_SERVER: ""
     strategy:
