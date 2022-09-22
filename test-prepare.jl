@@ -19,6 +19,12 @@ if isdefined(polymake_jll.FLINT_jll,:OpenBLAS32_jll)
     extraldflags="-L$(joinpath(blasdepsdir,"lib")) -L$(joinpath(Sys.BINDIR,Base.LIBDIR,"julia"))"
     extralibs="-lopenblas"
 end
+if Sys.isapple() && isdefined(polymake_jll,:LLVMOpenMP_jll)
+    openmpdepsdir = joinpath(polymake_deps_tree,"deps","LLVMOpenMP_jll")
+    force_symlink(polymake_jll.LLVMOpenMP_jll.artifact_dir,openmpdepsdir)
+    extraldflags *= " -L$(joinpath(openmpdepsdir,"lib"))"
+    extralibs *= " -lomp"
+end
 
 # we need to adjust the test-driver to running from the callable library
 let file = joinpath("test","run_testcases")
