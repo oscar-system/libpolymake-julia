@@ -36,6 +36,36 @@ void* new_fmpz_from_integer(pm::Integer integer)
     return reinterpret_cast<void*>(&z_fmp);
 }
 
+void* new_fmpq_from_integer(pm::Integer integer)
+{
+    if (isinf(integer)) throw pm::GMP::BadCast();
+    mpz_srcptr z;
+    z = integer.get_rep();
+    fmpz_t z_fmp, z_one;
+    fmpz_init(z_fmp);
+    fmpz_set_mpz(z_fmp, z);
+    fmpz_init(z_one);
+    fmpz_one(z_one);
+    static fmpq_t q_fmp;
+    fmpq_init(q_fmp);
+    fmpq_set_fmpz_frac(q_fmp, z_fmp, z_one);
+    fmpz_clear(z_fmp);
+    fmpz_clear(z_one);
+    return reinterpret_cast<void*>(&q_fmp);
+}
+
+pm::Integer new_integer_from_fmpq(jl_value_t* rational)
+{
+    fmpq_t* q;
+    q = reinterpret_cast<fmpq_t*>(rational);
+    mpz_t z_one, z_mp;
+    mpz_init(z_mp);
+    mpz_init(z_one);
+    fmpq_get_mpz_frac(z_mp, z_one, *q);
+    mpz_clear(z_one);
+    return pm::Integer(std::move(z_mp));
+}
+
 void add_integer(jlcxx::Module& jlpolymake)
 {
     jlpolymake
@@ -110,6 +140,8 @@ void add_integer(jlcxx::Module& jlpolymake)
     jlpolymake.method("new_integer_from_bigint", new_integer_from_bigint);
     jlpolymake.method("new_integer_from_fmpz", new_integer_from_fmpz);
     jlpolymake.method("new_fmpz_from_integer", new_fmpz_from_integer);
+    jlpolymake.method("new_fmpq_from_integer", new_fmpq_from_integer);
+    jlpolymake.method("new_integer_from_fmpq", new_integer_from_fmpq);
     jlpolymake.method("to_integer", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Integer>(pv);
     });

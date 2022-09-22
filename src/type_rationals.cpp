@@ -29,6 +29,28 @@ pm::Rational new_rational_from_fmpz(jl_value_t* integer)
     return pm::Rational(std::move(z_mp));
 }
 
+void* new_fmpq_from_rational(pm::Rational rational)
+{
+    if (isinf(rational)) throw pm::GMP::BadCast();
+    mpq_srcptr q;
+    q = rational.get_rep();
+    static fmpq_t q_fmp;
+    fmpq_init(q_fmp);
+    fmpq_set_mpq(q_fmp, q);
+    return reinterpret_cast<void*>(&q_fmp);
+}
+
+void* new_fmpz_from_rational(const pm::Rational rational)
+{
+    if (!rational.is_integral() || isinf(rational)) throw pm::GMP::BadCast();
+    mpz_srcptr z;
+    z = numerator(rational).get_rep();
+    static fmpz_t z_fmp;
+    fmpz_init(z_fmp);
+    fmpz_set_mpz(z_fmp, z);
+    return reinterpret_cast<void*>(&z_fmp);
+}
+
 void add_rational(jlcxx::Module& jlpolymake)
 {
 
@@ -123,6 +145,8 @@ void add_rational(jlcxx::Module& jlpolymake)
 
     jlpolymake.method("new_rational_from_fmpq", new_rational_from_fmpq);
     jlpolymake.method("new_rational_from_fmpz", new_rational_from_fmpz);
+    jlpolymake.method("new_fmpq_from_rational", new_fmpq_from_rational);
+    jlpolymake.method("new_fmpz_from_rational", new_fmpz_from_rational);
     jlpolymake.method("to_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Rational>(pv);
     });
