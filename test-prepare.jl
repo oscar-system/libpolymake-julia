@@ -49,6 +49,7 @@ run(`cmake \
      -DCMAKE_INSTALL_PREFIX=$(installdir) \
      -DCMAKE_SHARED_LINKER_FLAGS="$(extraldflags)" \
      -DCMAKE_BUILD_TYPE=Release \
+     -DPOLYMAKE_DISABLE_OPENMP=$(Sys.isapple() ? 1 : 0) \
      -S . -B build`);
 
 if "--build" in ARGS

@@ -16,6 +16,12 @@ include(GNUInstallDirs)
 set(CMAKE_CXX_STANDARD 14)
 
 SET( CMAKE_CXX_COMPILER "${Polymake_CXX}")
+# this is to allow filtering of the -fopenmp flag when building natively
+# on macos (only the cross-compiler for macos in BB supports -fopenmp)
+if(POLYMAKE_DISABLE_OPENMP)
+    string(REPLACE "-fopenmp" "" Polymake_CFLAGS ${Polymake_CFLAGS})
+    string(REPLACE "-fopenmp" "" Polymake_LDFLAGS ${Polymake_LDFLAGS})
+endif()
 SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -std=c++14 ${Polymake_CFLAGS}" )
 SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
