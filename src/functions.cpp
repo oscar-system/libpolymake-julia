@@ -48,7 +48,7 @@ jl_sym_t* typeinfo_helper(const pm::perl::PropertyValue& p, bool demangle)
         return jl_symbol("undefined");
     }
     if (ph.is_boolean()) {
-        return jl_symbol("Bool");
+        return jl_symbol("bool");
     }
     switch (ph.classify_number()) {
         // primitives
@@ -56,7 +56,7 @@ jl_sym_t* typeinfo_helper(const pm::perl::PropertyValue& p, bool demangle)
         case PropertyValueHelper::number_is_int:
             return jl_symbol("Int");
         case PropertyValueHelper::number_is_float:
-            return jl_symbol("Float");
+            return jl_symbol("double");
 
         // with typeinfo ptr (nullptr for Objects)
         case PropertyValueHelper::number_is_object:
