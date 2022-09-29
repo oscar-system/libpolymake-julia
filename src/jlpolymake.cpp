@@ -52,8 +52,6 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     auto pair_type = add_pairs(jlpolymake);
 
     add_lists(jlpolymake);
-    
-    add_pair_list(jlpolymake, pair_type);
 
     add_vector(jlpolymake);
 
@@ -66,6 +64,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_homologygroup(jlpolymake);
 
     auto array_type = add_array(jlpolymake);
+
+    add_pair_extended(jlpolymake, pair_type);
 
     add_edgemap(jlpolymake);
 
@@ -83,7 +83,7 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_direct_calls(jlpolymake);
 
-    add_array_polynomial(jlpolymake, array_type);
+    add_array_extended(jlpolymake, array_type);
 
     add_map(jlpolymake);
 
