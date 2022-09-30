@@ -8,10 +8,13 @@
 
 namespace jlpolymake {
 
-void add_pair_list(jlcxx::Module& jlpolymake, tparametric2 pair_type)
+void add_pair_extended(jlcxx::Module& jlpolymake, tparametric2 pair_type)
 {
     pair_type
-        .apply<std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>>([&jlpolymake](auto wrapped) {
+        .apply<
+                std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>,
+                std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>
+            >([&jlpolymake](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
             typedef typename decltype(wrapped)::type::first_type firstT;
             typedef typename decltype(wrapped)::type::second_type secondT;
@@ -39,6 +42,9 @@ void add_pair_list(jlcxx::Module& jlpolymake, tparametric2 pair_type)
     
     jlpolymake.method("to_pair_int_list_list_pair_int_int", [](const pm::perl::PropertyValue& pv) {
         return to_SmallObject<std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>>(pv);
+    });
+    jlpolymake.method("to_pair_array_int_array_int", [](const pm::perl::PropertyValue& pv) {
+        return to_SmallObject<std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>>(pv);
     });
 
 }
