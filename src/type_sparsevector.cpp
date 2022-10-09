@@ -32,8 +32,8 @@ void add_sparsevector(jlcxx::Module& jlpolymake)
                     });
                     wrapped.method("resize!",
                                    [](vecType& V, int64_t sz) { V.resize(sz); });
-                    wrapped.method("*", [](elemType s, vecType& V) { return vecType(s * V); });
-                    wrapped.method("/", [](vecType& V, elemType s) { return vecType(V / s); });
+                    wrapped.method("*", [](const elemType& s, const vecType& V) { return vecType(s * V); });
+                    wrapped.method("/", [](const vecType& V, const elemType& s) { return vecType(V / s); });
                     wrapped.method("show_small_obj", [](vecType& S) {
                         return show_small_object<vecType>(S);
                     });
