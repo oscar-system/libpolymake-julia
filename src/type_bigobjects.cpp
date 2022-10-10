@@ -133,7 +133,11 @@ void add_bigobject(jlcxx::Module& jlpolymake)
 
     jlpolymake.method("typeinfo_string",
                     [](const pm::perl::PropertyValue& p, bool demangle) {
-                        return typeinfo_helper(p, demangle);
+                        return typeinfo_string_helper(p, demangle);
+                    });
+    jlpolymake.method("typeinfo_symbol",
+                    [](const pm::perl::PropertyValue& p, bool demangle) {
+                        return typeinfo_symbol_helper(p, demangle);
                     });
     jlpolymake.method("check_defined", [](const pm::perl::PropertyValue& v) {
         return PropertyValueHelper(v).is_defined();

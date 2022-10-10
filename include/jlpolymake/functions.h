@@ -9,7 +9,8 @@ void initialize_polymake(bool interactive);
 
 pm::perl::BigObject to_bigobject(const pm::perl::PropertyValue&);
 
-jl_sym_t* typeinfo_helper(const pm::perl::PropertyValue& p, bool demangle);
+std::string typeinfo_string_helper(const pm::perl::PropertyValue& p, bool demangle);
+jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle);
 
 template <typename T> T to_SmallObject(const pm::perl::PropertyValue& pv)
 {
