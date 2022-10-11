@@ -29,7 +29,7 @@ pm::Rational new_rational_from_fmpz(jl_value_t* integer)
     return pm::Rational(std::move(z_mp));
 }
 
-void new_fmpq_from_rational(pm::Rational rational, void* p_fmpq)
+void new_fmpq_from_rational(const pm::Rational& rational, void* p_fmpq)
 {
     if (isinf(rational)) throw pm::GMP::BadCast();
     mpq_srcptr q;
@@ -39,7 +39,7 @@ void new_fmpq_from_rational(pm::Rational rational, void* p_fmpq)
     fmpq_set_mpq(*q_fmp, q);
 }
 
-void new_fmpz_from_rational(const pm::Rational rational, void* p_fmpz)
+void new_fmpz_from_rational(const pm::Rational& rational, void* p_fmpz)
 {
     if (!rational.is_integral() || isinf(rational)) throw pm::GMP::BadCast();
     mpz_srcptr z;
