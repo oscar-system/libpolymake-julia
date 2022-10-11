@@ -35,7 +35,7 @@ void new_fmpz_from_integer(const pm::Integer& integer, void* p_fmpz)
     fmpz_set_mpz(*z_fmp, z);
 }
 
-void new_fmpq_from_integer(const pm::Integer integer&, void* p_fmpq)
+void new_fmpq_from_integer(const pm::Integer& integer, void* p_fmpq)
 {
     if (isinf(integer)) throw pm::GMP::BadCast();
     mpz_srcptr z;
