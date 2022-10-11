@@ -29,26 +29,24 @@ pm::Rational new_rational_from_fmpz(jl_value_t* integer)
     return pm::Rational(std::move(z_mp));
 }
 
-void* new_fmpq_from_rational(pm::Rational rational)
+void new_fmpq_from_rational(pm::Rational rational, void* p_fmpq)
 {
     if (isinf(rational)) throw pm::GMP::BadCast();
     mpq_srcptr q;
     q = rational.get_rep();
-    static fmpq_t q_fmp;
-    fmpq_init(q_fmp);
-    fmpq_set_mpq(q_fmp, q);
-    return reinterpret_cast<void*>(&q_fmp);
+    fmpq_t* q_fmp;
+    q_fmp = reinterpret_cast<fmpq_t*>(p_fmpq);
+    fmpq_set_mpq(*q_fmp, q);
 }
 
-void* new_fmpz_from_rational(const pm::Rational rational)
+void new_fmpz_from_rational(const pm::Rational rational, void* p_fmpz)
 {
     if (!rational.is_integral() || isinf(rational)) throw pm::GMP::BadCast();
     mpz_srcptr z;
     z = numerator(rational).get_rep();
-    static fmpz_t z_fmp;
-    fmpz_init(z_fmp);
-    fmpz_set_mpz(z_fmp, z);
-    return reinterpret_cast<void*>(&z_fmp);
+    fmpz_t* z_fmp;
+    z_fmp = reinterpret_cast<fmpz_t*>(p_fmpz);
+    fmpz_set_mpz(*z_fmp, z);
 }
 
 void add_rational(jlcxx::Module& jlpolymake)

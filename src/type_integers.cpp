@@ -25,18 +25,17 @@ pm::Integer new_integer_from_fmpz(jl_value_t* integer)
     return pm::Integer(std::move(z_mp));
 }
 
-void* new_fmpz_from_integer(pm::Integer integer)
+void new_fmpz_from_integer(pm::Integer integer, void* p_fmpz)
 {
     if (isinf(integer)) throw pm::GMP::BadCast();
     mpz_srcptr z;
     z = integer.get_rep();
-    static fmpz_t z_fmp;
-    fmpz_init(z_fmp);
-    fmpz_set_mpz(z_fmp, z);
-    return reinterpret_cast<void*>(&z_fmp);
+    fmpz_t* z_fmp;
+    z_fmp = reinterpret_cast<fmpz_t*>(p_fmpz);
+    fmpz_set_mpz(*z_fmp, z);
 }
 
-void* new_fmpq_from_integer(pm::Integer integer)
+void new_fmpq_from_integer(pm::Integer integer, void* p_fmpq)
 {
     if (isinf(integer)) throw pm::GMP::BadCast();
     mpz_srcptr z;
@@ -46,12 +45,11 @@ void* new_fmpq_from_integer(pm::Integer integer)
     fmpz_set_mpz(z_fmp, z);
     fmpz_init(z_one);
     fmpz_one(z_one);
-    static fmpq_t q_fmp;
-    fmpq_init(q_fmp);
-    fmpq_set_fmpz_frac(q_fmp, z_fmp, z_one);
+    fmpq_t* q_fmp;
+    q_fmp = reinterpret_cast<fmpq_t*>(p_fmpq);
+    fmpq_set_fmpz_frac(*q_fmp, z_fmp, z_one);
     fmpz_clear(z_fmp);
     fmpz_clear(z_one);
-    return reinterpret_cast<void*>(&q_fmp);
 }
 
 pm::Integer new_integer_from_fmpq(jl_value_t* rational)
