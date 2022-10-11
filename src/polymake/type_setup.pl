@@ -87,6 +87,18 @@ my $type_tuples = [
             "to_pair_int_int",
         ],
         [
+            "Pair_Array_Int_Array_Int",
+            "std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>",
+            "StdPair{Array{CxxWrap.CxxLong},Array{CxxWrap.CxxLong}}",
+            "to_pair_array_int_array_int",
+        ],
+        [
+            "Array_Pair_Array_Int_Array_Int",
+            "pm::Array<std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>>",
+            "Array{StdPair{Array{CxxWrap.CxxLong},Array{CxxWrap.CxxLong}}}",
+            "to_array_pair_array_int_array_int",
+        ],
+        [
             "Pair_Int_List_List_Pair_Int_Int",
             "std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>",
             "StdPair{CxxWrap.CxxLong, StdList{StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}}}",

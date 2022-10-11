@@ -9,7 +9,7 @@ using tparametric1 = jlcxx::TypeWrapper<jlcxx::Parametric<jlcxx::TypeVar<1>>>;
 using tparametric2 = jlcxx::TypeWrapper<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>;
 
 tparametric1 add_array(jlcxx::Module& jlpolymake);
-void add_array_polynomial(jlcxx::Module& jlpolymake, tparametric1 arrayt);
+void add_array_extended(jlcxx::Module& jlpolymake, tparametric1 arrayt);
 
 void add_bigobject(jlcxx::Module& jlpolymake);
 void add_direct_calls(jlcxx::Module&);
@@ -27,7 +27,7 @@ void add_unipolynomial(jlcxx::Module& jlpolymake);
 void add_rational(jlcxx::Module& jlpolymake);
 void add_quadraticextension(jlcxx::Module& jlpolymake);
 tparametric2 add_pairs(jlcxx::Module& jlpolymake);
-void add_pair_list(jlcxx::Module& jlpolymake, tparametric2 pairt);
+void add_pair_extended(jlcxx::Module& jlpolymake, tparametric2 pairt);
 void add_set(jlcxx::Module& jlpolymake);
 void add_sparsematrix(jlcxx::Module& jlpolymake);
 void add_sparsevector(jlcxx::Module& jlpolymake);

@@ -8,11 +8,14 @@
 
 namespace jlpolymake {
 
-void add_array_polynomial(jlcxx::Module& jlpolymake, tparametric1 array_type)
+void add_array_extended(jlcxx::Module& jlpolymake, tparametric1 array_type)
 {
     array_type
-        .apply<pm::Array<pm::Polynomial<pm::Rational,long>>,
-               pm::Array<pm::Polynomial<pm::Integer,long>>>([](auto wrapped) {
+        .apply<
+                pm::Array<pm::Polynomial<pm::Rational,long>>,
+                pm::Array<pm::Polynomial<pm::Integer,long>>,
+                pm::Array<std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>>
+            >([](auto wrapped) {
             typedef typename decltype(wrapped)::type             WrappedT;
             typedef typename decltype(wrapped)::type::value_type elemType;
 
@@ -54,6 +57,10 @@ void add_array_polynomial(jlcxx::Module& jlpolymake, tparametric1 array_type)
     jlpolymake.method(
         "to_array_polynomial_rational_int", [](const pm::perl::PropertyValue& pv) {
             return to_SmallObject<pm::Array<pm::Polynomial<pm::Rational,long>>>(pv);
+        });
+    jlpolymake.method(
+        "to_array_pair_array_int_array_int", [](const pm::perl::PropertyValue& pv) {
+            return to_SmallObject<pm::Array<std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>>>(pv);
         });
 }
 
