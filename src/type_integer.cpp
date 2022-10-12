@@ -48,7 +48,7 @@ pm::Integer new_integer_from_fmpq(jl_value_t* rational)
     mpz_init(z_mp);
     mpz_init(z_one);
     fmpq_get_mpz_frac(z_mp, z_one, *reinterpret_cast<fmpq_t*>(rational));
-    if (!fmpz_is_one(z_one))
+    if (mpz_cmp_si(z_one, 1) != 0)
         throw pm::GMP::BadCast("non-integral number");
     mpz_clear(z_one);
     return pm::Integer(std::move(z_mp));
