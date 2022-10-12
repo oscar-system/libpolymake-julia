@@ -40,46 +40,6 @@ std::string filter_spaces(const std::string& str)
     return res.str();
 }
 
-std::string typeinfo_string_helper(const pm::perl::PropertyValue& p, bool demangle)
-{
-    PropertyValueHelper ph(p);
-
-    if (!ph.is_defined()) {
-        return "undefined";
-    }
-    if (ph.is_boolean()) {
-        return "bool";
-    }
-    switch (ph.classify_number()) {
-        // primitives
-        case PropertyValueHelper::number_is_zero:
-        case PropertyValueHelper::number_is_int:
-            return "Int";
-        case PropertyValueHelper::number_is_float:
-            return "double";
-
-        // with typeinfo ptr (nullptr for Objects)
-        case PropertyValueHelper::number_is_object:
-            // some non-primitive Scalar type with typeinfo (e.g. Rational)
-        case PropertyValueHelper::not_a_number:
-            // a c++ type with typeinfo or a perl Object
-            {
-                const std::type_info* ti = ph.get_canned_typeinfo();
-                if (ti == nullptr) {
-                    // check some perl based types via custom perl code
-                    return call_function("classify_perl_pv", p);
-                }
-                // demangle:
-                int status = -1;
-                std::unique_ptr<char, void (*)(void*)> res{
-                    abi::__cxa_demangle(ti->name(), nullptr, nullptr, &status),
-                    std::free};
-                return (status == 0 && demangle) ? res.get() : ti->name();
-            }
-    }
-    return "unknown";
-}
-
 jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle)
 {
     PropertyValueHelper ph(p);

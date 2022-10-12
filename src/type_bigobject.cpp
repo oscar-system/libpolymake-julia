@@ -133,7 +133,7 @@ void add_bigobject(jlcxx::Module& jlpolymake)
 
     jlpolymake.method("typeinfo_string",
                     [](const pm::perl::PropertyValue& p, bool demangle) {
-                        return typeinfo_string_helper(p, demangle);
+                        return std::string(jl_symbol_name(typeinfo_symbol_helper(p, demangle)));
                     });
     jlpolymake.method("typeinfo_symbol",
                     [](const pm::perl::PropertyValue& p, bool demangle) {
