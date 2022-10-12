@@ -10,43 +10,31 @@ namespace jlpolymake {
 
 pm::Rational new_rational_from_fmpq(jl_value_t* rational)
 {
-    fmpq_t* r;
-    r = reinterpret_cast<fmpq_t*>(rational);
     mpz_t n, d;
     mpz_init(n);
     mpz_init(d);
-    fmpq_get_mpz_frac(n, d, *r);
+    fmpq_get_mpz_frac(n, d, *reinterpret_cast<fmpq_t*>(rational));
     return pm::Rational(std::move(n), std::move(d));
 }
 
 pm::Rational new_rational_from_fmpz(jl_value_t* integer)
 {
-    fmpz_t* z;
-    z = reinterpret_cast<fmpz_t*>(integer);
     mpz_t z_mp;
     mpz_init(z_mp);
-    fmpz_get_mpz(z_mp, *z);
+    fmpz_get_mpz(z_mp, *reinterpret_cast<fmpz_t*>(integer));
     return pm::Rational(std::move(z_mp));
 }
 
 void new_fmpq_from_rational(const pm::Rational& rational, void* p_fmpq)
 {
     if (isinf(rational)) throw pm::GMP::BadCast();
-    mpq_srcptr q;
-    q = rational.get_rep();
-    fmpq_t* q_fmp;
-    q_fmp = reinterpret_cast<fmpq_t*>(p_fmpq);
-    fmpq_set_mpq(*q_fmp, q);
+    fmpq_set_mpq(*reinterpret_cast<fmpq_t*>(p_fmpq), rational.get_rep());
 }
 
 void new_fmpz_from_rational(const pm::Rational& rational, void* p_fmpz)
 {
     if (!rational.is_integral() || isinf(rational)) throw pm::GMP::BadCast();
-    mpz_srcptr z;
-    z = numerator(rational).get_rep();
-    fmpz_t* z_fmp;
-    z_fmp = reinterpret_cast<fmpz_t*>(p_fmpz);
-    fmpz_set_mpz(*z_fmp, z);
+    fmpz_set_mpz(*reinterpret_cast<fmpz_t*>(p_fmpz), numerator(rational).get_rep());
 }
 
 void add_rational(jlcxx::Module& jlpolymake)

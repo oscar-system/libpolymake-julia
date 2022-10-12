@@ -31,7 +31,7 @@ pm::perl::BigObject to_bigobject(const pm::perl::PropertyValue& v)
     return v;
 }
 
-std::string filter_spaces(const std::string str)
+std::string filter_spaces(const std::string& str)
 {
     std::stringstream res;
     for(std::string::const_iterator i = str.begin(); i != str.end(); i++) {
