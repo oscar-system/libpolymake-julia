@@ -15,6 +15,45 @@ pm::Integer new_integer_from_bigint(jl_value_t* integer)
     return *p;
 }
 
+pm::Integer new_integer_from_fmpz(jl_value_t* integer)
+{
+    mpz_t z_mp;
+    mpz_init(z_mp);
+    fmpz_get_mpz(z_mp, *reinterpret_cast<fmpz_t*>(integer));
+    return pm::Integer(std::move(z_mp));
+}
+
+void new_fmpz_from_integer(const pm::Integer& integer, void* p_fmpz)
+{
+    if (isinf(integer)) throw pm::GMP::BadCast();
+    fmpz_set_mpz(*reinterpret_cast<fmpz_t*>(p_fmpz), integer.get_rep());
+}
+
+void new_fmpq_from_integer(const pm::Integer& integer, void* p_fmpq)
+{
+    if (isinf(integer)) throw pm::GMP::BadCast();
+    fmpz_t z_fmp, z_one;
+    fmpz_init(z_fmp);
+    fmpz_set_mpz(z_fmp, integer.get_rep());
+    fmpz_init(z_one);
+    fmpz_one(z_one);
+    fmpq_set_fmpz_frac(*reinterpret_cast<fmpq_t*>(p_fmpq), z_fmp, z_one);
+    fmpz_clear(z_fmp);
+    fmpz_clear(z_one);
+}
+
+pm::Integer new_integer_from_fmpq(jl_value_t* rational)
+{
+    mpz_t z_one, z_mp;
+    mpz_init(z_mp);
+    mpz_init(z_one);
+    fmpq_get_mpz_frac(z_mp, z_one, *reinterpret_cast<fmpq_t*>(rational));
+    if (mpz_cmp_si(z_one, 1) != 0)
+        throw pm::GMP::BadCast("non-integral number");
+    mpz_clear(z_one);
+    return pm::Integer(std::move(z_mp));
+}
+
 void add_integer(jlcxx::Module& jlpolymake)
 {
     jlpolymake
@@ -87,6 +126,10 @@ void add_integer(jlcxx::Module& jlpolymake)
         jlpolymake.unset_override_module();
 
     jlpolymake.method("new_integer_from_bigint", new_integer_from_bigint);
+    jlpolymake.method("new_integer_from_fmpz", new_integer_from_fmpz);
+    jlpolymake.method("new_fmpz_from_integer", new_fmpz_from_integer);
+    jlpolymake.method("new_fmpq_from_integer", new_fmpq_from_integer);
+    jlpolymake.method("new_integer_from_fmpq", new_integer_from_fmpq);
     jlpolymake.method("to_integer", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Integer>(pv);
     });

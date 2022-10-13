@@ -8,6 +8,35 @@
 
 namespace jlpolymake {
 
+pm::Rational new_rational_from_fmpq(jl_value_t* rational)
+{
+    mpz_t n, d;
+    mpz_init(n);
+    mpz_init(d);
+    fmpq_get_mpz_frac(n, d, *reinterpret_cast<fmpq_t*>(rational));
+    return pm::Rational(std::move(n), std::move(d));
+}
+
+pm::Rational new_rational_from_fmpz(jl_value_t* integer)
+{
+    mpz_t z_mp;
+    mpz_init(z_mp);
+    fmpz_get_mpz(z_mp, *reinterpret_cast<fmpz_t*>(integer));
+    return pm::Rational(std::move(z_mp));
+}
+
+void new_fmpq_from_rational(const pm::Rational& rational, void* p_fmpq)
+{
+    if (isinf(rational)) throw pm::GMP::BadCast();
+    fmpq_set_mpq(*reinterpret_cast<fmpq_t*>(p_fmpq), rational.get_rep());
+}
+
+void new_fmpz_from_rational(const pm::Rational& rational, void* p_fmpz)
+{
+    if (!rational.is_integral() || isinf(rational)) throw pm::GMP::BadCast();
+    fmpz_set_mpz(*reinterpret_cast<fmpz_t*>(p_fmpz), numerator(rational).get_rep());
+}
+
 void add_rational(jlcxx::Module& jlpolymake)
 {
 
@@ -100,6 +129,10 @@ void add_rational(jlcxx::Module& jlpolymake)
             return static_cast<pm::Int>(a) * b; });
         jlpolymake.unset_override_module();
 
+    jlpolymake.method("new_rational_from_fmpq", new_rational_from_fmpq);
+    jlpolymake.method("new_rational_from_fmpz", new_rational_from_fmpz);
+    jlpolymake.method("new_fmpq_from_rational", new_fmpq_from_rational);
+    jlpolymake.method("new_fmpz_from_rational", new_fmpz_from_rational);
     jlpolymake.method("to_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Rational>(pv);
     });

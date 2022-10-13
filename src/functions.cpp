@@ -31,23 +31,32 @@ pm::perl::BigObject to_bigobject(const pm::perl::PropertyValue& v)
     return v;
 }
 
-std::string typeinfo_helper(const pm::perl::PropertyValue& p, bool demangle)
+std::string filter_spaces(const std::string& str)
+{
+    std::stringstream res;
+    for(std::string::const_iterator i = str.begin(); i != str.end(); i++) {
+         if(*i != ' ') res << *i;
+    }
+    return res.str();
+}
+
+jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle)
 {
     PropertyValueHelper ph(p);
 
     if (!ph.is_defined()) {
-        return "undefined";
+        return jl_symbol("undefined");
     }
     if (ph.is_boolean()) {
-        return "bool";
+        return jl_symbol("bool");
     }
     switch (ph.classify_number()) {
         // primitives
         case PropertyValueHelper::number_is_zero:
         case PropertyValueHelper::number_is_int:
-            return "Int";
+            return jl_symbol("Int");
         case PropertyValueHelper::number_is_float:
-            return "double";
+            return jl_symbol("double");
 
         // with typeinfo ptr (nullptr for Objects)
         case PropertyValueHelper::number_is_object:
@@ -58,17 +67,17 @@ std::string typeinfo_helper(const pm::perl::PropertyValue& p, bool demangle)
                 const std::type_info* ti = ph.get_canned_typeinfo();
                 if (ti == nullptr) {
                     // check some perl based types via custom perl code
-                    return call_function("classify_perl_pv", p);
+                    return jl_symbol(filter_spaces(call_function("classify_perl_pv", p)).c_str());
                 }
                 // demangle:
                 int status = -1;
                 std::unique_ptr<char, void (*)(void*)> res{
                     abi::__cxa_demangle(ti->name(), nullptr, nullptr, &status),
                     std::free};
-                return (status == 0 && demangle) ? res.get() : ti->name();
+                return (status == 0 && demangle) ? jl_symbol(filter_spaces(res.get()).c_str()) : jl_symbol(filter_spaces(ti->name()).c_str());
             }
     }
-    return "unknown";
+    return jl_symbol("unknown");
 }
 
 }
