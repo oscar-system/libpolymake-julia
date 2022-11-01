@@ -54,6 +54,12 @@ pm::Integer new_integer_from_fmpq(jl_value_t* rational)
     return pm::Integer(std::move(z_mp));
 }
 
+pm::Int new_int_from_integer(const pm::Integer& integer)
+{
+    if (isinf(integer)) throw pm::GMP::BadCast();
+    return static_cast<pm::Int>(integer);
+}
+
 void add_integer(jlcxx::Module& jlpolymake)
 {
     jlpolymake
@@ -130,6 +136,7 @@ void add_integer(jlcxx::Module& jlpolymake)
     jlpolymake.method("new_fmpz_from_integer", new_fmpz_from_integer);
     jlpolymake.method("new_fmpq_from_integer", new_fmpq_from_integer);
     jlpolymake.method("new_integer_from_fmpq", new_integer_from_fmpq);
+    jlpolymake.method("new_int_from_integer", new_int_from_integer);
     jlpolymake.method("to_integer", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Integer>(pv);
     });
