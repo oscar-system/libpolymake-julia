@@ -61,6 +61,11 @@ void new_baserational_from_rational(const pm::Rational& rational, void* num, voi
     mpz_set(*reinterpret_cast<mpz_t*>(den), denominator(rational).get_rep());
 }
 
+pm::Rational new_rational_from_baserational(const void* num, const void* den)
+{
+    return pm::Rational(*reinterpret_cast<const mpz_t*>(num), *reinterpret_cast<const mpz_t*>(den));
+}
+
 void add_rational(jlcxx::Module& jlpolymake)
 {
 
@@ -161,6 +166,7 @@ void add_rational(jlcxx::Module& jlpolymake)
     jlpolymake.method("new_integer_from_rational", new_integer_from_rational);
     jlpolymake.method("new_rational_from_integer", new_rational_from_integer);
     jlpolymake.method("new_baserational_from_rational", new_baserational_from_rational);
+    jlpolymake.method("new_rational_from_baserational", new_rational_from_baserational);
     jlpolymake.method("to_rational", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<pm::Rational>(pv);
     });
