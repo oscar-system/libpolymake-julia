@@ -7,6 +7,8 @@ namespace jlpolymake {
 
 void initialize_polymake(bool interactive);
 
+void initialize_polymake_with_dir(const std::string& userdir, bool interactive);
+
 pm::perl::BigObject to_bigobject(const pm::perl::PropertyValue&);
 
 jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle);
