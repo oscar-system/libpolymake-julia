@@ -56,7 +56,6 @@ pm::Integer new_integer_from_fmpq(jl_value_t* rational)
 
 pm::Int new_int_from_integer(const pm::Integer& integer)
 {
-    if (isinf(integer)) throw pm::GMP::BadCast();
     return static_cast<pm::Int>(integer);
 }
 
@@ -83,6 +82,7 @@ void add_integer(jlcxx::Module& jlpolymake)
                 [](pm::Integer& i) {
                     return show_small_object<pm::Integer>(i, false);
                 })
+        .method("isfinite", [](const pm::Integer& i) { return isfinite(i); })
         .method("Float64", [](pm::Integer& a) { return double(a); })
         .method("-", [](pm::Integer& a, pm::Integer& b) { return a - b; })
         .method("-", [](pm::Integer& a,

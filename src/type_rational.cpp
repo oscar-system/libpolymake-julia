@@ -39,14 +39,13 @@ void new_fmpz_from_rational(const pm::Rational& rational, void* p_fmpz)
 
 pm::Int new_int_from_rational(const pm::Rational& rational)
 {
-    if (!rational.is_integral() || isinf(rational)) throw pm::GMP::BadCast();
     return static_cast<pm::Int>(rational);
 }
 
 pm::Integer new_integer_from_rational(const pm::Rational& rational)
 {
     if (!rational.is_integral()) throw pm::GMP::BadCast();
-    return static_cast<pm::Integer>(rational);
+    return numerator(rational);
 }
 
 pm::Rational new_rational_from_integer(const pm::Integer& integer)
@@ -105,6 +104,7 @@ void add_rational(jlcxx::Module& jlpolymake)
                 [](const pm::Rational& r) {
                     return show_small_object<pm::Rational>(r, false);
                 })
+        .method("isfinite", [](const pm::Rational& r) { return isfinite(r); })
         .method("Float64", [](pm::Rational& a) { return double(a); })
         .method("-", [](pm::Rational& a, pm::Rational& b) { return a - b; })
         .method("-", [](pm::Rational& a, pm::Integer& b) { return a - b; })
