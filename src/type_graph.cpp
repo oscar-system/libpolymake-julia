@@ -39,7 +39,7 @@ void add_graph(jlcxx::Module& jlpolymake)
         wrapped.method("_rem_vertex", [](WrappedT& G, int64_t i) { return G.delete_node(i); });
         wrapped.method("_rem_edge", [](WrappedT& G, int64_t tail, int64_t head) { return G.delete_edge(tail, head); });
 
-        wrapped.method("show_small_obj", [](WrappedT& S) {
+        wrapped.method("show_small_obj", [](const WrappedT& S) {
             return show_small_object<WrappedT>(S);
         });
     });

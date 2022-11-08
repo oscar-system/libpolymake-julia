@@ -46,7 +46,7 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
                 return A;
             });
 
-            wrapped.method("append!", [](WrappedT& A, WrappedT& B) {
+            wrapped.method("append!", [](WrappedT& A, const WrappedT& B) {
                 A.append(B);
                 return A;
             });
@@ -59,7 +59,7 @@ tparametric1 add_array(jlcxx::Module& jlpolymake)
             });
             wrapped.method("take",
                            [](pm::perl::BigObject p, const std::string& s,
-                              WrappedT& A) { p.take(s) << A; });
+                              const WrappedT& A) { p.take(s) << A; });
         })
         .apply<pm::Array<pm::perl::BigObject>>([](auto wrapped) {
             typedef typename decltype(wrapped)::type WrappedT;
