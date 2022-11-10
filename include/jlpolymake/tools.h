@@ -51,7 +51,7 @@ extern Polymake_Data data;
 template <typename T> struct WrappedSetIterator {
     typename pm::Set<T>::const_iterator iterator;
     using value_type = T;
-    WrappedSetIterator<T>(pm::Set<T>& S)
+    WrappedSetIterator<T>(const pm::Set<T>& S)
     {
         iterator = pm::entire(S);
     }

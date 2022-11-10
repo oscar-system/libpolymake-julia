@@ -35,7 +35,7 @@ void add_pair_extended(jlcxx::Module& jlpolymake, tparametric2 pair_type)
 
             jlpolymake.unset_override_module();
 
-            wrapped.method("show_small_obj", [](WrappedT& S) {
+            wrapped.method("show_small_obj", [](const WrappedT& S) {
                 return show_small_object<WrappedT>(S);
             });
         });

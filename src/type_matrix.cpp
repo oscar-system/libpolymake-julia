@@ -21,7 +21,7 @@ void add_matrix(jlcxx::Module& jlpolymake)
                 wrapped.template constructor<int64_t, int64_t>();
 
                 wrapped.method("_getindex",
-                               [](WrappedT& f, int64_t i, int64_t j) {
+                               [](const WrappedT& f, int64_t i, int64_t j) {
                                    return elemType(f(i - 1, j - 1));
                                });
                 wrapped.method("_setindex!",
@@ -34,8 +34,8 @@ void add_matrix(jlcxx::Module& jlpolymake)
 
                 wrapped.method("take",
                                [](pm::perl::BigObject p, const std::string& s,
-                                  WrappedT& M) { p.take(s) << M; });
-                wrapped.method("show_small_obj", [](WrappedT& M) {
+                                  const WrappedT& M) { p.take(s) << M; });
+                wrapped.method("show_small_obj", [](const WrappedT& M) {
                     return show_small_object<WrappedT>(M);
                 });
             });

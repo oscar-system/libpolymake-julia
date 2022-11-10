@@ -35,7 +35,7 @@ void add_array_extended(jlcxx::Module& jlpolymake, tparametric1 array_type)
                 return A;
             });
 
-            wrapped.method("append!", [](WrappedT& A, WrappedT& B) {
+            wrapped.method("append!", [](WrappedT& A, const WrappedT& B) {
                 A.append(B);
                 return A;
             });
@@ -48,7 +48,7 @@ void add_array_extended(jlcxx::Module& jlpolymake, tparametric1 array_type)
             });
             wrapped.method("take",
                            [](pm::perl::BigObject p, const std::string& s,
-                              WrappedT& A) { p.take(s) << A; });
+                              const WrappedT& A) { p.take(s) << A; });
         });
     jlpolymake.method(
         "to_array_polynomial_integer_int", [](const pm::perl::PropertyValue& pv) {
