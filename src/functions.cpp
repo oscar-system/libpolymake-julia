@@ -8,11 +8,11 @@
 
 namespace jlpolymake {
 
-void initialize_polymake(bool interactive = true)
+void initialize_polymake_with_dir(const std::string& userdir, bool interactive = true)
 {
     try {
         if (data.main_polymake_session == nullptr) {
-            data.main_polymake_session = new polymake::Main;
+            data.main_polymake_session = new polymake::Main(userdir);
             data.main_polymake_session->shell_enable();
             if (interactive){
                 std::cout << data.main_polymake_session->greeting() << std::endl;
@@ -22,6 +22,11 @@ void initialize_polymake(bool interactive = true)
     catch (const std::exception& e) {
         jl_error(e.what());
     }
+}
+
+void initialize_polymake(bool interactive = true)
+{
+   initialize_polymake_with_dir("user", interactive);
 }
 
 pm::perl::BigObject to_bigobject(const pm::perl::PropertyValue& v)
