@@ -25,6 +25,7 @@ if Sys.isapple() && isdefined(polymake_jll,:LLVMOpenMP_jll)
     extraldflags *= " -L$(joinpath(openmpdepsdir,"lib"))"
     extralibs *= " -lomp"
 end
+extraldflags *= " -L$(joinpath(Sys.BINDIR,Base.LIBDIR))"
 
 # we need to adjust the test-driver to running from the callable library
 let file = joinpath("test","run_testcases")

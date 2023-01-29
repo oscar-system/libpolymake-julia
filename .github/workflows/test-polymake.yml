@@ -21,7 +21,9 @@ jobs:
     runs-on: ${{ matrix.os }}
     continue-on-error: ${{ matrix.julia-version == 'nightly' }}
     env:
-      JULIA_PKG_SERVER: ""
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      JULIA_PKG_USE_CLI_GIT: ""
+      JULIA_PKG_SERVER_REGISTRY_PREFERENCE: "eager"
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
