@@ -112,6 +112,12 @@ void add_bigobject(jlcxx::Module& jlpolymake)
     jlpolymake.method("setname!", [](pm::perl::BigObject& p, const std::string& s){
         p.set_name(s);
     });
+    jlpolymake.method("getdescription", [](const pm::perl::BigObject& p){
+        return static_cast<std::string>(p.description());
+    });
+    jlpolymake.method("setdescription!", [](pm::perl::BigObject& p, const std::string& s){
+        p.set_description(s);
+    });
     jlpolymake.method("take", [](pm::perl::BigObject& p, const std::string& s,
                                const std::string& t) { p.take(s) << t; });
     jlpolymake.method("take",
