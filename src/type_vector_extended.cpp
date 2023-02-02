@@ -8,17 +8,14 @@
 
 namespace jlpolymake {
 
-tparametric1 add_vector(jlcxx::Module& jlpolymake)
+void add_vector_extended(jlcxx::Module& jlpolymake, tparametric1 vector_type)
 {
-
-    auto type = jlpolymake
-        .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
-            "Vector", jlcxx::julia_type("AbstractVector", "Base"));
-        type.apply_combination<pm::Vector, VecOrMat_supported::value_type>(
+    vector_type
+        .apply_combination<pm::Vector, VecOrMat_supported_limited::value_type>(
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type             WrappedT;
                 typedef typename decltype(wrapped)::type::value_type elemType;
-                wrapped.template constructor<int64_t>();
+                wrapped.template constructor<int64_t, elemType>();
                 wrapped.method("_getindex", [](const WrappedT& V, int64_t n) {
                     return elemType(V[n - 1]);
                 });
@@ -37,23 +34,11 @@ tparametric1 add_vector(jlcxx::Module& jlpolymake)
                     return show_small_object<WrappedT>(V);
                 });
             });
-
-    jlpolymake.method("to_vector_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Vector<pm::Int>>(pv);
-    });
-    jlpolymake.method("to_vector_integer", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Vector<pm::Integer>>(pv);
-    });
-    jlpolymake.method("to_vector_rational", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Vector<pm::Rational>>(pv);
-    });
-    jlpolymake.method("to_vector_double", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Vector<double>>(pv);
-    });
-    jlpolymake.method("to_vector_quadraticextension_rational", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Vector<pm::QuadraticExtension<pm::Rational>>>(pv);
-    });
-    return type;
+    
+    jlpolymake.method(
+        "to_vector_polynomial_rational_int", [](const pm::perl::PropertyValue& pv) {
+            return to_SmallObject<pm::Vector<pm::Polynomial<pm::Rational,pm::Int>>>(pv);
+        });
 }
 
 }

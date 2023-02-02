@@ -39,6 +39,11 @@ struct VecOrMat_supported
     typedef jlcxx::ParameterList<pm::Int, pm::Integer, pm::Rational, double, pm::QuadraticExtension<pm::Rational>> value_type;
 };
 
+struct VecOrMat_supported_limited
+{
+    typedef jlcxx::ParameterList<pm::Polynomial<pm::Rational, pm::Int>> value_type;
+};
+
 }
 
 #endif

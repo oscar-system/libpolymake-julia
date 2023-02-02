@@ -8,18 +8,18 @@
 
 namespace jlpolymake {
 
-tparametric1 add_matrix(jlcxx::Module& jlpolymake)
+void add_matrix_extended(jlcxx::Module& jlpolymake, tparametric1 matrix_type)
 {
-
-    auto type = jlpolymake
-        .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
-            "Matrix", jlcxx::julia_type("AbstractMatrix", "Base"));
-        type.apply_combination<pm::Matrix, VecOrMat_supported::value_type>(
+    matrix_type
+        .apply_combination<pm::Matrix, VecOrMat_supported_limited::value_type>(
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type             WrappedT;
                 typedef typename decltype(wrapped)::type::value_type elemType;
                 wrapped.template constructor<int64_t, int64_t>();
 
+                wrapped.method("_same_element_matrix_polynomial", [](const elemType& e, int64_t i, int64_t j) {
+                                    return WrappedT(same_element_matrix(e, i, j));
+                                });
                 wrapped.method("_getindex",
                                [](const WrappedT& f, int64_t i, int64_t j) {
                                    return elemType(f(i - 1, j - 1));
@@ -39,22 +39,10 @@ tparametric1 add_matrix(jlcxx::Module& jlpolymake)
                     return show_small_object<WrappedT>(M);
                 });
             });
-    jlpolymake.method("to_matrix_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Matrix<pm::Int>>(pv);
-    });
-    jlpolymake.method("to_matrix_integer", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Matrix<pm::Integer>>(pv);
-    });
-    jlpolymake.method("to_matrix_rational", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Matrix<pm::Rational>>(pv);
-    });
-    jlpolymake.method("to_matrix_double", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Matrix<double>>(pv);
-    });
-    jlpolymake.method("to_matrix_quadraticextension_rational", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Matrix<pm::QuadraticExtension<pm::Rational>>>(pv);
-    });
-    return type;
+    jlpolymake.method(
+        "to_matrix_polynomial_rational_int", [](const pm::perl::PropertyValue& pv) {
+            return to_SmallObject<pm::Matrix<pm::Polynomial<pm::Rational,pm::Int>>>(pv);
+        });
 }
 
 }
