@@ -15,7 +15,6 @@ void add_matrix_extended(jlcxx::Module& jlpolymake, tparametric1 matrix_type)
             [](auto wrapped) {
                 typedef typename decltype(wrapped)::type             WrappedT;
                 typedef typename decltype(wrapped)::type::value_type elemType;
-                wrapped.template constructor<int64_t, int64_t>();
 
                 wrapped.method("_same_element_matrix_polynomial", [](const elemType& e, int64_t i, int64_t j) {
                                     return WrappedT(same_element_matrix(e, i, j));
