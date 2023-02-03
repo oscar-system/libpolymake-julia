@@ -51,6 +51,12 @@ my $type_tuples = [
             "to_matrix_quadraticextension_rational",
         ],
         [
+            "Matrix_Polynomial_Rational_Int",
+            "pm::Matrix<pm::Polynomial<pm::Rational,long>>",
+            "Matrix{Polynomial{Rational,CxxWrap.CxxLong}}",
+            "to_matrix_polynomial_rational_int",
+        ],
+        [
             "Vector_Int",
             "pm::Vector<long>",
             "Vector{CxxWrap.CxxLong}",
@@ -79,6 +85,12 @@ my $type_tuples = [
             "pm::Vector<pm::QuadraticExtension<pm::Rational>>",
             "Vector{QuadraticExtension{Rational}}",
             "to_vector_quadraticextension_rational",
+        ],
+        [
+            "Vector_Polynomial_Rational_Int",
+            "pm::Vector<pm::Polynomial<pm::Rational,long>>",
+            "Vector{Polynomial{Rational,CxxWrap.CxxLong}}",
+            "to_vector_polynomial_rational_int",
         ],
         [
             "Pair_Int_Int",

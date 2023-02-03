@@ -21,7 +21,8 @@ void add_incidencematrix(jlcxx::Module& jlpolymake);
 void add_integer(jlcxx::Module& jlpolymake);
 void add_lists(jlcxx::Module& jlpolymake);
 void add_map(jlcxx::Module& jlpolymake);
-void add_matrix(jlcxx::Module& jlpolymake);
+tparametric1 add_matrix(jlcxx::Module& jlpolymake);
+void add_matrix_extended(jlcxx::Module& jlpolymake, tparametric1 matrixt);
 void add_polynomial(jlcxx::Module& jlpolymake);
 void add_unipolynomial(jlcxx::Module& jlpolymake);
 void add_rational(jlcxx::Module& jlpolymake);
@@ -33,7 +34,8 @@ void add_sparsematrix(jlcxx::Module& jlpolymake);
 void add_sparsevector(jlcxx::Module& jlpolymake);
 void add_tropicalnumber(jlcxx::Module& jlpolymake);
 void add_type_translations(jlcxx::Module&);
-void add_vector(jlcxx::Module& jlpolymake);
+tparametric1 add_vector(jlcxx::Module& jlpolymake);
+void add_vector_extended(jlcxx::Module& jlpolymake, tparametric1 vectort);
 
 }
 

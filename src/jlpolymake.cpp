@@ -47,13 +47,13 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     
     add_quadraticextension(jlpolymake);
 
-    add_matrix(jlpolymake);
+    auto matrix_type = add_matrix(jlpolymake);
 
     auto pair_type = add_pairs(jlpolymake);
 
     add_lists(jlpolymake);
 
-    add_vector(jlpolymake);
+    auto vector_type = add_vector(jlpolymake);
 
     add_set(jlpolymake);
 
@@ -84,6 +84,10 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_direct_calls(jlpolymake);
 
     add_array_extended(jlpolymake, array_type);
+    
+    add_matrix_extended(jlpolymake, matrix_type);
+    
+    add_vector_extended(jlpolymake, vector_type);
 
     add_map(jlpolymake);
 
