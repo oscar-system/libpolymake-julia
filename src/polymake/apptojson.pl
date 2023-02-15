@@ -187,6 +187,10 @@ sub app_to_json($$) {
    close $F;
 }
 
+# make sure to load all apps before generating the json files to avoid skipping
+# cross-application rule sections
+map { application($_) } @apps;
+
 foreach my $app (@apps) {
    app_to_json($jsonpath,$app);
 }
