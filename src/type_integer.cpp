@@ -137,9 +137,6 @@ void add_integer(jlcxx::Module& jlpolymake)
     jlpolymake.method("new_fmpq_from_integer", new_fmpq_from_integer);
     jlpolymake.method("new_integer_from_fmpq", new_integer_from_fmpq);
     jlpolymake.method("new_int_from_integer", new_int_from_integer);
-    jlpolymake.method("to_integer", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Integer>(pv);
-    });
 }
 
 }

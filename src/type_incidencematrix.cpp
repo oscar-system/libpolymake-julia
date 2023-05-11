@@ -45,12 +45,6 @@ void add_incidencematrix(jlcxx::Module& jlpolymake)
             return show_small_object<WrappedT>(S);
         });
     });
-    jlpolymake.method("to_incidencematrix_nonsymmetric", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::IncidenceMatrix<pm::NonSymmetric>>(pv);
-    });
-    jlpolymake.method("to_incidencematrix_symmetric", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::IncidenceMatrix<pm::Symmetric>>(pv);
-    });
 }
 
 }

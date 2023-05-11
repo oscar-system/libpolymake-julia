@@ -50,17 +50,6 @@ void add_lists(jlcxx::Module& jlpolymake)
             });
         });
 
-    jlpolymake.method("to_list_pair_int_int", [](const pm::perl::PropertyValue& pv) {
-        return to_SmallObject<std::list<std::pair<pm::Int, pm::Int>>>(pv);
-    });
-    
-    jlpolymake.method("to_list_list_pair_int_int", [](const pm::perl::PropertyValue& pv) {
-        return to_SmallObject<std::list<std::list<std::pair<pm::Int, pm::Int>>>>(pv);
-    });
-    
-    jlpolymake.method("to_list_pair_integer_int", [](const pm::perl::PropertyValue& pv) {
-        return to_SmallObject<std::list<std::pair<pm::Integer, pm::Int>>>(pv);
-    });
 
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator")
             .apply<WrappedStdListIterator<std::pair<pm::Int, pm::Int>>, WrappedStdListIterator<std::list<std::pair<pm::Int, pm::Int>>>, WrappedStdListIterator<std::pair<pm::Integer, pm::Int>>>(

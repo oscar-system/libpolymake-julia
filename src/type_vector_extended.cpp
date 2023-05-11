@@ -35,10 +35,6 @@ void add_vector_extended(jlcxx::Module& jlpolymake, tparametric1 vector_type)
                 });
             });
     
-    jlpolymake.method(
-        "to_vector_polynomial_rational_int", [](const pm::perl::PropertyValue& pv) {
-            return to_SmallObject<pm::Vector<pm::Polynomial<pm::Rational,pm::Int>>>(pv);
-        });
 }
 
 }

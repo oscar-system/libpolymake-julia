@@ -167,9 +167,6 @@ void add_rational(jlcxx::Module& jlpolymake)
     jlpolymake.method("new_rational_from_integer", new_rational_from_integer);
     jlpolymake.method("new_baserational_from_rational", new_baserational_from_rational);
     jlpolymake.method("new_rational_from_baserational", new_rational_from_baserational);
-    jlpolymake.method("to_rational", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Rational>(pv);
-    });
 }
 
 }

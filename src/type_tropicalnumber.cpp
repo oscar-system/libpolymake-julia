@@ -40,22 +40,6 @@ void add_tropicalnumber(jlcxx::Module& jlpolymake)
                         return show_small_object<tropType>(S);
                     });
             });
-    jlpolymake.method("to_tropicalnumber_max_rational",
-        [](pm::perl::PropertyValue pv) {
-            return to_SmallObject<pm::TropicalNumber<pm::Max,pm::Rational>>(pv);
-        });
-    jlpolymake.method("to_tropicalnumber_min_rational",
-        [](pm::perl::PropertyValue pv) {
-            return to_SmallObject<pm::TropicalNumber<pm::Min,pm::Rational>>(pv);
-    });
-    // jlpolymake.method("to_tropicalnumber_max_integer",
-    //     [](pm::perl::PropertyValue pv) {
-    //         return to_SmallObject<pm::TropicalNumber<pm::Max,pm::Integer>>(pv);
-    //     });
-    // jlpolymake.method("to_tropicalnumber_min_integer",
-    //     [](pm::perl::PropertyValue pv) {
-    //         return to_SmallObject<pm::TropicalNumber<pm::Min,pm::Integer>>(pv);
-    //     });
 }
 
 }

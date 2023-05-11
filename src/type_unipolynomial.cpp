@@ -41,18 +41,6 @@ void add_unipolynomial(jlcxx::Module& jlpolymake)
                         const polyT& P){ p.take(s) << P; });
         });
 
-    jlpolymake.method("to_unipolynomial_int_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::UniPolynomial<pm::Int,pm::Int>>(v);
-        });
-    jlpolymake.method("to_unipolynomial_integer_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::UniPolynomial<pm::Integer,pm::Int>>(v);
-        });
-    jlpolymake.method("to_unipolynomial_rational_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::UniPolynomial<pm::Rational,pm::Int>>(v);
-        });
-    jlpolymake.method("to_unipolynomial_quadraticextension_rational_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::UniPolynomial<pm::QuadraticExtension<pm::Rational>,pm::Int>>(v);
-        });
 }
 
 }

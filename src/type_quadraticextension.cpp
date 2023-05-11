@@ -41,10 +41,6 @@ void add_quadraticextension(jlcxx::Module& jlpolymake)
             });
         });
 
-    jlpolymake.method("to_quadraticextension_rational", [](pm::perl::PropertyValue v) {
-        return to_SmallObject<pm::QuadraticExtension<pm::Rational>>(v);
-    });
-
 }
 
 }

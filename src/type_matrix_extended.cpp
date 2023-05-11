@@ -38,10 +38,6 @@ void add_matrix_extended(jlcxx::Module& jlpolymake, tparametric1 matrix_type)
                     return show_small_object<WrappedT>(M);
                 });
             });
-    jlpolymake.method(
-        "to_matrix_polynomial_rational_int", [](const pm::perl::PropertyValue& pv) {
-            return to_SmallObject<pm::Matrix<pm::Polynomial<pm::Rational,pm::Int>>>(pv);
-        });
 }
 
 }

@@ -8,6 +8,8 @@
 
 #include "jlpolymake/type_modules.h"
 
+#include "jlpolymake/containers.h"
+
 
 namespace jlpolymake {
 
@@ -47,49 +49,66 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     
     add_quadraticextension(jlpolymake);
 
-    auto matrix_type = add_matrix(jlpolymake);
+    prepare_containers(jlpolymake);
 
-    auto pair_type = add_pairs(jlpolymake);
+    wrap_array_for_types<VecOrMat_supported::value_type>(jlpolymake);
+
+    // needed for sparse containers
+    add_set(jlpolymake);
+    wrap_array<pm::Set<pm::Int>>(jlpolymake);
+
+    wrap_vector_for_types<VecOrMat_supported::value_type>(jlpolymake);
+    wrap_matrix_for_types<VecOrMat_supported::value_type>(jlpolymake);
+    wrap_sparsevector_for_types<VecOrMat_supported::value_type>(jlpolymake);
+    wrap_sparsematrix_for_types<VecOrMat_supported::value_type>(jlpolymake);
+
+    wrap_pair<pm::Int, pm::Int>(jlpolymake);
+    wrap_pair<pm::Integer, pm::Int>(jlpolymake);
 
     add_lists(jlpolymake);
 
-    auto vector_type = add_vector(jlpolymake);
-
-    add_set(jlpolymake);
-
     add_graph(jlpolymake);
 
-    add_sparsevector(jlpolymake);;
-    
     add_homologygroup(jlpolymake);
 
-    auto array_type = add_array(jlpolymake);
+    add_array(jlpolymake);
 
-    add_pair_extended(jlpolymake, pair_type);
+    wrap_pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>(jlpolymake);
+    wrap_pair<pm::Array<pm::Int>, pm::Array<pm::Int>>(jlpolymake);
 
     add_edgemap(jlpolymake);
-
     add_nodemap(jlpolymake);
 
     add_incidencematrix(jlpolymake);
 
-    add_sparsematrix(jlpolymake);
-
     add_tropicalnumber(jlpolymake);
 
     add_polynomial(jlpolymake);
-    
     add_unipolynomial(jlpolymake);
 
+    wrap_array<pm::Polynomial<pm::Rational,long>>(jlpolymake);
+    wrap_array<pm::Polynomial<pm::Integer,long>>(jlpolymake);
+    wrap_array<std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>>(jlpolymake);
+    
     add_direct_calls(jlpolymake);
 
-    add_array_extended(jlpolymake, array_type);
-    
+    auto matrix_type = jlcxx::TypeWrapper1(jlpolymake, pmwrappers::instance().pmmatrix);
+    auto vector_type = jlcxx::TypeWrapper1(jlpolymake, pmwrappers::instance().pmvector);
+
     add_matrix_extended(jlpolymake, matrix_type);
-    
     add_vector_extended(jlpolymake, vector_type);
 
     add_map(jlpolymake);
+
+    add_unbox_pv(jlpolymake);
+    
+    // this must be here instead of type_bigobject to have the array available
+    jlpolymake.method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name) -> pm::Array<pm::perl::BigObject> {
+        return p.lookup_multi(name, All);
+    });
+
+    jlpolymake.method("_get_global_epsilon", []() { return pm::spec_object_traits<double>::global_epsilon; });
+    jlpolymake.method("_set_global_epsilon", [](double e) { pm::spec_object_traits<double>::global_epsilon = e; });
 
     jlpolymake.method("initialize_polymake", &initialize_polymake);
     jlpolymake.method("initialize_polymake_with_dir", &initialize_polymake_with_dir);
