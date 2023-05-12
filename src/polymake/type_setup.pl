@@ -382,6 +382,10 @@ void call_function_feed_argument(T& function, jl_value_t* value)
         function << jl_unbox_float64(value);
     } $feeding_ifs
     else {
+        for (const auto& feeder : feeder_list<T&>::get()) {
+            if (feeder(function, value))
+                return;
+        }
         throw std::runtime_error(
             "Cannot pass function value: conversion failed for argument of type " + std::string(jl_typeof_str(value))
         );
@@ -420,6 +424,10 @@ void option_set_take(pm::perl::OptionSet optset,
         optset[key] << jl_unbox_float64(value);
     } $option_set_ifs
     else {
+        for (const auto& feeder : feeder_list<pm::perl::Value>::get()) {
+            if (feeder(optset[key], value))
+                return;
+        }
         throw std::runtime_error(
             "Cannot create OptionSet: conversion failed for (key, value) = (" +
             key +
