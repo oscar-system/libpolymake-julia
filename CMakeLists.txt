@@ -62,12 +62,6 @@ set(JLPOLYMAKE_TARGET polymake_julia)
 
 include_directories(${JlCxx_DIR}/../../../include/)
 
-file(GLOB JLPOLYMAKE_SRC "${JLPOLYMAKE_SOURCE_DIR}/*.cpp")
-add_library(${JLPOLYMAKE_TARGET} SHARED ${JLPOLYMAKE_SRC} ${GENERATED_CPP})
-target_link_libraries(${JLPOLYMAKE_TARGET} JlCxx::cxxwrap_julia "${Polymake_LIBS}" "${EXTRA_LIBRARIES}")
-
-set(TYPE_TRANSLATOR ${CMAKE_CURRENT_BINARY_DIR}/jl/type_translator.jl)
-
 set(GENERATED_HEADERS
     ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/get_type_names.h
     ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/map_inserts.h
@@ -76,6 +70,17 @@ set(GENERATED_HEADERS
     ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/type_declarations_extern.h
     ${JLPOLYMAKE_GENERATED}/jlpolymake/generated/type_declarations.h
 )
+file(GLOB JLPOLYMAKE_HEADERS "${JLPOLYMAKE_INCLUDE_DIR}/jlpolymake/*.h")
+
+
+file(GLOB JLPOLYMAKE_SRC "${JLPOLYMAKE_SOURCE_DIR}/*.cpp")
+add_library(${JLPOLYMAKE_TARGET} SHARED ${JLPOLYMAKE_SRC} ${GENERATED_CPP})
+target_link_libraries(${JLPOLYMAKE_TARGET} JlCxx::cxxwrap_julia "${Polymake_LIBS}" "${EXTRA_LIBRARIES}")
+
+set(TYPE_TRANSLATOR ${CMAKE_CURRENT_BINARY_DIR}/jl/type_translator.jl)
+
+set_target_properties(${JLPOLYMAKE_TARGET} PROPERTIES
+   PUBLIC_HEADER "${JLPOLYMAKE_HEADERS}")
 
 add_custom_command(
    OUTPUT ${GENERATED_HEADERS} ${TYPE_TRANSLATOR} ${GENERATED_CPP}
@@ -99,9 +104,13 @@ install(TARGETS
 ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
 LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
 RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
-INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/jlpolymake
+PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/jlpolymake)
 
 install(FILES ${TYPE_TRANSLATOR}
    DESTINATION ${CMAKE_INSTALL_DATADIR}/libpolymake_julia
 )
 
+install(FILES ${GENERATED_HEADERS}
+             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/jlpolymake/generated/
+             COMPONENT Headers)
