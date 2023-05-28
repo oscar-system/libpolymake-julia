@@ -9,6 +9,8 @@ void initialize_polymake(bool interactive);
 
 void initialize_polymake_with_dir(const std::string& userdir, bool interactive);
 
+void initialize_polymake_with_dir_and_prefix(const std::string& userdir, const std::string& top, const std::string& arch, bool interactive);
+
 pm::perl::BigObject to_bigobject(const pm::perl::PropertyValue&);
 
 jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle);

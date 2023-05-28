@@ -112,6 +112,7 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     jlpolymake.method("initialize_polymake", &initialize_polymake);
     jlpolymake.method("initialize_polymake_with_dir", &initialize_polymake_with_dir);
+    jlpolymake.method("initialize_polymake_with_dir", &initialize_polymake_with_dir_and_prefix);
     jlpolymake.method("application", [](const std::string x) {
         data.main_polymake_session->set_application(x);
     });
