@@ -6,9 +6,11 @@
 #include <string>
 #include <iostream>
 
+#if defined(__clang__)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wlogical-op-parentheses"
 #pragma clang diagnostic ignored "-Wshift-op-parentheses"
+#endif
 
 #include <polymake/Main.h>
 #include <polymake/Matrix.h>
@@ -32,7 +34,9 @@
 #include <polymake/perl/macros.h>
 #include <polymake/perl/wrappers.h>
 
+#if defined(__clang__)
 #pragma clang diagnostic pop
+#endif
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
 #define JLPOLYMAKE_VERSION_MINOR 9
