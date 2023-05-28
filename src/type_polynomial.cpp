@@ -41,21 +41,6 @@ void add_polynomial(jlcxx::Module& jlpolymake)
                         const polyT& P){ p.take(s) << P; });
         });
 
-    jlpolymake.method("to_polynomial_int_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::Polynomial<pm::Int,pm::Int>>(v);
-        });
-    jlpolymake.method("to_polynomial_integer_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::Polynomial<pm::Integer,pm::Int>>(v);
-        });
-    jlpolymake.method("to_polynomial_rational_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::Polynomial<pm::Rational,pm::Int>>(v);
-        });
-    jlpolymake.method("to_polynomial_double_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::Polynomial<double,pm::Int>>(v);
-        });
-    jlpolymake.method("to_polynomial_quadraticextension_rational_int", [](pm::perl::PropertyValue v) {
-            return to_SmallObject<pm::Polynomial<pm::QuadraticExtension<pm::Rational>,pm::Int>>(v);
-        });
 }
 
 }

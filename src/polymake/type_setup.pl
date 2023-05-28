@@ -21,70 +21,10 @@ my $type_tuples = [
             "to_quadraticextension_rational",
         ],
         [
-            "Matrix_Int",
-            "pm::Matrix<long>",
-            "Matrix{CxxWrap.CxxLong}",
-            "to_matrix_int",
-        ],
-        [
-            "Matrix_Integer",
-            "pm::Matrix<pm::Integer>",
-            "Matrix{Integer}",
-            "to_matrix_integer",
-        ],
-        [
-            "Matrix_Rational",
-            "pm::Matrix<pm::Rational>",
-            "Matrix{Rational}",
-            "to_matrix_rational",
-        ],
-        [
-            "Matrix_double",
-            "pm::Matrix<double>",
-            "Matrix{Float64}",
-            "to_matrix_double",
-        ],
-        [
-            "Matrix_QuadraticExtension_Rational",
-            "pm::Matrix<pm::QuadraticExtension<pm::Rational>>",
-            "Matrix{QuadraticExtension{Rational}}",
-            "to_matrix_quadraticextension_rational",
-        ],
-        [
             "Matrix_Polynomial_Rational_Int",
             "pm::Matrix<pm::Polynomial<pm::Rational,long>>",
             "Matrix{Polynomial{Rational,CxxWrap.CxxLong}}",
             "to_matrix_polynomial_rational_int",
-        ],
-        [
-            "Vector_Int",
-            "pm::Vector<long>",
-            "Vector{CxxWrap.CxxLong}",
-            "to_vector_int",
-        ],
-        [
-            "Vector_Integer",
-            "pm::Vector<pm::Integer>",
-            "Vector{Integer}",
-            "to_vector_integer",
-        ],
-        [
-            "Vector_Rational",
-            "pm::Vector<pm::Rational>",
-            "Vector{Rational}",
-            "to_vector_rational",
-        ],
-        [
-            "Vector_double",
-            "pm::Vector<double>",
-            "Vector{Float64}",
-            "to_vector_double",
-        ],
-        [
-            "Vector_QuadraticExtension_Rational",
-            "pm::Vector<pm::QuadraticExtension<pm::Rational>>",
-            "Vector{QuadraticExtension{Rational}}",
-            "to_vector_quadraticextension_rational",
         ],
         [
             "Vector_Polynomial_Rational_Int",
@@ -141,24 +81,6 @@ my $type_tuples = [
             "to_list_pair_integer_int",
         ],
         ["Set_Int", "pm::Set<long>", "Set{CxxWrap.CxxLong}", "to_set_int"],
-        [
-            "Array_Int",
-            "pm::Array<long>",
-            "Array{CxxWrap.CxxLong}",
-            "to_array_int",
-        ],
-        [
-            "Array_Integer",
-            "pm::Array<pm::Integer>",
-            "Array{Integer}",
-            "to_array_integer",
-        ],
-        [
-            "Array_QuadraticExtension_Rational",
-            "pm::Array<pm::QuadraticExtension<pm::Rational>>",
-            "Array{QuadraticExtension{Rational}}",
-            "to_array_quadraticextension_rational",
-        ],
         [
             "Array_String",
             "pm::Array<std::string>",
@@ -236,66 +158,6 @@ my $type_tuples = [
             "pm::Array<pm::Polynomial<pm::Rational,long>>",
             "Array{Polynomial{Rational,CxxWrap.CxxLong}}",
             "to_array_polynomial_rational_int",
-        ],
-        [
-            "SparseMatrix_Integer",
-            "pm::SparseMatrix<pm::Integer>",
-            "SparseMatrix{Integer}",
-            "to_sparsematrix_integer",
-        ],
-        [
-            "SparseMatrix_Rational",
-            "pm::SparseMatrix<pm::Rational>",
-            "SparseMatrix{Rational}",
-            "to_sparsematrix_rational",
-        ],
-        [
-            "SparseMatrix_Int",
-            "pm::SparseMatrix<long>",
-            "SparseMatrix{CxxWrap.CxxLong}",
-            "to_sparsematrix_int",
-        ],
-        [
-            "SparseMatrix_double",
-            "pm::SparseMatrix<double>",
-            "SparseMatrix{Float64}",
-            "to_sparsematrix_double",
-        ],
-        [
-            "SparseMatrix_QuadraticExtension_Rational",
-            "pm::SparseMatrix<pm::QuadraticExtension<pm::Rational>>",
-            "SparseMatrix{QuadraticExtension{Rational}}",
-            "to_sparsematrix_quadraticextension_rational",
-        ],
-        [
-            "SparseVector_Integer",
-            "pm::SparseVector<pm::Integer>",
-            "SparseVector{Integer}",
-            "to_sparsevector_integer",
-        ],
-        [
-            "SparseVector_Rational",
-            "pm::SparseVector<pm::Rational>",
-            "SparseVector{Rational}",
-            "to_sparsevector_rational",
-        ],
-        [
-            "SparseVector_Int",
-            "pm::SparseVector<long>",
-            "SparseVector{CxxWrap.CxxLong}",
-            "to_sparsevector_int",
-        ],
-        [
-            "SparseVector_double",
-            "pm::SparseVector<double>",
-            "SparseVector{Float64}",
-            "to_sparsevector_double",
-        ],
-        [
-            "SparseVector_QuadraticExtension_Rational",
-            "pm::SparseVector<pm::QuadraticExtension<pm::Rational>>",
-            "SparseVector{QuadraticExtension{Rational}}",
-            "to_sparsevector_quadraticextension_rational",
         ],
         [
             "IncidenceMatrix_NonSymmetric",
@@ -449,6 +311,29 @@ my $type_tuples = [
         ],
     ];
 
+# mapped name, C++, CxxWrap, helper (to_...)
+my $scalars = [["Int", "long", "CxxWrap.CxxLong", "int"],
+               ["Integer", "pm::Integer", "Integer", "integer"],
+               ["Rational", "pm::Rational", "Rational", "rational"],
+               ["double", "double", "Float64", "double"],
+               ["QuadraticExtension_Rational", "pm::QuadraticExtension<pm::Rational>", 
+                  "QuadraticExtension{Rational}", "quadraticextension_rational"]
+              ];
+my $simplecontainers = [["Matrix","pm::Matrix","Matrix","matrix"],
+                        ["SparseMatrix","pm::SparseMatrix","SparseMatrix","sparsematrix"],
+                        ["Vector","pm::Vector","Vector","vector"],
+                        ["SparseVector","pm::SparseVector","SparseVector","sparsevector"],
+                        ["Array","pm::Array","Array","array"],
+                       ];
+for my $c (@$simplecontainers) { 
+   for my $s (@$scalars) {
+      push @$type_tuples, ["$c->[0]_$s->[0]",
+                           "$c->[1]<$s->[1]>",
+                           "$c->[2]\{$s->[2]\}",
+                           "to_$c->[3]_$s->[3]"];
+   }
+}
+
 my @keys = qw(type_string ctype jltype convert_f);
 
 my $type_hashes = [];
@@ -497,6 +382,10 @@ void call_function_feed_argument(T& function, jl_value_t* value)
         function << jl_unbox_float64(value);
     } $feeding_ifs
     else {
+        for (const auto& feeder : feeder_list<T&>::get()) {
+            if (feeder(function, value))
+                return;
+        }
         throw std::runtime_error(
             "Cannot pass function value: conversion failed for argument of type " + std::string(jl_typeof_str(value))
         );
@@ -535,6 +424,10 @@ void option_set_take(pm::perl::OptionSet optset,
         optset[key] << jl_unbox_float64(value);
     } $option_set_ifs
     else {
+        for (const auto& feeder : feeder_list<pm::perl::Value>::get()) {
+            if (feeder(optset[key], value))
+                return;
+        }
         throw std::runtime_error(
             "Cannot create OptionSet: conversion failed for (key, value) = (" +
             key +
@@ -608,11 +501,40 @@ sub get_type_declarations_extern {
    return "extern ".join("\nextern ",@{decl($type_hashes)});
 }
 
+sub unbox_propertyvalue_src {
+   my ($type_hashes) = @_;
+   my $functions = join("\n", map {
+    "jlpolymake.method(\"$_->{convert_f}\", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<$_->{ctype}>(pv);
+    });" 
+   } grep {defined($_->{convert_f}) && $_->{type_string} ne "BigObject"} @$type_hashes);
+   return <<"---";
+#include "jlpolymake/jlpolymake.h"
+
+#include "jlpolymake/tools.h"
+
+#include "jlpolymake/functions.h"
+
+#include "jlpolymake/type_modules.h"
+
+namespace jlpolymake {
+
+void add_unbox_pv(jlcxx::Module& jlpolymake)
+{
+$functions
+}
+
+}
+---
+}
+
+
 my $target = @ARGV > 0 ? $ARGV[0] : dirname(__FILE__);
 my $cpp = "$target/include/jlpolymake/generated";
+my $src = "$target/src";
 my $jl = "$target/jl";
 
-make_path($cpp, $jl);
+make_path($cpp, $jl, $src);
 
 my %generated = (
                   "$cpp/map_inserts.h" => \&map_inserts_code,
@@ -622,6 +544,7 @@ my %generated = (
                   "$cpp/type_declarations.h" => \&get_type_declarations,
                   "$cpp/type_declarations_extern.h" => \&get_type_declarations_extern,
                   "$jl/type_translator.jl" => \&type_translator_code_jl,
+                  "$src/unbox_pv.cpp" => \&unbox_propertyvalue_src,
                  );
 
 

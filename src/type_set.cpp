@@ -95,10 +95,6 @@ void add_set(jlcxx::Module& jlpolymake)
             });
         });
 
-    jlpolymake.method("to_set_int", [](pm::perl::PropertyValue v) {
-        return to_SmallObject<pm::Set<pm::Int>>(v);
-    });
-
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("SetIterator")
         .apply<WrappedSetIterator<pm::Int>>(
             [](auto wrapped) {

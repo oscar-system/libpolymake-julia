@@ -6,7 +6,7 @@ Pkg.add("libcxxwrap_julia_jll")
 using polymake_jll
 using libcxxwrap_julia_jll
 
-include(polymake_jll.generate_deps_tree)
+include("src/polymake/generate_deps_tree.jl")
 
 const polymake_deps_tree = prepare_deps_tree(mktempdir(;cleanup=false))
 

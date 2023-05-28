@@ -39,10 +39,6 @@ void add_map(jlcxx::Module& jlpolymake)
             });
         });
 
-    jlpolymake.method("to_map_string_string", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::Map<std::string, std::string>>(pv);
-    });
-
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("MapIterator")
         .apply<WrappedMapIterator<std::string, std::string>>(
             [](auto wrapped) {

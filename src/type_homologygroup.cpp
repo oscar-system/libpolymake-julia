@@ -27,10 +27,6 @@ void add_homologygroup(jlcxx::Module& jlpolymake)
             });
         });
 
-    jlpolymake.method("to_homologygroup_integer", [](const pm::perl::PropertyValue& pv) {
-        return to_SmallObject<polymake::topaz::HomologyGroup<pm::Integer>>(pv);
-    });
-
 }
 
 }

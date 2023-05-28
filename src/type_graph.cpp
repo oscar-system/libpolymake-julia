@@ -43,12 +43,6 @@ void add_graph(jlcxx::Module& jlpolymake)
             return show_small_object<WrappedT>(S);
         });
     });
-    jlpolymake.method("to_graph_undirected", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::Graph<pm::graph::Undirected>>(pv);
-    });
-    jlpolymake.method("to_graph_directed", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::Graph<pm::graph::Directed>>(pv);
-    });
 
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("GraphEdgeIterator")
       .apply<WrappedGraphEdgeIterator<pm::graph::Directed>, WrappedGraphEdgeIterator<pm::graph::Undirected>>(
@@ -136,12 +130,6 @@ void add_edgemap(jlcxx::Module& jlpolymake)
                 });
                 
             });
-    jlpolymake.method("to_edgemap_undirected_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::EdgeMap<pm::graph::Undirected, pm::Int>>(pv);
-    });
-    jlpolymake.method("to_edgemap_directed_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::EdgeMap<pm::graph::Directed, pm::Int>>(pv);
-    });
 }
 
 
@@ -171,18 +159,6 @@ void add_nodemap(jlcxx::Module& jlpolymake)
                 });
                 
             });
-    jlpolymake.method("to_nodemap_undirected_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::NodeMap<pm::graph::Undirected, pm::Int>>(pv);
-    });
-    jlpolymake.method("to_nodemap_directed_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::NodeMap<pm::graph::Directed, pm::Int>>(pv);
-    });
-    jlpolymake.method("to_nodemap_undirected_set_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::NodeMap<pm::graph::Undirected, pm::Set<pm::Int>>>(pv);
-    });
-    jlpolymake.method("to_nodemap_directed_set_int", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<pm::graph::NodeMap<pm::graph::Directed, pm::Set<pm::Int>>>(pv);
-    });
 }
 
 }
