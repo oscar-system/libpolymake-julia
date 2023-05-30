@@ -25,7 +25,7 @@ void initialize_polymake_with_dir_and_prefix(const std::string& userdir, const s
 }
 
 void initialize_polymake_with_dir(const std::string& userdir, bool interactive = true) {
-   initialize_polymake_with_dir_and_prefix("user", "", "", interactive);
+   initialize_polymake_with_dir_and_prefix(userdir, "", "", interactive);
 }
 
 void initialize_polymake(bool interactive = true)
