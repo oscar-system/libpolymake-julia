@@ -317,7 +317,19 @@ my $scalars = [["Int", "long", "CxxWrap.CxxLong", "int"],
                ["Rational", "pm::Rational", "Rational", "rational"],
                ["double", "double", "Float64", "double"],
                ["QuadraticExtension_Rational", "pm::QuadraticExtension<pm::Rational>", 
-                  "QuadraticExtension{Rational}", "quadraticextension_rational"]
+                  "QuadraticExtension{Rational}", "quadraticextension_rational"],
+               [
+                   "TropicalNumber_Max_Rational",
+                   "pm::TropicalNumber<pm::Max,pm::Rational>",
+                   "TropicalNumber{Max,Rational}",
+                   "tropicalnumber_max_rational",
+               ],
+               [
+                   "TropicalNumber_Min_Rational",
+                   "pm::TropicalNumber<pm::Min,pm::Rational>",
+                   "TropicalNumber{Min,Rational}",
+                   "tropicalnumber_min_rational",
+               ],
               ];
 my $simplecontainers = [["Matrix","pm::Matrix","Matrix","matrix"],
                         ["SparseMatrix","pm::SparseMatrix","SparseMatrix","sparsematrix"],

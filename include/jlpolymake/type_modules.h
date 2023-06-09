@@ -28,9 +28,9 @@ void add_matrix_extended(jlcxx::Module& jlpolymake, tparametric1 matrixt);
 void add_polynomial(jlcxx::Module& jlpolymake);
 void add_unipolynomial(jlcxx::Module& jlpolymake);
 void add_rational(jlcxx::Module& jlpolymake);
+void add_tropicalnumber(jlcxx::Module& jlpolymake);
 void add_quadraticextension(jlcxx::Module& jlpolymake);
 void add_set(jlcxx::Module& jlpolymake);
-void add_tropicalnumber(jlcxx::Module& jlpolymake);
 void add_type_translations(jlcxx::Module&);
 void add_vector_extended(jlcxx::Module& jlpolymake, tparametric1 vectort);
 
