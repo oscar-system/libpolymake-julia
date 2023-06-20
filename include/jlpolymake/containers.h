@@ -21,6 +21,8 @@ private:
   jlcxx::Module& m_pmw_mod;
 public:
   TypeWrapper1 pmarray;
+  TypeWrapper1 pmset;
+  TypeWrapper1 pmsetiterator;
   TypeWrapper1 pmvector;
   TypeWrapper1 pmmatrix;
   TypeWrapper1 pmsparsevector;
@@ -258,6 +260,127 @@ struct WrapArray
    }
 };
 
+template <typename elem>
+struct WrapSetImpl
+{
+   template <typename TypeWrapperT>
+   static void wrap(TypeWrapperT& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using elemType = typename TypeWrapperT::type::value_type;
+
+      wrapped.template constructor<pm::Set<elemType>>();
+
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("_new_set", [](jlcxx::ArrayRef<elemType> A) {
+         pm::Set<elemType> s{A.begin(), A.end()};
+         return s;
+      });
+
+      wrapped.method("swap", &WrappedT::swap);
+
+      wrapped.method("isempty", &WrappedT::empty);
+      wrapped.method("length", &WrappedT::size);
+
+      wrapped.method("empty!", [](WrappedT& S) {
+          S.clear();
+          return S;
+      });
+      wrapped.method("_isequal", [](const WrappedT& S, const WrappedT& T) { return S == 
+T; });
+      wrapped.method(
+          "in", [](const elemType i, const WrappedT& S) { return S.contains(i); });
+
+      wrapped.method("push!", [](WrappedT& S, const elemType i) {
+          S += i;
+          return S;
+      });
+
+      wrapped.method("delete!", [](WrappedT& S, const elemType i) {
+          S -= i;
+          return S;
+      });
+
+      wrapped.method("union!",
+                     [](WrappedT& S, const WrappedT& T) { return S += T; });
+      wrapped.method("intersect!",
+                     [](WrappedT& S, const WrappedT& T) { return S *= T; });
+      wrapped.method("setdiff!",
+                     [](WrappedT& S, const WrappedT& T) { return S -= T; });
+      wrapped.method("symdiff!",
+                     [](WrappedT& S, const WrappedT& T) { return S ^= T; });
+
+      wrapped.method(
+          "union", [](const WrappedT& S, const WrappedT& T) { return WrappedT{S + T}; })
+;
+      wrapped.method("intersect", [](const WrappedT& S, const WrappedT& T) {
+          return WrappedT{S * T};
+      });
+      wrapped.method("setdiff", [](const WrappedT& S, const WrappedT& T) {
+          return WrappedT{S - T};
+      });
+      wrapped.method("symdiff", [](const WrappedT& S, const WrappedT& T) {
+          return WrappedT{S ^ T};
+      });
+
+      wrapped.method("incl", [](const WrappedT& s1, const WrappedT& s2) {
+              return pm::incl(s1, s2);
+              });
+
+      wrapped.module().unset_override_module();
+      wrap_common(wrapped);
+   }
+};
+struct WrapSet
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using elemType = typename TypeWrapperT::type::value_type;
+      WrapSetImpl<elemType>::wrap(wrapped);
+   }
+};
+
+template <typename elem>
+struct WrapSetIteratorImpl
+{
+   template <typename TypeWrapperT>
+   static void wrap(TypeWrapperT& wrapped)
+   {
+      using WrappedSetIter = typename TypeWrapperT::type;
+      using elemType = typename TypeWrapperT::type::value_type;
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("beginiterator", [](const pm::Set<elemType>& S) {
+          auto result = WrappedSetIterator<elemType>{S};
+          return result;
+      });
+
+      wrapped.method("increment", [](WrappedSetIter& state) {
+          state.iterator++;
+      });
+      wrapped.method("get_element", [](const WrappedSetIter& state) {
+          auto elt = *(state.iterator);
+          return elt;
+      });
+      wrapped.method("isdone", [](const pm::Set<elemType>& S,
+                                  const WrappedSetIter&    state) {
+          return S.end() == state.iterator;
+      });
+      wrapped.module().unset_override_module();
+   }
+};
+struct WrapSetIterator
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using elemType = typename TypeWrapperT::type::value_type;
+      WrapSetIteratorImpl<elemType>::wrap(wrapped);
+   }
+};
+
+
 template<typename T>
 inline void wrap_vector(jlcxx::Module& mod)
 {
@@ -311,6 +434,13 @@ template<typename T>
 inline void wrap_array_for_types(jlcxx::Module& mod)
 {
    TypeWrapper1(mod, pmwrappers::instance().pmarray).apply_combination<pm::Array, T>(WrapArray());
+}
+
+template<typename T>
+inline void wrap_set(jlcxx::Module& mod)
+{
+   TypeWrapper1(mod, pmwrappers::instance().pmset).apply<pm::Set<T>>(WrapSet());
+   TypeWrapper1(mod, pmwrappers::instance().pmsetiterator).apply<WrappedSetIterator<T>>(WrapSetIterator());
 }
 
 template<typename T1, typename T2>

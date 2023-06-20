@@ -81,6 +81,7 @@ my $type_tuples = [
             "to_list_pair_integer_int",
         ],
         ["Set_Int", "pm::Set<long>", "Set{CxxWrap.CxxLong}", "to_set_int"],
+        ["Set_Set_Int", "pm::Set<pm::Set<long>>", "Set{Set{CxxWrap.CxxLong}}", "to_set_set_int"],
         [
             "Array_String",
             "pm::Array<std::string>",
