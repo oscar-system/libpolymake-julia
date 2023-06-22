@@ -58,6 +58,7 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     // needed for sparse containers
     add_set(jlpolymake);
     wrap_array<pm::Set<pm::Int>>(jlpolymake);
+    wrap_array<pm::Set<pm::Set<pm::Int>>>(jlpolymake);
 
     wrap_vector_for_types<VecOrMat_supported::value_type>(jlpolymake);
     wrap_matrix_for_types<VecOrMat_supported::value_type>(jlpolymake);
