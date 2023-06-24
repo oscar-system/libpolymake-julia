@@ -81,6 +81,8 @@ my $type_tuples = [
             "to_list_pair_integer_int",
         ],
         ["Set_Int", "pm::Set<long>", "Set{CxxWrap.CxxLong}", "to_set_int"],
+        ["Set_Set_Int", "pm::Set<pm::Set<long>>", "Set{Set{CxxWrap.CxxLong}}", "to_set_set_int"],
+        ["Array_Set_Set_Int", "pm::Array<pm::Set<pm::Set<long>>>", "Array{Set{Set{CxxWrap.CxxLong}}}", "to_array_set_set_int"],
         [
             "Array_String",
             "pm::Array<std::string>",
@@ -317,7 +319,19 @@ my $scalars = [["Int", "long", "CxxWrap.CxxLong", "int"],
                ["Rational", "pm::Rational", "Rational", "rational"],
                ["double", "double", "Float64", "double"],
                ["QuadraticExtension_Rational", "pm::QuadraticExtension<pm::Rational>", 
-                  "QuadraticExtension{Rational}", "quadraticextension_rational"]
+                  "QuadraticExtension{Rational}", "quadraticextension_rational"],
+               [
+                   "TropicalNumber_Max_Rational",
+                   "pm::TropicalNumber<pm::Max,pm::Rational>",
+                   "TropicalNumber{Max,Rational}",
+                   "tropicalnumber_max_rational",
+               ],
+               [
+                   "TropicalNumber_Min_Rational",
+                   "pm::TropicalNumber<pm::Min,pm::Rational>",
+                   "TropicalNumber{Min,Rational}",
+                   "tropicalnumber_min_rational",
+               ],
               ];
 my $simplecontainers = [["Matrix","pm::Matrix","Matrix","matrix"],
                         ["SparseMatrix","pm::SparseMatrix","SparseMatrix","sparsematrix"],

@@ -46,6 +46,11 @@ struct VecOrMat_supported_limited
     typedef jlcxx::ParameterList<pm::Polynomial<pm::Rational, pm::Int>> value_type;
 };
 
+struct TropicalNumberTypes
+{
+   typedef jlcxx::ParameterList<pm::TropicalNumber<pm::Min>, pm::TropicalNumber<pm::Max>> value_type;
+};
+
 }
 
 #endif

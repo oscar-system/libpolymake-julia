@@ -34,6 +34,8 @@ pmwrappers& wrappers()
 pmwrappers::pmwrappers(jlcxx::Module& jlpolymake) :
   m_pmw_mod(jlpolymake),
   pmarray(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Array", jlcxx::julia_type("AbstractVector", "Base"))),
+  pmset(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Set", jlcxx::julia_type("AbstractSet", "Base"))),
+  pmsetiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("SetIterator")),
   pmvector(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Vector", jlcxx::julia_type("AbstractVector", "Base"))),
   pmmatrix(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Matrix", jlcxx::julia_type("AbstractMatrix", "Base"))),
   pmsparsevector(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>,jlcxx::ParameterList<jlcxx::TypeVar<1>,int>>("SparseVector", jlcxx::julia_type("AbstractSparseVector", "SparseArrays"))),
