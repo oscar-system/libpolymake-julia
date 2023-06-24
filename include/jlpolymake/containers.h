@@ -290,14 +290,14 @@ struct WrapSetImpl
       wrapped.method("_isequal", [](const WrappedT& S, const WrappedT& T) { return S == 
 T; });
       wrapped.method(
-          "in", [](const elemType i, const WrappedT& S) { return S.contains(i); });
+          "in", [](const elemType& i, const WrappedT& S) { return S.contains(i); });
 
-      wrapped.method("push!", [](WrappedT& S, const elemType i) {
+      wrapped.method("push!", [](WrappedT& S, const elemType& i) {
           S += i;
           return S;
       });
 
-      wrapped.method("delete!", [](WrappedT& S, const elemType i) {
+      wrapped.method("delete!", [](WrappedT& S, const elemType& i) {
           S -= i;
           return S;
       });
