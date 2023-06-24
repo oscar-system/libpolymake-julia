@@ -260,11 +260,10 @@ struct WrapArray
    }
 };
 
-template <typename elem>
-struct WrapSetImpl
+struct WrapSet
 {
    template <typename TypeWrapperT>
-   static void wrap(TypeWrapperT& wrapped)
+   void operator()(TypeWrapperT&& wrapped)
    {
       using WrappedT = typename TypeWrapperT::type;
       using elemType = typename TypeWrapperT::type::value_type;
@@ -332,21 +331,11 @@ T; });
       wrap_common(wrapped);
    }
 };
-struct WrapSet
+
+struct WrapSetIterator
 {
    template <typename TypeWrapperT>
    void operator()(TypeWrapperT&& wrapped)
-   {
-      using elemType = typename TypeWrapperT::type::value_type;
-      WrapSetImpl<elemType>::wrap(wrapped);
-   }
-};
-
-template <typename elem>
-struct WrapSetIteratorImpl
-{
-   template <typename TypeWrapperT>
-   static void wrap(TypeWrapperT& wrapped)
    {
       using WrappedSetIter = typename TypeWrapperT::type;
       using elemType = typename TypeWrapperT::type::value_type;
@@ -370,16 +359,6 @@ struct WrapSetIteratorImpl
       wrapped.module().unset_override_module();
    }
 };
-struct WrapSetIterator
-{
-   template <typename TypeWrapperT>
-   void operator()(TypeWrapperT&& wrapped)
-   {
-      using elemType = typename TypeWrapperT::type::value_type;
-      WrapSetIteratorImpl<elemType>::wrap(wrapped);
-   }
-};
-
 
 template<typename T>
 inline void wrap_vector(jlcxx::Module& mod)
