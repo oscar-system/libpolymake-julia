@@ -10,6 +10,7 @@
 
 #include "jlpolymake/containers.h"
 
+template<> struct jlcxx::IsMirroredType<pm::operations::cmp> : std::false_type { };
 
 namespace jlpolymake {
 
@@ -44,49 +45,32 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_bigobject(jlpolymake);
 
     add_integer(jlpolymake);
-
     add_rational(jlpolymake);
-    
     add_tropicalnumber(jlpolymake);
-
     add_quadraticextension(jlpolymake);
 
     prepare_containers(jlpolymake);
+    jlpolymake.add_type<pm::operations::cmp>("operations_cmp");
 
-    wrap_array_for_types<VecOrMat_supported::value_type>(jlpolymake);
+    wrap_types(jlpolymake);
 
-    // needed for sparse containers
-    add_set(jlpolymake);
-    wrap_array<pm::Set<pm::Int>>(jlpolymake);
-    wrap_array<pm::Set<pm::Set<pm::Int>>>(jlpolymake);
-
-    wrap_vector_for_types<VecOrMat_supported::value_type>(jlpolymake);
-    wrap_matrix_for_types<VecOrMat_supported::value_type>(jlpolymake);
-    wrap_sparsevector_for_types<VecOrMat_supported::value_type>(jlpolymake);
-    wrap_sparsematrix_for_types<VecOrMat_supported::value_type>(jlpolymake);
-
-    wrap_array_for_types<TropicalNumberTypes::value_type>(jlpolymake);
-    wrap_vector_for_types<TropicalNumberTypes::value_type>(jlpolymake);
-    wrap_matrix_for_types<TropicalNumberTypes::value_type>(jlpolymake);
-    wrap_sparsevector_for_types<TropicalNumberTypes::value_type>(jlpolymake);
-    wrap_sparsematrix_for_types<TropicalNumberTypes::value_type>(jlpolymake);
-
-    wrap_pair<pm::Int, pm::Int>(jlpolymake);
-    wrap_pair<pm::Integer, pm::Int>(jlpolymake);
-
-    add_lists(jlpolymake);
+    jlpolymake.method("range", [](const pm::Int a, const pm::Int b) {
+            return pm::Set<pm::Int>{pm::range(a, b)};
+        });
+    jlpolymake.method("sequence", [](const pm::Int a, const pm::Int c) {
+            return pm::Set<pm::Int>{pm::sequence(a, c)};
+        });
+    jlpolymake.method("scalar2set", [](const pm::Int s) {
+            return pm::Set<pm::Int>{pm::scalar2set(s)};
+        });
 
     add_graph(jlpolymake);
+    add_edgemap(jlpolymake);
+    add_nodemap(jlpolymake);
 
     add_homologygroup(jlpolymake);
 
-    add_array(jlpolymake);
-
-    wrap_pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>(jlpolymake);
-    wrap_pair<pm::Array<pm::Int>, pm::Array<pm::Int>>(jlpolymake);
-
-    add_edgemap(jlpolymake);
-    add_nodemap(jlpolymake);
+    wrap_array<polymake::topaz::HomologyGroup<pm::Integer>>(jlpolymake);
 
     add_incidencematrix(jlpolymake);
 
@@ -95,7 +79,6 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     wrap_array<pm::Polynomial<pm::Rational,long>>(jlpolymake);
     wrap_array<pm::Polynomial<pm::Integer,long>>(jlpolymake);
-    wrap_array<std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>>(jlpolymake);
     
     add_direct_calls(jlpolymake);
 
@@ -105,9 +88,17 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_matrix_extended(jlpolymake, matrix_type);
     add_vector_extended(jlpolymake, vector_type);
 
-    add_map(jlpolymake);
-
     add_unbox_pv(jlpolymake);
+
+    jlpolymake.method("to_array_string",[] (std::optional<pm::perl::ListResult>& l)
+         {
+            if (!l)
+               throw std::runtime_error("ListResult can be unpacked only once.");
+            pm::Array<std::string> arr;
+            *l >> pm::perl::unroll(arr);
+            l.reset();
+            return arr;
+         });
     
     // this must be here instead of type_bigobject to have the array available
     jlpolymake.method("_lookup_multi", [](pm::perl::BigObject p, const std::string& name) -> pm::Array<pm::perl::BigObject> {

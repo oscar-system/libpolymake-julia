@@ -13,6 +13,7 @@ using tparametric2 = jlcxx::TypeWrapper<jlcxx::Parametric<jlcxx::TypeVar<1>, jlc
 void add_array(jlcxx::Module& jlpolymake);
 void prepare_containers(jlcxx::Module& jlpolymake);
 
+void wrap_types(jlcxx::Module& jlpolymake);
 
 void add_bigobject(jlcxx::Module& jlpolymake);
 void add_direct_calls(jlcxx::Module&);
@@ -22,15 +23,12 @@ void add_nodemap(jlcxx::Module& jlpolymake);
 void add_homologygroup(jlcxx::Module& jlpolymake);
 void add_incidencematrix(jlcxx::Module& jlpolymake);
 void add_integer(jlcxx::Module& jlpolymake);
-void add_lists(jlcxx::Module& jlpolymake);
-void add_map(jlcxx::Module& jlpolymake);
 void add_matrix_extended(jlcxx::Module& jlpolymake, tparametric1 matrixt);
 void add_polynomial(jlcxx::Module& jlpolymake);
 void add_unipolynomial(jlcxx::Module& jlpolymake);
 void add_rational(jlcxx::Module& jlpolymake);
 void add_tropicalnumber(jlcxx::Module& jlpolymake);
 void add_quadraticextension(jlcxx::Module& jlpolymake);
-void add_set(jlcxx::Module& jlpolymake);
 void add_type_translations(jlcxx::Module&);
 void add_vector_extended(jlcxx::Module& jlpolymake, tparametric1 vectort);
 

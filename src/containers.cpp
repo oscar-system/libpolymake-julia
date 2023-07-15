@@ -34,13 +34,23 @@ pmwrappers& wrappers()
 pmwrappers::pmwrappers(jlcxx::Module& jlpolymake) :
   m_pmw_mod(jlpolymake),
   pmarray(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Array", jlcxx::julia_type("AbstractVector", "Base"))),
+
   pmset(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Set", jlcxx::julia_type("AbstractSet", "Base"))),
   pmsetiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("SetIterator")),
+
   pmvector(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Vector", jlcxx::julia_type("AbstractVector", "Base"))),
   pmmatrix(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("Matrix", jlcxx::julia_type("AbstractMatrix", "Base"))),
+
   pmsparsevector(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>,jlcxx::ParameterList<jlcxx::TypeVar<1>,int>>("SparseVector", jlcxx::julia_type("AbstractSparseVector", "SparseArrays"))),
   pmsparsematrix(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>,jlcxx::ParameterList<jlcxx::TypeVar<1>,int>>("SparseMatrix", jlcxx::julia_type("AbstractSparseMatrix", "SparseArrays"))),
-  pmpair(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("StdPair"))
+
+  pmpair(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("StdPair")),
+
+  pmmap(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("Map", jlcxx::julia_type("AbstractDict", "Base"))),
+  pmmapiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("MapIterator")),
+  
+  pmlist(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("StdList")),
+  pmlistiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator"))
 {
 }
 

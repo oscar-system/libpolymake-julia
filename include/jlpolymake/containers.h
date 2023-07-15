@@ -20,6 +20,8 @@ private:
   static std::unique_ptr<pmwrappers> m_instance;
   jlcxx::Module& m_pmw_mod;
 public:
+  // Warning: when adding new types here make sure to add them at the end to make sure
+  // it stays compatible with previous builds of polymake_oscarnumber
   TypeWrapper1 pmarray;
   TypeWrapper1 pmset;
   TypeWrapper1 pmsetiterator;
@@ -28,6 +30,10 @@ public:
   TypeWrapper1 pmsparsevector;
   TypeWrapper1 pmsparsematrix;
   TypeWrapper2 pmpair;
+  TypeWrapper2 pmmap;
+  TypeWrapper2 pmmapiterator;
+  TypeWrapper1 pmlist;
+  TypeWrapper1 pmlistiterator;
 
   static void instantiate(jlcxx::Module& mod);
   static pmwrappers& instance();
@@ -73,8 +79,14 @@ struct WrapMatrix
       wrapped.method("_setindex!",
             [](WrappedT& M, const elemType& r, int64_t i,
                int64_t j) { M(i - 1, j - 1) = r; });
-      wrapped.method("nrows", &WrappedT::rows);
-      wrapped.method("ncols", &WrappedT::cols);
+      wrapped.method("nrows", [](const WrappedT& M) { return static_cast<int64_t>(M.rows()); });
+      wrapped.method("ncols", [](const WrappedT& M) { return static_cast<int64_t>(M.cols()); });
+      wrapped.method("_vcat", [](const WrappedT& M, const WrappedT& N) {
+            return WrappedT(M/N);
+            });
+      wrapped.method("_hcat", [](const WrappedT& M, const WrappedT& N) {
+            return WrappedT(M|N);
+            });
       wrapped.method("resize!", [](WrappedT& M, int64_t i,
                int64_t j) { M.resize(i, j); });
       wrapped.module().unset_override_module();
@@ -360,6 +372,134 @@ struct WrapSetIterator
    }
 };
 
+struct WrapMap
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using keyT = typename TypeWrapperT::type::key_type;
+      using valT = typename TypeWrapperT::type::mapped_type;
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("_getindex", [](const WrappedT& M, const keyT& key) {
+            return M[key];
+            });
+
+      wrapped.method("_haskey", [](const WrappedT& M, const keyT& key) {
+            return M.exists(key);
+            });
+
+      wrapped.method("_setindex!", [](WrappedT& M, const valT& val, const keyT& key) {
+            M[key] = val;
+            });
+
+      wrapped.method("isempty", &WrappedT::empty);
+      wrapped.method("empty!", &WrappedT::clear);
+      wrapped.method("length", [] (const WrappedT& M) { return static_cast<int64_t>(M.size()); });
+
+      wrapped.method("_isequal", [](const WrappedT& S, const WrappedT& T) { return S == T; });
+
+      wrapped.module().unset_override_module();
+      wrap_common(wrapped);
+   }
+};
+
+struct WrapMapIterator
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using keyT = typename TypeWrapperT::type::key_type;
+      using valT = typename TypeWrapperT::type::mapped_type;
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("beginiterator", [](const Map<keyT, valT>& M) {
+          auto result = WrappedMapIterator<keyT, valT>{M};
+          return result;
+      });
+
+      wrapped.method("increment", [](WrappedT& state) {
+          state.iterator++;
+      });
+      wrapped.method("get_element", [](const WrappedT& state) {
+          auto elt = *(state.iterator);
+          return std::tuple<keyT, valT>(elt.first, elt.second);
+      });
+      wrapped.method("isdone", [](const Map<keyT, valT>& M,
+                                  const WrappedT&    state) {
+          return M.end() == state.iterator;
+      });
+      wrapped.module().unset_override_module();
+   }
+};
+
+struct WrapList
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using elemType = typename TypeWrapperT::type::value_type;
+
+      wrapped.template constructor<WrappedT>();
+
+      wrapped.module().set_override_module(jl_base_module);
+
+      wrapped.method("isempty", &WrappedT::empty);
+
+      wrapped.method("empty!", [](WrappedT& L) {
+            L.clear();
+            return L;
+            });
+
+      wrapped.method("push!", [](WrappedT& L, const elemType& i) {
+            L.push_back(i);
+            return L;
+            });
+
+      wrapped.method("pushfirst!", [](WrappedT& L, const elemType& i) {
+            L.push_front(i);
+            return L;
+            });
+
+      wrapped.method("length", [] (const WrappedT& L) { return static_cast<int64_t>(L.size()); });
+
+      wrapped.module().unset_override_module();
+
+      wrap_common(wrapped);
+   }
+};
+
+struct WrapListIterator
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using elemType = typename TypeWrapperT::type::value_type;
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("beginiterator", [](const std::list<elemType>& L) {
+          auto result = WrappedStdListIterator<elemType>{L};
+          return result;
+      });
+
+      wrapped.method("increment", [](WrappedT& state) {
+          state.iterator++;
+      });
+      wrapped.method("get_element", [](const WrappedT& state) {
+          auto elt = *(state.iterator);
+          return elt;
+      });
+      wrapped.method("isdone", [](const std::list<elemType>& L,
+                                  const WrappedT&    state) {
+          return L.end() == state.iterator;
+      });
+      wrapped.module().unset_override_module();
+   }
+};
+
 template<typename T>
 inline void wrap_vector(jlcxx::Module& mod)
 {
@@ -423,9 +563,23 @@ inline void wrap_set(jlcxx::Module& mod)
 }
 
 template<typename T1, typename T2>
+inline void wrap_map(jlcxx::Module& mod)
+{
+   TypeWrapper2(mod, pmwrappers::instance().pmmap).apply<pm::Map<T1,T2>>(WrapMap());
+   TypeWrapper2(mod, pmwrappers::instance().pmmapiterator).apply<WrappedMapIterator<T1,T2>>(WrapMapIterator());
+}
+
+template<typename T1, typename T2>
 inline void wrap_pair(jlcxx::Module& mod)
 {
    TypeWrapper2(mod, pmwrappers::instance().pmpair).apply<std::pair<T1,T2>>(WrapPair());
+}
+
+template<typename T>
+inline void wrap_list(jlcxx::Module& mod)
+{
+   TypeWrapper1(mod, pmwrappers::instance().pmlist).apply<std::list<T>>(WrapList());
+   TypeWrapper1(mod, pmwrappers::instance().pmlistiterator).apply<WrappedStdListIterator<T>>(WrapListIterator());
 }
 
 }

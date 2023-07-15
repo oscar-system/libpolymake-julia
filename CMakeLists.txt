@@ -56,6 +56,7 @@ set(JLPOLYMAKE_GENERATED ${CMAKE_CURRENT_BINARY_DIR}/include)
 
 set(GENERATED_CPP
     ${CMAKE_CURRENT_BINARY_DIR}/src/unbox_pv.cpp
+    ${CMAKE_CURRENT_BINARY_DIR}/src/wrap_types.cpp
 )
 
 set(JLPOLYMAKE_TARGET polymake_julia)
