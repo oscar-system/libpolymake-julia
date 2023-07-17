@@ -50,13 +50,49 @@ if(CMAKE_COMPILER_IS_GNUCC AND CMAKE_CXX_COMPILER_VERSION VERSION_LESS 7.0)
    message( FATAL_ERROR "gcc version must be at least 7 to build the polymake CxxWrap interface." )
 endif()
 
+set(TYPE_GENERATOR ${CMAKE_CURRENT_SOURCE_DIR}/src/polymake/type_setup.pl)
+set(GENERATOR_STAGING_DIR ${CMAKE_CURRENT_BINARY_DIR}/tmp/)
+set(GENERATOR_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(GENERATOR_OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR})
+
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${TYPE_GENERATOR})
+
+file(REMOVE_RECURSE ${GENERATOR_STAGING_DIR})
+file(MAKE_DIRECTORY ${GENERATOR_STAGING_DIR})
+
+execute_process(COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/src/polymake/type_setup.pl ${GENERATOR_STAGING_DIR} COMMAND_ERROR_IS_FATAL ANY)
+
+file(MAKE_DIRECTORY ${GENERATOR_OUTPUT_DIR}/src)
+file(MAKE_DIRECTORY ${GENERATOR_OUTPUT_DIR}/jl)
+file(MAKE_DIRECTORY ${GENERATOR_OUTPUT_DIR}/include/jlpolymake/generated)
+
+# Remove stale files from final generator output directory
+file(GLOB_RECURSE CURR_GENERATED_FILES RELATIVE "${GENERATOR_OUTPUT_DIR}/"
+   "${GENERATOR_OUTPUT_DIR}/src/*"
+   "${GENERATOR_OUTPUT_DIR}/jl/*"
+   "${GENERATOR_OUTPUT_DIR}/include/jlpolymake/generated/*")
+foreach(FILE ${CURR_GENERATED_FILES})
+    if(NOT EXISTS "${GENERATOR_STAGING_DIR}/${FILE}")
+        file(REMOVE "${GENERATOR_OUTPUT_DIR}/${FILE}")
+    endif()
+endforeach()
+
+## Copy modified files from staging to final generator output directory
+file(GLOB_RECURSE GENERATED_FILES RELATIVE "${GENERATOR_STAGING_DIR}/"
+   "${GENERATOR_STAGING_DIR}/src/*"
+   "${GENERATOR_STAGING_DIR}/jl/*"
+   "${GENERATOR_STAGING_DIR}/include/jlpolymake/generated/*")
+foreach(FILE ${GENERATED_FILES})
+   execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different "${GENERATOR_STAGING_DIR}/${FILE}" "${GENERATOR_OUTPUT_DIR}/${FILE}" COMMAND_ERROR_IS_FATAL ANY)
+endforeach()
+
 set(JLPOLYMAKE_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 set(JLPOLYMAKE_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/src)
 set(JLPOLYMAKE_GENERATED ${CMAKE_CURRENT_BINARY_DIR}/include)
 
-set(GENERATED_CPP
-    ${CMAKE_CURRENT_BINARY_DIR}/src/unbox_pv.cpp
-    ${CMAKE_CURRENT_BINARY_DIR}/src/wrap_types.cpp
+file(GLOB GENERATED_CPP
+   ${CMAKE_CURRENT_BINARY_DIR}/src/unbox_pv*.cpp
+   ${CMAKE_CURRENT_BINARY_DIR}/src/wrap_types*.cpp
 )
 
 set(JLPOLYMAKE_TARGET polymake_julia)
@@ -84,12 +120,6 @@ set(GEN_DEPS_TREE ${CMAKE_CURRENT_SOURCE_DIR}/src/polymake/generate_deps_tree.jl
 
 set_target_properties(${JLPOLYMAKE_TARGET} PROPERTIES
    PUBLIC_HEADER "${JLPOLYMAKE_HEADERS}")
-
-add_custom_command(
-   OUTPUT ${GENERATED_HEADERS} ${TYPE_TRANSLATOR} ${GENERATED_CPP}
-   COMMAND perl ${CMAKE_CURRENT_SOURCE_DIR}/src/polymake/type_setup.pl ${CMAKE_CURRENT_BINARY_DIR}
-   DEPENDS src/polymake/type_setup.pl
-)
 
 add_custom_target(generated_files ALL DEPENDS ${GENERATED_HEADERS} ${GENERATED_CPP})
 add_dependencies(${JLPOLYMAKE_TARGET} generated_files)

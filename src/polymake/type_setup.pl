@@ -6,6 +6,7 @@ use File::Basename qw(dirname);
 use File::Path qw(make_path);
 use List::Util 'uniqstr';
 
+my $missingtypes = qr(^(Min|Max|String|Undirected|Directed)$);
 my %added_types;
 my %needed_types;
 my $type_tuples = [];
@@ -479,7 +480,7 @@ sub unbox_propertyvalue_src {
         return to_SmallObject<$_->{ctype}>(pv);
     });"
    } grep {defined($_->{convert_f}) && $_->{type_string} ne "BigObject"} @$type_hashes;
-   return gen_limited_files("unbox_pv", $path, @functions);
+   return gen_limited_files("add_unbox_pv", $path, @functions);
 }
 
 sub wrap_types_src {
@@ -523,5 +524,5 @@ foreach (keys %generated) {
 }
 
 foreach my $k (keys(%needed_types)) {
-   print "Type missing: $k\n";
+   print "WARNING: type missing: $k\n" unless $k =~ $missingtypes;
 }
