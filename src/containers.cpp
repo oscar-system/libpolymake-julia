@@ -50,7 +50,10 @@ pmwrappers::pmwrappers(jlcxx::Module& jlpolymake) :
   pmmapiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("MapIterator")),
   
   pmlist(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("StdList")),
-  pmlistiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator"))
+  pmlistiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator")),
+
+  pmpolynomial(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("Polynomial")),
+  pmunipolynomial(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("UniPolynomial"))
 {
 }
 

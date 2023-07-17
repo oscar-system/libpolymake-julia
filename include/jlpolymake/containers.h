@@ -34,6 +34,8 @@ public:
   TypeWrapper2 pmmapiterator;
   TypeWrapper1 pmlist;
   TypeWrapper1 pmlistiterator;
+  TypeWrapper2 pmpolynomial;
+  TypeWrapper2 pmunipolynomial;
 
   static void instantiate(jlcxx::Module& mod);
   static pmwrappers& instance();
@@ -500,6 +502,67 @@ struct WrapListIterator
    }
 };
 
+struct WrapPolynomialBase
+{
+   template <typename TypeWrapperT>
+   static void wrap(TypeWrapperT& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using coeffT = typename TypeWrapperT::type::coefficient_type;
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("_isequal", [](const WrappedT& a, const WrappedT& b) { return a == b; });
+      wrapped.method("_add", [](const WrappedT& a, const WrappedT& b) { return a + b; });
+      wrapped.method("_sub", [](const WrappedT& a, const WrappedT& b) { return a - b; });
+      wrapped.method("_mul", [](const WrappedT& a, const WrappedT& b) { return a * b; });
+      wrapped.method("^", [](const WrappedT& a, int64_t b) { return a ^ b; });
+      wrapped.method("/", [](const WrappedT& a, const coeffT& c) { return a / c; });
+      wrapped.method("coefficients_as_vector", &WrappedT::coefficients_as_vector);
+      wrapped.method("set_var_names", [](const WrappedT& a, const Array<std::string>& names) { a.set_var_names(names); });
+      wrapped.method("get_var_names", [](const WrappedT& a) { return a.get_var_names(); });
+      wrapped.method("nvars", [] (const WrappedT& a) -> pm::Int { return a.n_vars(); });
+
+      wrapped.module().unset_override_module();
+      wrap_common(wrapped);
+   }
+};
+
+struct WrapUniPolynomial
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using coeffT = typename TypeWrapperT::type::coefficient_type;
+      using expT = typename TypeWrapperT::type::monomial_type;
+
+      wrapped.template constructor<pm::Vector<coeffT>, pm::Vector<expT>>();
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("monomials_as_vector", [](const WrappedT& a) { return a.monomials_as_vector(); });
+      wrapped.module().unset_override_module();
+      WrapPolynomialBase::wrap(wrapped);
+   }
+};
+
+struct WrapPolynomial
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using coeffT = typename TypeWrapperT::type::coefficient_type;
+      using expT = typename TypeWrapperT::type::monomial_type::value_type;
+
+      wrapped.template constructor<pm::Vector<coeffT>, pm::Matrix<expT>>();
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("monomials_as_matrix", [](const WrappedT& a) { return a.monomials_as_matrix(); });
+      wrapped.module().unset_override_module();
+      WrapPolynomialBase::wrap(wrapped);
+   }
+};
+
 template<typename T>
 inline void wrap_vector(jlcxx::Module& mod)
 {
@@ -582,4 +645,16 @@ inline void wrap_list(jlcxx::Module& mod)
    TypeWrapper1(mod, pmwrappers::instance().pmlistiterator).apply<WrappedStdListIterator<T>>(WrapListIterator());
 }
 
+template<typename T1, typename T2>
+inline void wrap_polynomial(jlcxx::Module& mod)
+{
+   TypeWrapper2(mod, pmwrappers::instance().pmpolynomial).apply<pm::Polynomial<T1,T2>>(WrapPolynomial());
 }
+
+template<typename T1, typename T2>
+inline void wrap_unipolynomial(jlcxx::Module& mod)
+{
+   TypeWrapper2(mod, pmwrappers::instance().pmunipolynomial).apply<pm::UniPolynomial<T1,T2>>(WrapUniPolynomial());
+}
+
+} //end namespace

@@ -8,6 +8,8 @@
 
 #include "jlpolymake/type_modules.h"
 
+#include "jlpolymake/generated/get_type_names.h"
+
 #include "jlpolymake/containers.h"
 
 template<> struct jlcxx::IsMirroredType<pm::operations::cmp> : std::false_type { };
@@ -74,12 +76,6 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     wrap_array<polymake::topaz::HomologyGroup<pm::Integer>>(jlpolymake);
 
-    add_polynomial(jlpolymake);
-    add_unipolynomial(jlpolymake);
-
-    wrap_array<pm::Polynomial<pm::Rational,long>>(jlpolymake);
-    wrap_array<pm::Polynomial<pm::Integer,long>>(jlpolymake);
-    
     add_direct_calls(jlpolymake);
 
     auto matrix_type = jlcxx::TypeWrapper1(jlpolymake, pmwrappers::instance().pmmatrix);
@@ -164,6 +160,6 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_caller(jlpolymake);
 
-    add_type_translations(jlpolymake);
+    jlpolymake.method("get_type_names", &get_type_names);
 
 }

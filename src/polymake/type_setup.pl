@@ -70,22 +70,21 @@ sub TropicalNumber {
    return template("TropicalNumber", @_);
 }
 
-# we need to ignore polynomials when generating the wrap_ calls
 sub Vector {
    my $p = $_[0] eq "Sparse" ? shift : "";
-   push @$wrap_calls, [lc("wrap_${p}vector"), [$_[0]->[1]]]
-       if $_[0]->[1] !~ /Polynomial/;
+   push @$wrap_calls, [lc("wrap_${p}vector"), [$_[0]->[1]]];
+   #       if $_[0]->[1] !~ /Polynomial/;
    return template("${p}Vector", @_);
 }
 sub Matrix {
    my $p = $_[0] eq "Sparse" ? shift : "";
-   push @$wrap_calls, [lc("wrap_${p}matrix"), [$_[0]->[1]]]
-       if $_[0]->[1] !~ /Polynomial/;
+   push @$wrap_calls, [lc("wrap_${p}matrix"), [$_[0]->[1]]];
+   #       if $_[0]->[1] !~ /Polynomial/;
    return template("${p}Matrix", @_);
 }
 sub Array {
-   push @$wrap_calls, ["wrap_array", [$_[0]->[1]]]
-       if $_[0]->[1] !~ /Polynomial/;
+   push @$wrap_calls, ["wrap_array", [$_[0]->[1]]];
+   #       if $_[0]->[1] !~ /Polynomial/;
    return template("Array", @_);
 }
 sub Set {
@@ -105,9 +104,11 @@ sub List {
    return template(["List", "std::list", "StdList", "list"], @_);
 }
 sub UniPolynomial {
+   push @$wrap_calls, ["wrap_unipolynomial", [$_[0]->[1], $_[1]->[1]]];
    return template("UniPolynomial", @_);
 }
 sub Polynomial {
+   push @$wrap_calls, ["wrap_polynomial", [$_[0]->[1], $_[1]->[1]]];
    return template("Polynomial", @_);
 }
 sub NodeMap {
@@ -197,7 +198,6 @@ foreach my $typearr (
         Polynomial(double,Int),
         Polynomial(QuadraticExtension(Rational),Int),
 
-        # the wrap calls are done separately, via add_*_extended
         Matrix(Polynomial(Rational,Int)),
         Vector(Polynomial(Rational,Int)),
         Array(Polynomial(Integer,Int)),
