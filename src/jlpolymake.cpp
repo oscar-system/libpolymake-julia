@@ -64,6 +64,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
             return pm::Set<pm::Int>{pm::scalar2set(s)};
         });
 
+    add_incidencematrix(jlpolymake);
+
     add_graph(jlpolymake);
     add_edgemap(jlpolymake);
     add_nodemap(jlpolymake);
@@ -71,8 +73,6 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     add_homologygroup(jlpolymake);
 
     wrap_array<polymake::topaz::HomologyGroup<pm::Integer>>(jlpolymake);
-
-    add_incidencematrix(jlpolymake);
 
     add_polynomial(jlpolymake);
     add_unipolynomial(jlpolymake);

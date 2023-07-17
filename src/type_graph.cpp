@@ -26,6 +26,9 @@ void add_graph(jlcxx::Module& jlpolymake)
         typedef typename decltype(wrapped)::type WrappedT;
 
         wrapped.template constructor<int64_t>();
+        wrapped.template constructor<IncidenceMatrix<NonSymmetric>>();
+        wrapped.template constructor<IncidenceMatrix<Symmetric>>();
+
 
         wrapped.method("nv", &WrappedT::nodes);
         wrapped.method("ne", &WrappedT::edges);
