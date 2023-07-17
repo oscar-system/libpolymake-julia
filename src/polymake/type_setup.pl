@@ -68,6 +68,8 @@ sub QuadraticExtension {
 sub TropicalNumber {
    return template("TropicalNumber", @_);
 }
+
+# we need to ignore polynomials when generating the wrap_ calls
 sub Vector {
    my $p = $_[0] eq "Sparse" ? shift : "";
    push @$wrap_calls, [lc("wrap_${p}vector"), [$_[0]->[1]]]
@@ -80,6 +82,11 @@ sub Matrix {
        if $_[0]->[1] !~ /Polynomial/;
    return template("${p}Matrix", @_);
 }
+sub Array {
+   push @$wrap_calls, ["wrap_array", [$_[0]->[1]]]
+       if $_[0]->[1] !~ /Polynomial/;
+   return template("Array", @_);
+}
 sub Set {
    push @$wrap_calls, ["wrap_set", [$_[0]->[1]]];
    return template("Set", @_);
@@ -87,11 +94,6 @@ sub Set {
 sub Map {
    push @$wrap_calls, ["wrap_map", [$_[0]->[1], $_[1]->[1]]];
    return template("Map", @_);
-}
-sub Array {
-   push @$wrap_calls, ["wrap_array", [$_[0]->[1]]]
-       if $_[0]->[1] !~ /Polynomial/;
-   return template("Array", @_);
 }
 sub Pair {
    push @$wrap_calls, ["wrap_pair", [$_[0]->[1], $_[1]->[1]]];
@@ -417,39 +419,7 @@ sub get_type_declarations_extern {
    return "extern ".join("\nextern ",@{decl($type_hashes)});
 }
 
-sub unbox_propertyvalue_src {
-   my ($type_hashes) = @_;
-   my $functions = join("\n", map {
-    "jlpolymake.method(\"to_$_->{convert_f}\", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<$_->{ctype}>(pv);
-    });"
-   } grep {defined($_->{convert_f}) && $_->{type_string} ne "BigObject"} @$type_hashes);
-   return <<"---";
-#include "jlpolymake/jlpolymake.h"
-
-#include "jlpolymake/tools.h"
-
-#include "jlpolymake/functions.h"
-
-#include "jlpolymake/type_modules.h"
-
-namespace jlpolymake {
-
-void add_unbox_pv(jlcxx::Module& jlpolymake)
-{
-$functions
-}
-
-}
----
-}
-
-sub wrap_types_src {
-   my $calls = join("\n", uniqstr(map {
-       "    $_->[0]<".join(",",@{$_->[1]}).">(jlpolymake);"
-   } @$wrap_calls));
-
-   return <<"---";
+my $header = <<"---";
 #include "jlpolymake/jlpolymake.h"
 
 #include "jlpolymake/tools.h"
@@ -462,13 +432,63 @@ sub wrap_types_src {
 
 namespace jlpolymake {
 
-void wrap_types(jlcxx::Module& jlpolymake)
-{
-$calls
+---
+
+my $footer = <<"---";
 }
 
 }
 ---
+my $wrapperlimit = 20;
+
+sub gen_limited_files {
+   my ($addfun, $path, @calls) = @_;
+   $path =~ s/\.cpp$//;
+
+   my $funsig = "(jlcxx::Module& jlpolymake)";
+
+   my $files = {};
+   my $i = 0;
+   do {
+      my $filename = $path."_$i.cpp";
+      my $function = $header .
+                     "void ${addfun}_$i$funsig\n" .
+                     "{\n    " .
+                     join ("\n    ",splice(@calls, 0, $wrapperlimit)) .
+                     "\n" . $footer;
+
+      $files->{$filename} = $function;
+      $i += 1;
+   } while (@calls > 0);
+
+   my $main = $header;
+   $main .= "void ${addfun}_$_$funsig;\n" for (0..$i-1);
+
+   $main .= "\nvoid $addfun$funsig\n{\n";
+   $main .= "    ${addfun}_$_(jlpolymake);\n" for (0..$i-1);
+   $main .= "$footer";
+
+   $files->{"$path.cpp"} = $main;
+   return $files;
+}
+
+sub unbox_propertyvalue_src {
+   my ($type_hashes, $path) = @_;
+   my @functions = map {
+    "jlpolymake.method(\"to_$_->{convert_f}\", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<$_->{ctype}>(pv);
+    });"
+   } grep {defined($_->{convert_f}) && $_->{type_string} ne "BigObject"} @$type_hashes;
+   return gen_limited_files("unbox_pv", $path, @functions);
+}
+
+sub wrap_types_src {
+   my ($type_hashes, $path) = @_;
+   my @calls = uniqstr(map {
+       "    $_->[0]<".join(",",@{$_->[1]}).">(jlpolymake);"
+   } @$wrap_calls);
+
+   return gen_limited_files("wrap_types", $path, @calls);
 }
 
 
@@ -493,9 +513,13 @@ my %generated = (
 
 
 foreach (keys %generated) {
-   open my $f, ">", "$_";
-   print $f $generated{$_}->($type_hashes),"\n";
-   close $f;
+   my $files = $generated{$_}->($type_hashes, $_);
+   $files = {$_ => $files} if ref($files) ne "HASH";
+   while(my($k, $v) = each %$files) {
+      open my $f, ">", "$k";
+      print $f $v,"\n";
+      close $f;
+   }
 }
 
 foreach my $k (keys(%needed_types)) {
