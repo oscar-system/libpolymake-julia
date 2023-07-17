@@ -5,7 +5,7 @@
 
 namespace jlpolymake {
 
-void add_unbox_pv(jlcxx::Module& jlpolymake);
+void unbox_pv(jlcxx::Module& jlpolymake);
 
 using tparametric1 = jlcxx::TypeWrapper<jlcxx::Parametric<jlcxx::TypeVar<1>>>;
 using tparametric2 = jlcxx::TypeWrapper<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>;
@@ -14,6 +14,7 @@ void add_array(jlcxx::Module& jlpolymake);
 void prepare_containers(jlcxx::Module& jlpolymake);
 
 void wrap_types(jlcxx::Module& jlpolymake);
+void wrap_types_extra(jlcxx::Module& jlpolymake);
 
 void add_bigobject(jlcxx::Module& jlpolymake);
 void add_direct_calls(jlcxx::Module&);

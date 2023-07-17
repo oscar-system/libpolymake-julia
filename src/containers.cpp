@@ -48,6 +48,9 @@ pmwrappers::pmwrappers(jlcxx::Module& jlpolymake) :
 
   pmmap(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("Map", jlcxx::julia_type("AbstractDict", "Base"))),
   pmmapiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("MapIterator")),
+
+  pmnodemap(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("NodeMap")),
+  pmedgemap(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>("EdgeMap")),
   
   pmlist(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("StdList")),
   pmlistiterator(jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("ListIterator")),

@@ -8,6 +8,9 @@
 
 #include "jlpolymake/type_modules.h"
 
+#include "polymake/graph/DijkstraShortestPath.h"
+#include "polymake/graph/DijkstraShortestPathWithScalarWeights.h"
+
 namespace jlpolymake {
 
 using TypeWrapper2 = jlcxx::TypeWrapper<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>;
@@ -32,6 +35,8 @@ public:
   TypeWrapper2 pmpair;
   TypeWrapper2 pmmap;
   TypeWrapper2 pmmapiterator;
+  TypeWrapper2 pmnodemap;
+  TypeWrapper2 pmedgemap;
   TypeWrapper1 pmlist;
   TypeWrapper1 pmlistiterator;
   TypeWrapper2 pmpolynomial;
@@ -100,6 +105,7 @@ struct WrapMatrix
       using WrappedT = typename TypeWrapperT::type;
       using elemType = typename TypeWrapperT::type::value_type;
       wrapped.module().set_override_module(pmwrappers::instance().module());
+      // this construction only needs to exist once, for non-sparse return value
       wrapped.method("_same_element_matrix", [](const elemType& e, int64_t i, int64_t j) {
             return WrappedT(same_element_matrix(e, i, j));
             });
@@ -133,6 +139,7 @@ struct WrapVectorBase
          is_instance_of<elemType, UniPolynomial>::value==false, 
       std::nullptr_t> = nullptr)
    {
+      // cannot do this for polynomial entries
       using WrappedT = typename TypeWrapperT::type;
       wrapped.method("/", [](const WrappedT& V, const elemType& s) { return WrappedT(V / s); });
    }
@@ -470,6 +477,76 @@ struct WrapMapIterator
    }
 };
 
+struct WrapNodeMap
+{
+
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using GType = typename TypeWrapperT::type::graph_type;
+      using TDir = typename TypeWrapperT::type::graph_type::dir;
+      using E = typename TypeWrapperT::type::value_type;
+      wrapped.template constructor<GType>();
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("_set_entry", [](WrappedT& NM, int64_t node, const E& val) { NM[node] = val; });
+      wrapped.method("_get_entry", [](const WrappedT& NM, int64_t node) { return NM[node]; });
+      wrapped.module().unset_override_module();
+      wrap_common(wrapped);
+   }
+};
+
+struct WrapEdgeMap
+{
+   template <typename TypeWrapperT, typename E>
+   static void add_dijkstra(TypeWrapperT& wrapped, 
+         std::enable_if_t<
+            std::is_same<typename pm::object_traits<E>::generic_tag, pm::is_scalar>::value, 
+            std::nullptr_t> = nullptr)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using GType = typename TypeWrapperT::type::graph_type;
+      using TDir = typename TypeWrapperT::type::graph_type::dir;
+      wrapped.method("_shortest_path_dijkstra", [](const GType& G, const WrappedT& S, int64_t start, int64_t end, bool backward){
+            polymake::graph::DijkstraShortestPath<polymake::graph::DijkstraShortestPathWithScalarWeights<TDir, E>> DSP(G, S);
+            auto path_it = DSP.solve(static_cast<pm::Int>(start), static_cast<pm::Int>(end), !backward);
+            std::vector<pm::Int> rev_path;
+            if (!path_it.at_end()) {
+               do
+                  rev_path.push_back(path_it.cur_node());
+               while (!(++path_it).at_end());
+            }
+            return pm::Array<pm::Int>(rev_path.rbegin(), rev_path.rend());
+         });
+   }
+   template <typename TypeWrapperT, typename E>
+   static void add_dijkstra(TypeWrapperT& wrapped, 
+         std::enable_if_t<
+            std::is_same<typename pm::object_traits<E>::generic_tag, pm::is_scalar>::value == false, 
+            std::nullptr_t> = nullptr)
+   { /* instantiate dijkstra only for scalar weights */ }
+
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using GType = typename TypeWrapperT::type::graph_type;
+      using TDir = typename TypeWrapperT::type::graph_type::dir;
+      using E = typename TypeWrapperT::type::value_type;
+      wrapped.template constructor<GType>();
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("_set_entry", [](WrappedT& EM, int64_t tail, int64_t head, const E& val) { wary(EM)(tail, head) = val; });
+      wrapped.method("_get_entry", [](const WrappedT& EM, int64_t tail, int64_t head) { return wary(EM)(tail, head); });
+
+      add_dijkstra<TypeWrapperT, E>(wrapped);
+
+      wrapped.module().unset_override_module();
+      wrap_common(wrapped);
+   }
+};
+
 struct WrapList
 {
    template <typename TypeWrapperT>
@@ -663,6 +740,18 @@ inline void wrap_map(jlcxx::Module& mod)
 {
    TypeWrapper2(mod, pmwrappers::instance().pmmap).apply<pm::Map<T1,T2>>(WrapMap());
    TypeWrapper2(mod, pmwrappers::instance().pmmapiterator).apply<WrappedMapIterator<T1,T2>>(WrapMapIterator());
+}
+
+template<typename T1, typename T2>
+inline void wrap_nodemap(jlcxx::Module& mod)
+{
+   TypeWrapper2(mod, pmwrappers::instance().pmnodemap).apply<pm::graph::NodeMap<T1,T2>>(WrapNodeMap());
+}
+
+template<typename T1, typename T2>
+inline void wrap_edgemap(jlcxx::Module& mod)
+{
+   TypeWrapper2(mod, pmwrappers::instance().pmedgemap).apply<pm::graph::EdgeMap<T1,T2>>(WrapEdgeMap());
 }
 
 template<typename T1, typename T2>

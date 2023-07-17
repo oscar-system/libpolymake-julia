@@ -2,15 +2,16 @@
 
 use strict;
 use warnings;
-use File::Basename qw(dirname);
+use File::Basename qw(dirname basename);
 use File::Path qw(make_path);
 use List::Util 'uniqstr';
 
-my $missingtypes = qr(^(Min|Max|String|Undirected|Directed)$);
+my $missingtypes = qr(^(Min|Max|String|Undirected|Directed|Symmetric|NonSymmetric)$);
 my %added_types;
 my %needed_types;
 my $type_tuples = [];
 my $wrap_calls = [];
+my $extra_calls = [];
 
 sub check_type {
    foreach my $a (@_) {
@@ -58,15 +59,19 @@ sub template {
    }
 }
 
+sub def { [$_[0], "pm::$_[0]", $_[0], lc($_[0])] }
+sub Min { def("Min"); }
+sub Max { def("Max"); }
+sub Symmetric    { def("Symmetric"); }
+sub NonSymmetric { def("NonSymmetric"); }
+sub Rational  { def("Rational"); }
+sub Integer   { def("Integer"); }
+
 sub double { return ["double", "double", "Float64", "double"]; }
 sub Int { return ["Int","pm::Int","CxxWrap.CxxLong","int"]; }
-sub Min { return ["Min","pm::Min","Min","min"]; }
-sub Max { return ["Max","pm::Max","Max","max"]; }
-sub Directed   { return ["Directed","pm::graph::Directed","Directed","directed"]; }
-sub Undirected { return ["Undirected","pm::graph::Undirected","Undirected","undirected"]; }
-sub Rational { return ["Rational","pm::Rational","Rational","rational"]; }
-sub Integer { return ["Integer","pm::Integer","Integer","integer"]; }
-sub String { return ["String","std::string","CxxWrap.StdString","string"]; }
+sub Directed     { return ["Directed","pm::graph::Directed","Directed","directed"]; }
+sub Undirected   { return ["Undirected","pm::graph::Undirected","Undirected","undirected"]; }
+sub String    { return ["String","std::string","CxxWrap.StdString","string"]; }
 sub BigObject { return ["BigObject", "pm::perl::BigObject", "BigObject", "bigobject"]; }
 
 sub QuadraticExtension {
@@ -79,18 +84,15 @@ sub TropicalNumber {
 sub Vector {
    my $p = $_[0] eq "Sparse" ? shift : "";
    push @$wrap_calls, [lc("wrap_${p}vector"), [$_[0]->[1]]];
-   #       if $_[0]->[1] !~ /Polynomial/;
    return template("${p}Vector", @_);
 }
 sub Matrix {
    my $p = $_[0] eq "Sparse" ? shift : "";
    push @$wrap_calls, [lc("wrap_${p}matrix"), [$_[0]->[1]]];
-   #       if $_[0]->[1] !~ /Polynomial/;
    return template("${p}Matrix", @_);
 }
 sub Array {
    push @$wrap_calls, ["wrap_array", [$_[0]->[1]]];
-   #       if $_[0]->[1] !~ /Polynomial/;
    return template("Array", @_);
 }
 sub Set {
@@ -117,20 +119,33 @@ sub Polynomial {
    push @$wrap_calls, ["wrap_polynomial", [$_[0]->[1], $_[1]->[1]]];
    return template("Polynomial", @_);
 }
+sub IncidenceMatrix {
+   my $i = def("IncidenceMatrix");
+   # just one fixed call for a custom file
+   push @$wrap_calls, ["add_incidencematrix", []];
+   return (template($i, Symmetric),
+           template($i, NonSymmetric));
+}
+sub Graph {
+   my $g = ["Graph", "graph::Graph", "Graph", "graph"];
+   # just one fixed call for a custom file
+   push @$wrap_calls, ["add_graph", []];
+   return (template($g, Directed),
+           template($g, Undirected));
+}
 sub NodeMap {
-   my $nm = ["NodeMap", "graph::NodeMap", "NodeMap", "nodemap"];
+   my $nm = ["NodeMap", "pm::graph::NodeMap", "NodeMap", "nodemap"];
+   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Undirected", $_[0]->[1]]];
+   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Directed"  , $_[0]->[1]]];
    return (template($nm, Directed, @_),
            template($nm, Undirected, @_));
 }
 sub EdgeMap {
-   my $em = ["EdgeMap", "graph::EdgeMap", "EdgeMap", "edgemap"];
+   my $em = ["EdgeMap", "pm::graph::EdgeMap", "EdgeMap", "edgemap"];
+   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Undirected", $_[0]->[1]]];
+   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Directed"  , $_[0]->[1]]];
    return (template($em, Directed, @_),
            template($em, Undirected, @_));
-}
-sub Graph {
-   my $g = ["Graph", "graph::Graph", "Graph", "graph"];
-   return (template($g, Directed),
-           template($g, Undirected));
 }
 
 # mapped name, C++, CxxWrap, helper (to_...)
@@ -221,18 +236,7 @@ add_types(
         Map(Set(Int),Vector(Rational)),
         Map(Vector(Int),Integer),
 
-        [
-            "IncidenceMatrix_NonSymmetric",
-            "pm::IncidenceMatrix<pm::NonSymmetric>",
-            "IncidenceMatrix{NonSymmetric}",
-            "incidencematrix_nonsymmetric",
-        ],
-        [
-            "IncidenceMatrix_Symmetric",
-            "pm::IncidenceMatrix<pm::Symmetric>",
-            "IncidenceMatrix{Symmetric}",
-            "incidencematrix_symmetric",
-        ],
+        IncidenceMatrix,
 
         Graph,
         NodeMap(Int),
@@ -252,7 +256,6 @@ add_types(
             "array_homologygroup_integer",
         ],
      );
-
 
 my @keys = qw(type_string ctype jltype convert_f);
 
@@ -444,8 +447,9 @@ my $footer = <<"---";
 my $wrapperlimit = 20;
 
 sub gen_limited_files {
-   my ($addfun, $path, @calls) = @_;
+   my ($path, @calls) = @_;
    $path =~ s/\.cpp$//;
+   my $addfun = basename($path);
 
    my $funsig = "(jlcxx::Module& jlpolymake)";
 
@@ -475,24 +479,28 @@ sub gen_limited_files {
 }
 
 sub unbox_propertyvalue_src {
-   my ($type_hashes, $path) = @_;
+   my ($type_hashes, $calls, $path) = @_;
    my @functions = map {
     "jlpolymake.method(\"to_$_->{convert_f}\", [](pm::perl::PropertyValue pv) {
         return to_SmallObject<$_->{ctype}>(pv);
     });"
    } grep {defined($_->{convert_f}) && $_->{type_string} ne "BigObject"} @$type_hashes;
-   return gen_limited_files("add_unbox_pv", $path, @functions);
+   return gen_limited_files($path, @functions);
 }
 
 sub wrap_types_src {
-   my ($type_hashes, $path) = @_;
+   my ($type_hashes, $calls, $path) = @_;
    my @calls = uniqstr(map {
-       "    $_->[0]<".join(",",@{$_->[1]}).">(jlpolymake);"
-   } @$wrap_calls);
+       "    $_->[0]".(@{$_->[1]} > 0 ? "<".join(",",@{$_->[1]}).">" : "")."(jlpolymake);"
+   } @$calls);
 
-   return gen_limited_files("wrap_types", $path, @calls);
+   return gen_limited_files($path, @calls);
 }
 
+sub wrap_types_extra_src {
+   my ($type_hashes, $calls, $path) = @_;
+   return wrap_types_src($type_hashes, $extra_calls, $path);
+}
 
 my $target = @ARGV > 0 ? $ARGV[0] : dirname(__FILE__);
 my $cpp = "$target/include/jlpolymake/generated";
@@ -511,11 +519,12 @@ my %generated = (
                   "$jl/type_translator.jl" => \&type_translator_code_jl,
                   "$src/unbox_pv.cpp" => \&unbox_propertyvalue_src,
                   "$src/wrap_types.cpp" => \&wrap_types_src,
+                  "$src/wrap_types_extra.cpp" => \&wrap_types_extra_src,
                  );
 
 
 foreach (keys %generated) {
-   my $files = $generated{$_}->($type_hashes, $_);
+   my $files = $generated{$_}->($type_hashes, $wrap_calls, $_);
    $files = {$_ => $files} if ref($files) ne "HASH";
    while(my($k, $v) = each %$files) {
       open my $f, ">", "$k";

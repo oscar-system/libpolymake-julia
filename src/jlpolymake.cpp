@@ -54,6 +54,7 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     prepare_containers(jlpolymake);
     jlpolymake.add_type<pm::operations::cmp>("operations_cmp");
 
+    // most containers, polynomials, maps,...
     wrap_types(jlpolymake);
 
     jlpolymake.method("range", [](const pm::Int a, const pm::Int b) {
@@ -66,19 +67,17 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
             return pm::Set<pm::Int>{pm::scalar2set(s)};
         });
 
-    add_incidencematrix(jlpolymake);
-
-    add_graph(jlpolymake);
-    add_edgemap(jlpolymake);
-    add_nodemap(jlpolymake);
-
+    // extra types
     add_homologygroup(jlpolymake);
-
     wrap_array<polymake::topaz::HomologyGroup<pm::Integer>>(jlpolymake);
+
+    // currently empty
+    // might be needed to resolve some order issues
+    wrap_types_extra(jlpolymake);
 
     add_direct_calls(jlpolymake);
 
-    add_unbox_pv(jlpolymake);
+    unbox_pv(jlpolymake);
 
     jlpolymake.method("to_array_string",[] (std::optional<pm::perl::ListResult>& l)
          {
