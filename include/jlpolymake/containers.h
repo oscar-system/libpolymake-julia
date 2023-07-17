@@ -97,6 +97,13 @@ struct WrapMatrix
    template <typename TypeWrapperT>
    void operator()(TypeWrapperT&& wrapped)
    {
+      using WrappedT = typename TypeWrapperT::type;
+      using elemType = typename TypeWrapperT::type::value_type;
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("_same_element_matrix", [](const elemType& e, int64_t i, int64_t j) {
+            return WrappedT(same_element_matrix(e, i, j));
+            });
+      wrapped.module().unset_override_module();
       WrapMatrix::wrap(wrapped);
    }
 };
@@ -117,8 +124,27 @@ struct WrapSparseMatrix
    }
 };
 
-struct WrapVector
+struct WrapVectorBase
 {
+
+   template <typename TypeWrapperT, typename elemType>
+   static void add_div(TypeWrapperT& wrapped, std::enable_if_t<
+         is_instance_of<elemType, Polynomial>::value==false && 
+         is_instance_of<elemType, UniPolynomial>::value==false, 
+      std::nullptr_t> = nullptr)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      wrapped.method("/", [](const WrappedT& V, const elemType& s) { return WrappedT(V / s); });
+   }
+   template <typename TypeWrapperT, typename elemType>
+   static void add_div(TypeWrapperT& wrapped, std::enable_if_t<
+         is_instance_of<elemType, Polynomial>::value || 
+         is_instance_of<elemType, UniPolynomial>::value, 
+      std::nullptr_t> = nullptr)
+   {
+
+   }
+
    template <typename TypeWrapperT>
    static void wrap(TypeWrapperT& wrapped)
    {
@@ -138,14 +164,41 @@ struct WrapVector
       wrapped.method("length", &WrappedT::dim);
       wrapped.method("resize!",
             [](WrappedT& V, int64_t sz) { V.resize(sz); });
+      wrapped.method("*", [](const elemType& s, const WrappedT& V) { return WrappedT(s * V); });
+      add_div<TypeWrapperT, elemType>(wrapped);
 
       wrapped.module().unset_override_module();
       wrap_common(wrapped);
    }
+};
+
+struct WrapVector
+{
    template <typename TypeWrapperT>
    void operator()(TypeWrapperT&& wrapped)
    {
-      WrapVector::wrap(wrapped);
+      using WrappedT = typename TypeWrapperT::type;
+      using elemType = typename TypeWrapperT::type::value_type;
+      wrapped.template constructor<int64_t, elemType>();
+      WrapVectorBase::wrap(wrapped);
+   }
+};
+
+struct WrapSparseVector
+{
+   template <typename TypeWrapperT>
+   void operator()(TypeWrapperT&& wrapped)
+   {
+      using WrappedT = typename TypeWrapperT::type;
+      using elemType = typename TypeWrapperT::type::value_type;
+
+      WrapVectorBase::wrap(wrapped);
+
+      wrapped.module().set_override_module(pmwrappers::instance().module());
+      wrapped.method("_nzindices", [](const WrappedT& S) {
+            return Set<pm::Int>(pm::indices(S));
+            });
+      wrapped.module().unset_override_module();
    }
 };
 
@@ -171,26 +224,6 @@ struct WrapPair
             });
       wrapped.module().unset_override_module();
       wrap_common(wrapped);
-   }
-};
-
-struct WrapSparseVector
-{
-   template <typename TypeWrapperT>
-   void operator()(TypeWrapperT&& wrapped)
-   {
-      using WrappedT = typename TypeWrapperT::type;
-      using elemType = typename TypeWrapperT::type::value_type;
-
-      WrapVector::wrap(wrapped);
-
-      wrapped.module().set_override_module(pmwrappers::instance().module());
-      wrapped.method("_nzindices", [](const WrappedT& S) {
-            return Set<pm::Int>(pm::indices(S));
-            });
-      wrapped.method("*", [](const elemType& s, const WrappedT& V) { return WrappedT(s * V); });
-      wrapped.method("/", [](const WrappedT& V, const elemType& s) { return WrappedT(V / s); });
-      wrapped.module().unset_override_module();
    }
 };
 

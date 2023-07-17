@@ -78,12 +78,6 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_direct_calls(jlpolymake);
 
-    auto matrix_type = jlcxx::TypeWrapper1(jlpolymake, pmwrappers::instance().pmmatrix);
-    auto vector_type = jlcxx::TypeWrapper1(jlpolymake, pmwrappers::instance().pmvector);
-
-    add_matrix_extended(jlpolymake, matrix_type);
-    add_vector_extended(jlpolymake, vector_type);
-
     add_unbox_pv(jlpolymake);
 
     jlpolymake.method("to_array_string",[] (std::optional<pm::perl::ListResult>& l)

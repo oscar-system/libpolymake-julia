@@ -26,6 +26,12 @@ sub add_type {
    push @$type_tuples, $_[0];
 }
 
+sub add_types {
+   foreach (@_) {
+      add_type($_);
+   }
+}
+
 sub joinname { return join("_",@_); }
 sub joincxxt {
    my $name = shift;
@@ -136,14 +142,10 @@ my $scalars = [ Int, Integer, Rational, double,
 
 my $simplecontainers = [ \&Matrix, \&Vector, \&Array, ];
 
-foreach my $s (@$scalars) {
-   add_type($s);
-}
+add_types(@$scalars);
 
 for my $c (@$simplecontainers) {
-   for my $s (@$scalars) {
-      add_type($c->($s));
-   }
+   add_types(map {$c->($_)} @$scalars);
 }
 
 # these must be sorted, i.e. any member template must appear before using it
@@ -153,7 +155,7 @@ for my $c (@$simplecontainers) {
 # for supported types this will also generate the `wrap_type<Members>(jlpoymake)` call
 # otherwise it will only produce the necessary type-mappings for the julia bindings
 
-foreach my $typearr (
+add_types(
         ["PropertyValue", "pm::perl::PropertyValue", "PropertyValue", undef],
         # ListResult cannot be used like other scalar based types so this is
         # commented on purpose, also as a reminder
@@ -187,7 +189,13 @@ foreach my $typearr (
         Array(Array(Set(Int))),
         Array(Matrix(Integer)),
         Array(BigObject),
+     );
 
+# must be after Set{Int}
+add_types(map { Matrix("Sparse", $_) } @$scalars);
+add_types(map { Vector("Sparse", $_) } @$scalars);
+
+add_types(
         UniPolynomial(Int,Int),
         UniPolynomial(Integer,Int),
         UniPolynomial(Rational,Int),
@@ -243,15 +251,8 @@ foreach my $typearr (
             "Array{HomologyGroup{Integer}}",
             "array_homologygroup_integer",
         ],
-     ) {
-   add_type($typearr);
-}
+     );
 
-# must be after Set{Int}
-foreach my $s (@$scalars) {
-   add_type(Matrix("Sparse", $s));
-   add_type(Vector("Sparse", $s));
-}
 
 my @keys = qw(type_string ctype jltype convert_f);
 
