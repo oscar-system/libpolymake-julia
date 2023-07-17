@@ -6,9 +6,6 @@
 
 #include "jlpolymake/type_modules.h"
 
-template<> struct jlcxx::IsMirroredType<pm::NonSymmetric> : std::false_type { };
-template<> struct jlcxx::IsMirroredType<pm::Symmetric> : std::false_type { };
-
 namespace jlpolymake {
 
 void add_incidencematrix(jlcxx::Module& jlpolymake)
@@ -22,6 +19,8 @@ void add_incidencematrix(jlcxx::Module& jlpolymake)
             [](auto wrapped) {
         typedef typename decltype(wrapped)::type WrappedT;
         wrapped.template constructor<int64_t, int64_t>();
+        wrapped.template constructor<const WrappedT&>();
+
         wrapped.method("_getindex",
             [](const WrappedT& M, int64_t i, int64_t j) {
                 return bool(M(i - 1, j - 1));

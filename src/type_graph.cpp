@@ -6,9 +6,6 @@
 
 #include "jlpolymake/type_modules.h"
 
-template<> struct jlcxx::IsMirroredType<pm::graph::Directed> : std::false_type { };
-template<> struct jlcxx::IsMirroredType<pm::graph::Undirected> : std::false_type { };
-
 namespace jlpolymake {
 
 void add_graph(jlcxx::Module& jlpolymake)
@@ -23,8 +20,9 @@ void add_graph(jlcxx::Module& jlpolymake)
         typedef typename decltype(wrapped)::type WrappedT;
 
         wrapped.template constructor<int64_t>();
-        wrapped.template constructor<IncidenceMatrix<NonSymmetric>>();
-        wrapped.template constructor<IncidenceMatrix<Symmetric>>();
+        wrapped.template constructor<const WrappedT&>();
+        wrapped.template constructor<const IncidenceMatrix<NonSymmetric>&>();
+        wrapped.template constructor<const IncidenceMatrix<Symmetric>&>();
 
 
         wrapped.method("nv", &WrappedT::nodes);

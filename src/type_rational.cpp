@@ -71,7 +71,8 @@ void add_rational(jlcxx::Module& jlpolymake)
     jlpolymake
         .add_type<pm::Rational>("Rational",
                                 jlcxx::julia_type("Real", "Base"))
-        .constructor<pm::Integer, pm::Integer>()
+        .constructor<const pm::Integer&, const pm::Integer&>()
+        .constructor<const pm::Rational&>()
         .method("rational_si_si", [](
             const jlcxx::StrictlyTypedNumber<long> num,
             const jlcxx::StrictlyTypedNumber<long> den) {

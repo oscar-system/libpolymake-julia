@@ -12,8 +12,6 @@
 
 #include "jlpolymake/containers.h"
 
-template<> struct jlcxx::IsMirroredType<pm::operations::cmp> : std::false_type { };
-
 namespace jlpolymake {
 
 #include "jlpolymake/generated/type_declarations.h"

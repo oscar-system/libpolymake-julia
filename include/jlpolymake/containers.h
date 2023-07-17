@@ -57,6 +57,7 @@ template<typename TypeWrapperT>
 void wrap_common(TypeWrapperT& wrapped)
 {
   using WrappedT = typename TypeWrapperT::type;
+  wrapped.template constructor<const WrappedT&>();
   wrapped.module().set_override_module(pmwrappers::instance().module());
   wrapped.method("take",
         [](pm::perl::BigObject p, const std::string& s,
@@ -186,7 +187,7 @@ struct WrapVector
    {
       using WrappedT = typename TypeWrapperT::type;
       using elemType = typename TypeWrapperT::type::value_type;
-      wrapped.template constructor<int64_t, elemType>();
+      wrapped.template constructor<int64_t, const elemType&>();
       WrapVectorBase::wrap(wrapped);
    }
 };
@@ -218,8 +219,7 @@ struct WrapPair
       using firstT = typename TypeWrapperT::type::first_type;
       using secondT = typename TypeWrapperT::type::second_type;
 
-      wrapped.template constructor();
-      wrapped.template constructor<firstT, secondT>();
+      wrapped.template constructor<const firstT&, const secondT&>();
 
       //Pattern to overwrite function in Base
       wrapped.module().set_override_module(jl_base_module);
@@ -244,7 +244,7 @@ struct WrapArrayImpl
       using elemType = typename TypeWrapperT::type::value_type;
 
       wrapped.template constructor<int64_t>();
-      wrapped.template constructor<int64_t, elemType>();
+      wrapped.template constructor<int64_t, const elemType&>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("_getindex", [](const WrappedT& V, int64_t n) {
@@ -321,9 +321,6 @@ struct WrapSet
    {
       using WrappedT = typename TypeWrapperT::type;
       using elemType = typename TypeWrapperT::type::value_type;
-
-      wrapped.template constructor<pm::Set<elemType>>();
-
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("_new_set", [](jlcxx::ArrayRef<elemType> A) {
@@ -487,7 +484,7 @@ struct WrapNodeMap
       using GType = typename TypeWrapperT::type::graph_type;
       using TDir = typename TypeWrapperT::type::graph_type::dir;
       using E = typename TypeWrapperT::type::value_type;
-      wrapped.template constructor<GType>();
+      wrapped.template constructor<const GType&>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("_set_entry", [](WrappedT& NM, int64_t node, const E& val) { NM[node] = val; });
@@ -534,7 +531,7 @@ struct WrapEdgeMap
       using GType = typename TypeWrapperT::type::graph_type;
       using TDir = typename TypeWrapperT::type::graph_type::dir;
       using E = typename TypeWrapperT::type::value_type;
-      wrapped.template constructor<GType>();
+      wrapped.template constructor<const GType&>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("_set_entry", [](WrappedT& EM, int64_t tail, int64_t head, const E& val) { wary(EM)(tail, head) = val; });
@@ -554,8 +551,6 @@ struct WrapList
    {
       using WrappedT = typename TypeWrapperT::type;
       using elemType = typename TypeWrapperT::type::value_type;
-
-      wrapped.template constructor<WrappedT>();
 
       wrapped.module().set_override_module(jl_base_module);
 
@@ -646,7 +641,7 @@ struct WrapUniPolynomial
       using coeffT = typename TypeWrapperT::type::coefficient_type;
       using expT = typename TypeWrapperT::type::monomial_type;
 
-      wrapped.template constructor<pm::Vector<coeffT>, pm::Vector<expT>>();
+      wrapped.template constructor<const pm::Vector<coeffT>&, const pm::Vector<expT>&>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("monomials_as_vector", [](const WrappedT& a) { return a.monomials_as_vector(); });
@@ -664,7 +659,7 @@ struct WrapPolynomial
       using coeffT = typename TypeWrapperT::type::coefficient_type;
       using expT = typename TypeWrapperT::type::monomial_type::value_type;
 
-      wrapped.template constructor<pm::Vector<coeffT>, pm::Matrix<expT>>();
+      wrapped.template constructor<const pm::Vector<coeffT>&, const pm::Matrix<expT>&>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("monomials_as_matrix", [](const WrappedT& a) { return a.monomials_as_matrix(); });
