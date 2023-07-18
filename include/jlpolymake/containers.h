@@ -110,6 +110,10 @@ struct WrapMatrix
       wrapped.method("_same_element_matrix", [](const elemType& e, int64_t i, int64_t j) {
             return WrappedT(same_element_matrix(e, i, j));
             });
+      // we keep this name until the next minor version bump
+      wrapped.method("_same_element_matrix_polynomial", [](const elemType& e, int64_t i, int64_t j) {
+            return WrappedT(same_element_matrix(e, i, j));
+            });
       wrapped.module().unset_override_module();
       WrapMatrix::wrap(wrapped);
    }
