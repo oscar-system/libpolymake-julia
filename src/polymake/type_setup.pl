@@ -2,351 +2,260 @@
 
 use strict;
 use warnings;
-use File::Basename qw(dirname);
+use File::Basename qw(dirname basename);
 use File::Path qw(make_path);
+use List::Util 'uniqstr';
 
-my $type_tuples = [
+my $missingtypes = qr(^(Min|Max|String|Undirected|Directed|Symmetric|NonSymmetric)$);
+my %added_types;
+my %needed_types;
+my $type_tuples = [];
+my $wrap_calls = [];
+my $extra_calls = [];
+
+sub check_type {
+   foreach my $a (@_) {
+      if (defined($a) && !exists($added_types{$a->[0]})) {
+         $needed_types{$a->[0]} = 1;
+      }
+   }
+}
+
+sub add_type {
+   $added_types{$_[0]->[0]} = 1;
+   delete $needed_types{$_[0]->[0]};
+   push @$type_tuples, $_[0];
+}
+
+sub add_types {
+   foreach (@_) {
+      add_type($_);
+   }
+}
+
+sub joinname { return join("_",@_); }
+sub joincxxt {
+   my $name = shift;
+   my $prefix = $name =~ /^(std::|polymake::|double|pm::)/ ? "" : "pm::";
+   return "$prefix$name<".join(",",@_).">";
+}
+sub joinjlt  { return shift."{".join(",",@_)."}"; }
+sub jointo   { return lc(join("_",@_)); }
+
+sub template {
+   my ($name, $arr1, $arr2) = @_;
+   check_type($arr1, $arr2);
+   my @names = ref($name) eq "ARRAY" ? @$name : (($name) x 4);
+   if (defined($arr2)) {
+      return [ joinname($names[0],$arr1->[0],$arr2->[0]),
+               joincxxt($names[1],$arr1->[1],$arr2->[1]),
+               joinjlt ($names[2],$arr1->[2],$arr2->[2]),
+               jointo  ($names[3],$arr1->[3],$arr2->[3])];
+   } else {
+      return [ joinname($names[0],$arr1->[0]),
+               joincxxt($names[1],$arr1->[1]),
+               joinjlt ($names[2],$arr1->[2]),
+               jointo  ($names[3],$arr1->[3])];
+   }
+}
+
+sub def { [$_[0], "pm::$_[0]", $_[0], lc($_[0])] }
+sub Min { def("Min"); }
+sub Max { def("Max"); }
+sub Symmetric    { def("Symmetric"); }
+sub NonSymmetric { def("NonSymmetric"); }
+sub Rational  { def("Rational"); }
+sub Integer   { def("Integer"); }
+
+sub double { return ["double", "double", "Float64", "double"]; }
+sub Int { return ["Int","pm::Int","CxxWrap.CxxLong","int"]; }
+sub Directed     { return ["Directed","pm::graph::Directed","Directed","directed"]; }
+sub Undirected   { return ["Undirected","pm::graph::Undirected","Undirected","undirected"]; }
+sub String    { return ["String","std::string","CxxWrap.StdString","string"]; }
+sub BigObject { return ["BigObject", "pm::perl::BigObject", "BigObject", "bigobject"]; }
+
+sub QuadraticExtension {
+   return template("QuadraticExtension", @_);
+}
+sub TropicalNumber {
+   return template("TropicalNumber", @_);
+}
+
+sub Vector {
+   my $p = $_[0] eq "Sparse" ? shift : "";
+   push @$wrap_calls, [lc("wrap_${p}vector"), [$_[0]->[1]]];
+   return template("${p}Vector", @_);
+}
+sub Matrix {
+   my $p = $_[0] eq "Sparse" ? shift : "";
+   push @$wrap_calls, [lc("wrap_${p}matrix"), [$_[0]->[1]]];
+   return template("${p}Matrix", @_);
+}
+sub Array {
+   push @$wrap_calls, ["wrap_array", [$_[0]->[1]]];
+   return template("Array", @_);
+}
+sub Set {
+   push @$wrap_calls, ["wrap_set", [$_[0]->[1]]];
+   return template("Set", @_);
+}
+sub Map {
+   push @$wrap_calls, ["wrap_map", [$_[0]->[1], $_[1]->[1]]];
+   return template("Map", @_);
+}
+sub Pair {
+   push @$wrap_calls, ["wrap_pair", [$_[0]->[1], $_[1]->[1]]];
+   return template(["Pair", "std::pair", "StdPair", "pair"], @_);
+}
+sub List {
+   push @$wrap_calls, ["wrap_list", [$_[0]->[1]]];
+   return template(["List", "std::list", "StdList", "list"], @_);
+}
+sub UniPolynomial {
+   push @$wrap_calls, ["wrap_unipolynomial", [$_[0]->[1], $_[1]->[1]]];
+   return template("UniPolynomial", @_);
+}
+sub Polynomial {
+   push @$wrap_calls, ["wrap_polynomial", [$_[0]->[1], $_[1]->[1]]];
+   return template("Polynomial", @_);
+}
+sub IncidenceMatrix {
+   my $i = def("IncidenceMatrix");
+   # just one fixed call for a custom file
+   push @$wrap_calls, ["add_incidencematrix", []];
+   return (template($i, Symmetric),
+           template($i, NonSymmetric));
+}
+sub Graph {
+   my $g = ["Graph", "graph::Graph", "Graph", "graph"];
+   # just one fixed call for a custom file
+   push @$wrap_calls, ["add_graph", []];
+   return (template($g, Directed),
+           template($g, Undirected));
+}
+sub NodeMap {
+   my $nm = ["NodeMap", "pm::graph::NodeMap", "NodeMap", "nodemap"];
+   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Undirected", $_[0]->[1]]];
+   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Directed"  , $_[0]->[1]]];
+   return (template($nm, Directed, @_),
+           template($nm, Undirected, @_));
+}
+sub EdgeMap {
+   my $em = ["EdgeMap", "pm::graph::EdgeMap", "EdgeMap", "edgemap"];
+   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Undirected", $_[0]->[1]]];
+   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Directed"  , $_[0]->[1]]];
+   return (template($em, Directed, @_),
+           template($em, Undirected, @_));
+}
+
+# mapped name, C++, CxxWrap, helper (to_...)
+my $scalars = [ Int, Integer, Rational, double,
+                QuadraticExtension(Rational),
+                TropicalNumber(Min,Rational),
+                TropicalNumber(Max,Rational)
+              ];
+
+my $simplecontainers = [ \&Matrix, \&Vector, \&Array, ];
+
+add_types(@$scalars);
+
+for my $c (@$simplecontainers) {
+   add_types(map {$c->($_)} @$scalars);
+}
+
+# these must be sorted, i.e. any member template must appear before using it
+# simple containers with just a scalar are done above
+# sparse containers are added at the end (since they need sets)
+#
+# for supported types this will also generate the `wrap_type<Members>(jlpoymake)` call
+# otherwise it will only produce the necessary type-mappings for the julia bindings
+
+add_types(
         ["PropertyValue", "pm::perl::PropertyValue", "PropertyValue", undef],
         # ListResult cannot be used like other scalar based types so this is
         # commented on purpose, also as a reminder
         # ["ListResult", "pm::perl::ListResult", "ListResult", undef],
         ["OptionSet", "pm::perl::OptionSet", "OptionSet", undef],
-        ["BigObject", "pm::perl::BigObject", "BigObject", "to_bigobject"],
-        ["Integer", "pm::Integer", "Integer", "to_integer"],
-        ["Rational", "pm::Rational", "Rational", "to_rational"],
+
+        BigObject,
+
+        Pair(Array(Int),Array(Int)),
+        Array(Pair(Array(Int),Array(Int))),
+
+        Pair(Int,Int),
+        List(Pair(Int,Int)),
+        List(List(Pair(Int,Int))),
+        Pair(Int, List(List(Pair(Int,Int)))),
+        Array(Pair(Int,Int)),
+        Array(List(Pair(Int,Int))),
+
+        Pair(Integer,Int),
+        List(Pair(Integer,Int)),
+
+        Set(Int),
+        Set(Set(Int)),
+        Array(Set(Int)),
+        Array(Set(Set(Int))),
+
+        Array(String),
+        Array(Array(Int)),
+        Array(Array(Integer)),
+        Array(Array(Rational)),
+        Array(Array(Set(Int))),
+        Array(Matrix(Integer)),
+        Array(BigObject),
+     );
+
+# must be after Set{Int}
+add_types(map { Matrix("Sparse", $_) } @$scalars);
+add_types(map { Vector("Sparse", $_) } @$scalars);
+
+add_types(
+        UniPolynomial(Int,Int),
+        UniPolynomial(Integer,Int),
+        UniPolynomial(Rational,Int),
+        UniPolynomial(QuadraticExtension(Rational),Int),
+        Polynomial(Int,Int),
+        Polynomial(Integer,Int),
+        Polynomial(Rational,Int),
+        Polynomial(double,Int),
+        Polynomial(QuadraticExtension(Rational),Int),
+
+        Matrix(Polynomial(Rational,Int)),
+        Vector(Polynomial(Rational,Int)),
+        Array(Polynomial(Integer,Int)),
+        Array(Polynomial(Rational,Int)),
+
+        Map(String,String),
+        Map(String,Int),
+        Map(Int,Int),
+        Map(Integer,Int),
+        Map(Rational,Rational),
+        Map(Set(Int),Integer),
+        Map(Set(Int),Rational),
+        Map(Set(Int),Vector(Rational)),
+        Map(Vector(Int),Integer),
+
+        IncidenceMatrix,
+
+        Graph,
+        NodeMap(Int),
+        NodeMap(Set(Int)),
+        EdgeMap(Int),
+
         [
-            "QuadraticExtension_Rational",
-            "pm::QuadraticExtension<pm::Rational>",
-            "QuadraticExtension{Rational}",
-            "to_quadraticextension_rational",
-        ],
-        [
-            "Matrix_Polynomial_Rational_Int",
-            "pm::Matrix<pm::Polynomial<pm::Rational,long>>",
-            "Matrix{Polynomial{Rational,CxxWrap.CxxLong}}",
-            "to_matrix_polynomial_rational_int",
-        ],
-        [
-            "Vector_Polynomial_Rational_Int",
-            "pm::Vector<pm::Polynomial<pm::Rational,long>>",
-            "Vector{Polynomial{Rational,CxxWrap.CxxLong}}",
-            "to_vector_polynomial_rational_int",
-        ],
-        [
-            "Pair_Int_Int",
-            "std::pair<pm::Int, pm::Int>",
-            "StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}",
-            "to_pair_int_int",
-        ],
-        [
-            "Pair_Array_Int_Array_Int",
-            "std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>",
-            "StdPair{Array{CxxWrap.CxxLong},Array{CxxWrap.CxxLong}}",
-            "to_pair_array_int_array_int",
-        ],
-        [
-            "Array_Pair_Array_Int_Array_Int",
-            "pm::Array<std::pair<pm::Array<pm::Int>, pm::Array<pm::Int>>>",
-            "Array{StdPair{Array{CxxWrap.CxxLong},Array{CxxWrap.CxxLong}}}",
-            "to_array_pair_array_int_array_int",
-        ],
-        [
-            "Pair_Int_List_List_Pair_Int_Int",
-            "std::pair<pm::Int, std::list<std::list<std::pair<pm::Int, pm::Int>>>>",
-            "StdPair{CxxWrap.CxxLong, StdList{StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}}}",
-            "to_pair_int_list_list_pair_int_int",
-        ],
-        [
-            "Pair_Integer_Int",
-            "std::pair<pm::Integer, pm::Int>",
-            "StdPair{Integer,CxxWrap.CxxLong}",
-            "to_pair_integer_int",
-        ],
-        [
-            "List_Pair_Int_Int",
-            "std::list<std::pair<pm::Int, pm::Int>>",
-            "StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}",
-            "to_list_pair_int_int",
-        ],
-        [
-            "List_List_Pair_Int_Int",
-            "std::list<std::list<std::pair<pm::Int, pm::Int>>>",
-            "StdList{StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}}",
-            "to_list_list_pair_int_int",
-        ],
-        [
-            "List_Pair_Integer_Int",
-            "std::list<std::pair<pm::Integer, pm::Int>>",
-            "StdList{StdPair{Integer,CxxWrap.CxxLong}}",
-            "to_list_pair_integer_int",
-        ],
-        ["Set_Int", "pm::Set<long>", "Set{CxxWrap.CxxLong}", "to_set_int"],
-        ["Set_Set_Int", "pm::Set<pm::Set<long>>", "Set{Set{CxxWrap.CxxLong}}", "to_set_set_int"],
-        ["Array_Set_Set_Int", "pm::Array<pm::Set<pm::Set<long>>>", "Array{Set{Set{CxxWrap.CxxLong}}}", "to_array_set_set_int"],
-        [
-            "Array_String",
-            "pm::Array<std::string>",
-            "Array{CxxWrap.StdString}",
-            "to_array_string",
-        ],
-        [
-            "Array_Set_Int",
-            "pm::Array<pm::Set<long>>",
-            "Array{Set{CxxWrap.CxxLong}}",
-            "to_array_set_int",
-        ],
-        [
-            "Array_Array_Int",
-            "pm::Array<pm::Array<long>>",
-            "Array{Array{CxxWrap.CxxLong}}",
-            "to_array_array_int",
-        ],
-        [
-            "Array_Array_Integer",
-            "pm::Array<pm::Array<pm::Integer>>",
-            "Array{Array{Integer}}",
-            "to_array_array_integer",
-        ],
-        [
-            "Array_Array_Set_Int",
-            "pm::Array<pm::Array<pm::Set<long>>>",
-            "Array{Array{Set{CxxWrap.CxxLong}}}",
-            "to_array_array_set_int",
-        ],
-        [
-            "Array_Array_Rational",
-            "pm::Array<pm::Array<pm::Rational>>",
-            "Array{Array{Rational}}",
-            "to_array_array_rational",
-        ],
-        [
-            "Array_Pair_Int_Int",
-            "pm::Array<std::pair<pm::Int, pm::Int>>",
-            "Array{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}",
-            "to_array_pair_int_int",
-        ],
-        [
-            "Array_List_Pair_Int_Int",
-            "pm::Array<std::list<std::pair<pm::Int, pm::Int>>>",
-            "Array{StdList{StdPair{CxxWrap.CxxLong,CxxWrap.CxxLong}}}",
-            "to_array_list_pair_int_int",
-        ],
-        [
-            "Array_Matrix_Integer",
-            "pm::Array<pm::Matrix<pm::Integer>>",
-            "Array{Matrix{Integer}}",
-            "to_array_matrix_integer",
+            "HomologyGroup_Integer",
+            "polymake::topaz::HomologyGroup<pm::Integer>",
+            "HomologyGroup{Integer}",
+            "homologygroup_integer",
         ],
         [
             "Array_HomologyGroup_Integer",
             "pm::Array<polymake::topaz::HomologyGroup<pm::Integer>>",
             "Array{HomologyGroup{Integer}}",
-            "to_array_homologygroup_integer",
+            "array_homologygroup_integer",
         ],
-        [
-            "Array_BigObject",
-            "pm::Array<pm::perl::BigObject>",
-            "Array{BigObject}",
-            "to_array_bigobject",
-        ],
-        [
-            "Array_Polynomial_Integer_Int",
-            "pm::Array<pm::Polynomial<pm::Integer,long>>",
-            "Array{Polynomial{Integer,CxxWrap.CxxLong}}",
-            "to_array_polynomial_integer_int",
-        ],
-        [
-            "Array_Polynomial_Rational_Int",
-            "pm::Array<pm::Polynomial<pm::Rational,long>>",
-            "Array{Polynomial{Rational,CxxWrap.CxxLong}}",
-            "to_array_polynomial_rational_int",
-        ],
-        [
-            "IncidenceMatrix_NonSymmetric",
-            "pm::IncidenceMatrix<pm::NonSymmetric>",
-            "IncidenceMatrix{NonSymmetric}",
-            "to_incidencematrix_nonsymmetric",
-        ],
-        [
-            "IncidenceMatrix_Symmetric",
-            "pm::IncidenceMatrix<pm::Symmetric>",
-            "IncidenceMatrix{Symmetric}",
-            "to_incidencematrix_symmetric",
-        ],
-        [
-            "TropicalNumber_Max_Rational",
-            "pm::TropicalNumber<pm::Max,pm::Rational>",
-            "TropicalNumber{Max,Rational}",
-            "to_tropicalnumber_max_rational",
-        ],
-        [
-            "TropicalNumber_Min_Rational",
-            "pm::TropicalNumber<pm::Min,pm::Rational>",
-            "TropicalNumber{Min,Rational}",
-            "to_tropicalnumber_min_rational",
-        ],
-        # [
-        #     "TropicalNumber_Max_Integer",
-        #     "pm::TropicalNumber<pm::Max,pm::Integer>",
-        #     "TropicalNumber{Max,Integer}",
-        #     "to_tropicalnumber_max_Integer",
-        # ],
-        # [
-        #     "TropicalNumber_Min_Integer",
-        #     "pm::TropicalNumber<pm::Min,pm::Integer>",
-        #     "TropicalNumber{Min,Integer}",
-        #     "to_tropicalnumber_min_Integer",
-        # ],
-        [
-            "UniPolynomial_Int_Int",
-            "pm::UniPolynomial<long,long>",
-            "UniPolynomial{CxxWrap.CxxLong,CxxWrap.CxxLong}",
-            "to_unipolynomial_int_int",
-        ],
-        [
-            "UniPolynomial_Integer_Int",
-            "pm::UniPolynomial<pm::Integer,long>",
-            "UniPolynomial{Integer,CxxWrap.CxxLong}",
-            "to_unipolynomial_integer_int",
-        ],
-        [
-            "UniPolynomial_Rational_Int",
-            "pm::UniPolynomial<pm::Rational,long>",
-            "UniPolynomial{Rational,CxxWrap.CxxLong}",
-            "to_unipolynomial_rational_int",
-        ],
-        [
-            "UniPolynomial_QuadraticExtension_Rational_Int",
-            "pm::UniPolynomial<pm::QuadraticExtension<pm::Rational>,long>",
-            "UniPolynomial{QuadraticExtension{Rational},CxxWrap.CxxLong}",
-            "to_unipolynomial_quadraticextension_rational_int",
-        ],
-        [
-            "Polynomial_Int_Int",
-            "pm::Polynomial<long,long>",
-            "Polynomial{CxxWrap.CxxLong,CxxWrap.CxxLong}",
-            "to_polynomial_int_int",
-        ],
-        [
-            "Polynomial_Integer_Int",
-            "pm::Polynomial<pm::Integer,long>",
-            "Polynomial{Integer,CxxWrap.CxxLong}",
-            "to_polynomial_integer_int",
-        ],
-        [
-            "Polynomial_Rational_Int",
-            "pm::Polynomial<pm::Rational,long>",
-            "Polynomial{Rational,CxxWrap.CxxLong}",
-            "to_polynomial_rational_int",
-        ],
-        [
-            "Polynomial_double_Int",
-            "pm::Polynomial<double,long>",
-            "Polynomial{Float64,CxxWrap.CxxLong}",
-            "to_polynomial_double_int",
-        ],
-        [
-            "Polynomial_QuadraticExtension_Rational_Int",
-            "pm::Polynomial<pm::QuadraticExtension<pm::Rational>,long>",
-            "Polynomial{QuadraticExtension{Rational},CxxWrap.CxxLong}",
-            "to_polynomial_quadraticextension_rational_int",
-        ],
-        [
-            "Map_String_String",
-            "pm::Map<std::string,std::string>",
-            "Map{CxxWrap.StdString,CxxWrap.StdString}",
-            "to_map_string_string",
-        ],
-        [
-            "HomologyGroup_Integer",
-            "polymake::topaz::HomologyGroup<pm::Integer>",
-            "HomologyGroup{Integer}",
-            "to_homologygroup_integer",
-        ],
-        [
-            "Graph_Undirected",
-            "pm::graph::Graph<pm::graph::Undirected>",
-            "Graph{Undirected}",
-            "to_graph_undirected",
-        ],
-        [
-            "Graph_Directed",
-            "pm::graph::Graph<pm::graph::Directed>",
-            "Graph{Directed}",
-            "to_graph_directed",
-        ],
-        [
-            "EdgeMap_Directed_Int",
-            "pm::graph::EdgeMap<pm::graph::Directed, pm::Int>",
-            "EdgeMap{Directed, CxxWrap.CxxLong}",
-            "to_edgemap_directed_int",
-        ],
-        [
-            "EdgeMap_Undirected_Int",
-            "pm::graph::EdgeMap<pm::graph::Undirected, pm::Int>",
-            "EdgeMap{Undirected, CxxWrap.CxxLong}",
-            "to_edgemap_undirected_int",
-        ],
-        [
-            "NodeMap_Directed_Int",
-            "pm::graph::NodeMap<pm::graph::Directed, pm::Int>",
-            "NodeMap{Directed, CxxWrap.CxxLong}",
-            "to_nodemap_directed_int",
-        ],
-        [
-            "NodeMap_Undirected_Int",
-            "pm::graph::NodeMap<pm::graph::Undirected, pm::Int>",
-            "NodeMap{Undirected, CxxWrap.CxxLong}",
-            "to_nodemap_undirected_int",
-        ],
-        [
-            "NodeMap_Directed_Set_Int",
-            "pm::graph::NodeMap<pm::graph::Directed, pm::Set<pm::Int>>",
-            "NodeMap{Directed, Set{CxxWrap.CxxLong}}",
-            "to_nodemap_directed_set_int",
-        ],
-        [
-            "NodeMap_Undirected_Set_Int",
-            "pm::graph::NodeMap<pm::graph::Undirected, pm::Set<pm::Int>>",
-            "NodeMap{Undirected, Set{CxxWrap.CxxLong}}",
-            "to_nodemap_undirected_set_int",
-        ],
-    ];
-
-# mapped name, C++, CxxWrap, helper (to_...)
-my $scalars = [["Int", "long", "CxxWrap.CxxLong", "int"],
-               ["Integer", "pm::Integer", "Integer", "integer"],
-               ["Rational", "pm::Rational", "Rational", "rational"],
-               ["double", "double", "Float64", "double"],
-               ["QuadraticExtension_Rational", "pm::QuadraticExtension<pm::Rational>", 
-                  "QuadraticExtension{Rational}", "quadraticextension_rational"],
-               [
-                   "TropicalNumber_Max_Rational",
-                   "pm::TropicalNumber<pm::Max,pm::Rational>",
-                   "TropicalNumber{Max,Rational}",
-                   "tropicalnumber_max_rational",
-               ],
-               [
-                   "TropicalNumber_Min_Rational",
-                   "pm::TropicalNumber<pm::Min,pm::Rational>",
-                   "TropicalNumber{Min,Rational}",
-                   "tropicalnumber_min_rational",
-               ],
-              ];
-my $simplecontainers = [["Matrix","pm::Matrix","Matrix","matrix"],
-                        ["SparseMatrix","pm::SparseMatrix","SparseMatrix","sparsematrix"],
-                        ["Vector","pm::Vector","Vector","vector"],
-                        ["SparseVector","pm::SparseVector","SparseVector","sparsevector"],
-                        ["Array","pm::Array","Array","array"],
-                       ];
-for my $c (@$simplecontainers) { 
-   for my $s (@$scalars) {
-      push @$type_tuples, ["$c->[0]_$s->[0]",
-                           "$c->[1]<$s->[1]>",
-                           "$c->[2]\{$s->[2]\}",
-                           "to_$c->[3]_$s->[3]"];
-   }
-}
+     );
 
 my @keys = qw(type_string ctype jltype convert_f);
 
@@ -464,7 +373,7 @@ sub type_translator_code_jl {
 sub type_translator {
    my ($ctype, $convert_f) = @_;
     return <<"---";
-    type_name_tuples[i] = jl_cstr_to_string(\"$convert_f\");
+    type_name_tuples[i] = jl_cstr_to_string(\"to_$convert_f\");
     realname = abi::__cxa_demangle(typeid($ctype).name(), nullptr, nullptr, &status);
     type_name_tuples[i + 1] = jl_cstr_to_string(realname);
     free(realname);
@@ -515,14 +424,7 @@ sub get_type_declarations_extern {
    return "extern ".join("\nextern ",@{decl($type_hashes)});
 }
 
-sub unbox_propertyvalue_src {
-   my ($type_hashes) = @_;
-   my $functions = join("\n", map {
-    "jlpolymake.method(\"$_->{convert_f}\", [](pm::perl::PropertyValue pv) {
-        return to_SmallObject<$_->{ctype}>(pv);
-    });" 
-   } grep {defined($_->{convert_f}) && $_->{type_string} ne "BigObject"} @$type_hashes);
-   return <<"---";
+my $header = <<"---";
 #include "jlpolymake/jlpolymake.h"
 
 #include "jlpolymake/tools.h"
@@ -531,17 +433,74 @@ sub unbox_propertyvalue_src {
 
 #include "jlpolymake/type_modules.h"
 
+#include "jlpolymake/containers.h"
+
 namespace jlpolymake {
 
-void add_unbox_pv(jlcxx::Module& jlpolymake)
-{
-$functions
+---
+
+my $footer = <<"---";
 }
 
 }
 ---
+my $wrapperlimit = 20;
+
+sub gen_limited_files {
+   my ($path, @calls) = @_;
+   $path =~ s/\.cpp$//;
+   my $addfun = basename($path);
+
+   my $funsig = "(jlcxx::Module& jlpolymake)";
+
+   my $files = {};
+   my $i = 0;
+   do {
+      my $filename = $path."_$i.cpp";
+      my $function = $header .
+                     "void ${addfun}_$i$funsig\n" .
+                     "{\n    " .
+                     join ("\n    ",splice(@calls, 0, $wrapperlimit)) .
+                     "\n" . $footer;
+
+      $files->{$filename} = $function;
+      $i += 1;
+   } while (@calls > 0);
+
+   my $main = $header;
+   $main .= "void ${addfun}_$_$funsig;\n" for (0..$i-1);
+
+   $main .= "\nvoid $addfun$funsig\n{\n";
+   $main .= "    ${addfun}_$_(jlpolymake);\n" for (0..$i-1);
+   $main .= "$footer";
+
+   $files->{"$path.cpp"} = $main;
+   return $files;
 }
 
+sub unbox_propertyvalue_src {
+   my ($type_hashes, $calls, $path) = @_;
+   my @functions = map {
+    "jlpolymake.method(\"to_$_->{convert_f}\", [](pm::perl::PropertyValue pv) {
+        return to_SmallObject<$_->{ctype}>(pv);
+    });"
+   } grep {defined($_->{convert_f}) && $_->{type_string} ne "BigObject"} @$type_hashes;
+   return gen_limited_files($path, @functions);
+}
+
+sub wrap_types_src {
+   my ($type_hashes, $calls, $path) = @_;
+   my @calls = uniqstr(map {
+       "    $_->[0]".(@{$_->[1]} > 0 ? "<".join(",",@{$_->[1]}).">" : "")."(jlpolymake);"
+   } @$calls);
+
+   return gen_limited_files($path, @calls);
+}
+
+sub wrap_types_extra_src {
+   my ($type_hashes, $calls, $path) = @_;
+   return wrap_types_src($type_hashes, $extra_calls, $path);
+}
 
 my $target = @ARGV > 0 ? $ARGV[0] : dirname(__FILE__);
 my $cpp = "$target/include/jlpolymake/generated";
@@ -559,11 +518,21 @@ my %generated = (
                   "$cpp/type_declarations_extern.h" => \&get_type_declarations_extern,
                   "$jl/type_translator.jl" => \&type_translator_code_jl,
                   "$src/unbox_pv.cpp" => \&unbox_propertyvalue_src,
+                  "$src/wrap_types.cpp" => \&wrap_types_src,
+                  "$src/wrap_types_extra.cpp" => \&wrap_types_extra_src,
                  );
 
 
 foreach (keys %generated) {
-   open my $f, ">", "$_";
-   print $f $generated{$_}->($type_hashes),"\n";
-   close $f;
+   my $files = $generated{$_}->($type_hashes, $wrap_calls, $_);
+   $files = {$_ => $files} if ref($files) ne "HASH";
+   while(my($k, $v) = each %$files) {
+      open my $f, ">", "$k";
+      print $f $v,"\n";
+      close $f;
+   }
+}
+
+foreach my $k (keys(%needed_types)) {
+   print "WARNING: type missing: $k\n" unless $k =~ $missingtypes;
 }

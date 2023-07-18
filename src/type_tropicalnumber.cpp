@@ -6,9 +6,6 @@
 
 #include "jlpolymake/type_modules.h"
 
-template<> struct jlcxx::IsMirroredType<pm::Max> : std::false_type { };
-template<> struct jlcxx::IsMirroredType<pm::Min> : std::false_type { };
-
 namespace jlpolymake {
 
 void add_tropicalnumber(jlcxx::Module& jlpolymake)
@@ -24,7 +21,8 @@ void add_tropicalnumber(jlcxx::Module& jlpolymake)
                 jlcxx::ParameterList<pm::Rational>>(
                 [](auto wrapped) {
                     typedef typename decltype(wrapped)::type tropType;
-                    wrapped.template constructor<pm::Rational>();
+                    wrapped.template constructor<const pm::Rational&>();
+                    wrapped.template constructor<const tropType&>();
                     wrapped.method("zero", [](const tropType& a) { return a.zero(); });
                     wrapped.method("dual_zero", [](const tropType& a) { return a.dual_zero(); });
                     wrapped.method("one", [](const tropType& a) { return a.one(); });

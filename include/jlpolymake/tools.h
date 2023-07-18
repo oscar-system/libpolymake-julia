@@ -3,6 +3,14 @@
 
 #include "jlpolymake/jlpolymake.h"
 
+template<> struct jlcxx::IsMirroredType<pm::operations::cmp> : std::false_type { };
+template<> struct jlcxx::IsMirroredType<pm::NonSymmetric> : std::false_type { };
+template<> struct jlcxx::IsMirroredType<pm::Symmetric> : std::false_type { };
+template<> struct jlcxx::IsMirroredType<pm::Max> : std::false_type { };
+template<> struct jlcxx::IsMirroredType<pm::Min> : std::false_type { };
+template<> struct jlcxx::IsMirroredType<pm::graph::Directed> : std::false_type { };
+template<> struct jlcxx::IsMirroredType<pm::graph::Undirected> : std::false_type { };
+
 namespace pm {
 template <typename PointedT, typename CppT>
 struct iterator_cross_const_helper<jlcxx::array_iterator_base<PointedT, CppT>,

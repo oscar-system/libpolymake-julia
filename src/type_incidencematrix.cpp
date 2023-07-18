@@ -6,9 +6,6 @@
 
 #include "jlpolymake/type_modules.h"
 
-template<> struct jlcxx::IsMirroredType<pm::NonSymmetric> : std::false_type { };
-template<> struct jlcxx::IsMirroredType<pm::Symmetric> : std::false_type { };
-
 namespace jlpolymake {
 
 void add_incidencematrix(jlcxx::Module& jlpolymake)
@@ -22,6 +19,8 @@ void add_incidencematrix(jlcxx::Module& jlpolymake)
             [](auto wrapped) {
         typedef typename decltype(wrapped)::type WrappedT;
         wrapped.template constructor<int64_t, int64_t>();
+        wrapped.template constructor<const WrappedT&>();
+
         wrapped.method("_getindex",
             [](const WrappedT& M, int64_t i, int64_t j) {
                 return bool(M(i - 1, j - 1));
@@ -31,10 +30,16 @@ void add_incidencematrix(jlcxx::Module& jlpolymake)
             int64_t j) {
                 M(i - 1, j - 1) = r;
         });
-        wrapped.method("nrows", &WrappedT::rows);
+        wrapped.method("nrows", [](const WrappedT& M) { return static_cast<int64_t>(M.rows()); });
         wrapped.method("_row", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.row(i - 1)); });
-        wrapped.method("ncols", &WrappedT::cols);
+        wrapped.method("ncols", [](const WrappedT& M) { return static_cast<int64_t>(M.cols()); });
         wrapped.method("_col", [](const WrappedT& M, int64_t i) { return pm::Set<pm::Int>(M.col(i - 1)); });
+        wrapped.method("_vcat", [](const WrappedT& M, const WrappedT& N) {
+              return IncidenceMatrix<NonSymmetric>(M/N);
+            });
+        wrapped.method("_hcat", [](const WrappedT& M, const WrappedT& N) {
+              return IncidenceMatrix<NonSymmetric>(M|N);
+            });
         wrapped.method("_resize!", [](WrappedT& M, int64_t i,
                                     int64_t j) { M.resize(i, j); });
         wrapped.method("take",

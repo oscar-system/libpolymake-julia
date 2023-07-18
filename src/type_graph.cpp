@@ -6,12 +6,6 @@
 
 #include "jlpolymake/type_modules.h"
 
-#include "polymake/graph/DijkstraShortestPath.h"
-#include "polymake/graph/DijkstraShortestPathWithScalarWeights.h"
-
-template<> struct jlcxx::IsMirroredType<pm::graph::Directed> : std::false_type { };
-template<> struct jlcxx::IsMirroredType<pm::graph::Undirected> : std::false_type { };
-
 namespace jlpolymake {
 
 void add_graph(jlcxx::Module& jlpolymake)
@@ -26,6 +20,10 @@ void add_graph(jlcxx::Module& jlpolymake)
         typedef typename decltype(wrapped)::type WrappedT;
 
         wrapped.template constructor<int64_t>();
+        wrapped.template constructor<const WrappedT&>();
+        wrapped.template constructor<const IncidenceMatrix<NonSymmetric>&>();
+        wrapped.template constructor<const IncidenceMatrix<Symmetric>&>();
+
 
         wrapped.method("nv", &WrappedT::nodes);
         wrapped.method("ne", &WrappedT::edges);
@@ -92,73 +90,6 @@ void add_graph(jlcxx::Module& jlpolymake)
     jlpolymake.method("take",
                     [](pm::perl::BigObject& p, const std::string& s,
                        const pm::graph::Graph<pm::graph::Directed>& G) { p.take(s) << G; });
-}
-
-
-void add_edgemap(jlcxx::Module& jlpolymake)
-{
-    auto type = jlpolymake
-        .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
-                "EdgeMap");
-
-    type.apply<pm::graph::EdgeMap<pm::graph::Undirected, pm::Int>,
-        pm::graph::EdgeMap<pm::graph::Directed, pm::Int>>
-            ([](auto wrapped){
-                typedef typename decltype(wrapped)::type WrappedT;
-                typedef typename decltype(wrapped)::type::graph_type GType;
-                typedef typename decltype(wrapped)::type::graph_type::dir TDir;
-                typedef typename decltype(wrapped)::type::value_type E;
-                wrapped.template constructor<GType>();
-
-
-                wrapped.method("_set_entry", [](WrappedT& EM, int64_t tail, int64_t head, const E& val) { wary(EM)(tail, head) = val; });
-                wrapped.method("_get_entry", [](const WrappedT& EM, int64_t tail, int64_t head) { return wary(EM)(tail, head); });
-                wrapped.method("show_small_obj", [](const WrappedT& S) {
-                    return show_small_object<WrappedT>(S);
-                });
-
-                wrapped.method("_shortest_path_dijkstra", [](const GType& G, const WrappedT& S, int64_t start, int64_t end, bool backward){
-                    polymake::graph::DijkstraShortestPath<polymake::graph::DijkstraShortestPathWithScalarWeights<TDir, E>> DSP(G, S);
-                    auto path_it = DSP.solve(static_cast<pm::Int>(start), static_cast<pm::Int>(end), !backward);
-                    std::vector<pm::Int> rev_path;
-                    if (!path_it.at_end()) {
-                        do
-                            rev_path.push_back(path_it.cur_node());
-                        while (!(++path_it).at_end());
-                    }
-                    return pm::Array<pm::Int>(rev_path.rbegin(), rev_path.rend());
-                });
-                
-            });
-}
-
-
-
-void add_nodemap(jlcxx::Module& jlpolymake)
-{
-    auto type = jlpolymake
-        .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>, jlcxx::TypeVar<2>>>(
-                "NodeMap");
-
-    type.apply<pm::graph::NodeMap<pm::graph::Undirected, pm::Int>,
-        pm::graph::NodeMap<pm::graph::Directed, pm::Int>,
-        pm::graph::NodeMap<pm::graph::Undirected, pm::Set<pm::Int>>,
-        pm::graph::NodeMap<pm::graph::Directed, pm::Set<pm::Int>>>
-            ([](auto wrapped){
-                typedef typename decltype(wrapped)::type WrappedT;
-                typedef typename decltype(wrapped)::type::graph_type GType;
-                typedef typename decltype(wrapped)::type::graph_type::dir TDir;
-                typedef typename decltype(wrapped)::type::value_type E;
-                wrapped.template constructor<GType>();
-
-
-                wrapped.method("_set_entry", [](WrappedT& EM, int64_t node, const E& val) { EM[node] = val; });
-                wrapped.method("_get_entry", [](const WrappedT& EM, int64_t node) { return EM[node]; });
-                wrapped.method("show_small_obj", [](const WrappedT& S) {
-                    return show_small_object<WrappedT>(S);
-                });
-                
-            });
 }
 
 }
