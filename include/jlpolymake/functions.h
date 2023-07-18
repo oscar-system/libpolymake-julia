@@ -36,16 +36,6 @@ std::string show_small_object(const T& obj, bool print_typename = true)
     return buffer.str();
 }
 
-struct VecOrMat_supported
-{
-    typedef jlcxx::ParameterList<pm::Int, pm::Integer, pm::Rational, double, pm::QuadraticExtension<pm::Rational>> value_type;
-};
-
-struct VecOrMat_supported_limited
-{
-    typedef jlcxx::ParameterList<pm::Polynomial<pm::Rational, pm::Int>> value_type;
-};
-
 struct TropicalNumberTypes
 {
    typedef jlcxx::ParameterList<pm::TropicalNumber<pm::Min>, pm::TropicalNumber<pm::Max>> value_type;
