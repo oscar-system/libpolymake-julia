@@ -193,6 +193,8 @@ add_types(
         List(Pair(Integer,Int)),
 
         Pair(Vector(Int),Array(Int)),
+        Pair(Vector(Integer),Array(Int)),
+        Pair(Vector(Rational),Array(Int)),
 
         Set(Int),
         Set(Set(Int)),
