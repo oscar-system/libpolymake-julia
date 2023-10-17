@@ -257,6 +257,12 @@ add_types(
             "Array{HomologyGroup{Integer}}",
             "array_homologygroup_integer",
         ],
+        [
+            "SwitchTable",
+            "polymake::group::SwitchTable",
+            "SwitchTable",
+            "switchtable",
+        ],
      );
 
 my @keys = qw(type_string ctype jltype convert_f);

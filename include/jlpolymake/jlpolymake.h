@@ -28,6 +28,7 @@
 #include <polymake/Map.h>
 #include <polymake/Graph.h>
 #include <polymake/topaz/HomologyComplex.h>
+#include <polymake/group/switch_table.h>
 
 #include <polymake/perl/calls.h>
 
