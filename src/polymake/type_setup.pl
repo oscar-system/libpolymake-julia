@@ -192,6 +192,8 @@ add_types(
         Pair(Integer,Int),
         List(Pair(Integer,Int)),
 
+        Pair(Vector(Int),Array(Int)),
+
         Set(Int),
         Set(Set(Int)),
         Array(Set(Int)),
