@@ -192,6 +192,10 @@ add_types(
         Pair(Integer,Int),
         List(Pair(Integer,Int)),
 
+        Pair(Vector(Int),Array(Int)),
+        Pair(Vector(Integer),Array(Int)),
+        Pair(Vector(Rational),Array(Int)),
+
         Set(Int),
         Set(Set(Int)),
         Array(Set(Int)),
@@ -254,6 +258,12 @@ add_types(
             "pm::Array<polymake::topaz::HomologyGroup<pm::Integer>>",
             "Array{HomologyGroup{Integer}}",
             "array_homologygroup_integer",
+        ],
+        [
+            "SwitchTable",
+            "polymake::group::SwitchTable",
+            "SwitchTable",
+            "switchtable",
         ],
      );
 

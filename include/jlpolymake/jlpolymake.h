@@ -28,6 +28,7 @@
 #include <polymake/Map.h>
 #include <polymake/Graph.h>
 #include <polymake/topaz/HomologyComplex.h>
+#include <polymake/group/switch_table.h>
 
 #include <polymake/perl/calls.h>
 
@@ -40,7 +41,7 @@
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
 #define JLPOLYMAKE_VERSION_MINOR 10
-#define JLPOLYMAKE_VERSION_PATCH 3
+#define JLPOLYMAKE_VERSION_PATCH 6
 
 #define __JLPOLYMAKE_STR_HELPER(x) #x
 #define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)
