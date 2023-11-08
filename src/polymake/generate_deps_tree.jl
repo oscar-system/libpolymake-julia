@@ -38,6 +38,7 @@ function prepare_deps_tree(targetdir::String)
    deps = [ polymake_jll.FLINT_jll,
             polymake_jll.GMP_jll,
             polymake_jll.MPFR_jll,
+            polymake_jll.MongoC_jll,
             polymake_jll.PPL_jll,
             polymake_jll.Perl_jll,
             polymake_jll.SCIP_jll,
