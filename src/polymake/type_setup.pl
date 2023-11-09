@@ -243,9 +243,18 @@ add_types(
         IncidenceMatrix,
 
         Graph,
+
         NodeMap(Int),
+        NodeMap(double),
+        NodeMap(Integer),
+        NodeMap(Rational),
         NodeMap(Set(Int)),
+
         EdgeMap(Int),
+        EdgeMap(double),
+        EdgeMap(Integer),
+        EdgeMap(Rational),
+
 
         [
             "HomologyGroup_Integer",
