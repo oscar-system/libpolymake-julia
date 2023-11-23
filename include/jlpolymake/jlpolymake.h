@@ -2,6 +2,7 @@
 #define JLPOLYMAKE_H
 
 #include <jlcxx/jlcxx.hpp>
+#include <jlcxx/functions.hpp>
 
 #include <string>
 #include <iostream>
@@ -29,6 +30,7 @@
 #include <polymake/Graph.h>
 #include <polymake/topaz/HomologyComplex.h>
 #include <polymake/group/switch_table.h>
+#include <polymake/RandomGenerators.h>
 
 #include <polymake/perl/calls.h>
 
@@ -41,7 +43,7 @@
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
 #define JLPOLYMAKE_VERSION_MINOR 11
-#define JLPOLYMAKE_VERSION_PATCH 0
+#define JLPOLYMAKE_VERSION_PATCH 1
 
 #define __JLPOLYMAKE_STR_HELPER(x) #x
 #define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)

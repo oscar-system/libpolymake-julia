@@ -104,6 +104,14 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
         data.main_polymake_session->set_application(x);
     });
 
+    jlpolymake.method("set_rand_source", [](int64_t (*f_ptr)()) {
+        auto f = [f_ptr] () { return static_cast<long>(f_ptr()); };
+        polymake::RandomSeed::set_rand_source(f);
+    });
+    jlpolymake.method("reset_rand_source", []() {
+        polymake::RandomSeed::set_rand_source(std::function<long()>());
+    });
+
     jlpolymake.method("_shell_execute", [](const std::string x) {
         return data.main_polymake_session->shell_execute(x);
     });
