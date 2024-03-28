@@ -36,6 +36,10 @@ void add_graph(jlcxx::Module& jlpolymake)
         wrapped.method("_squeeze", [](WrappedT& G) { return G.squeeze(); });
         wrapped.method("_rem_vertex", [](WrappedT& G, int64_t i) { return wary(G).delete_node(i); });
         wrapped.method("_rem_edge", [](WrappedT& G, int64_t tail, int64_t head) { return wary(G).delete_edge(tail, head); });
+        wrapped.method("_degree", [](const WrappedT& G, int64_t node) { return G.degree(static_cast<Int>(node)); });
+        wrapped.method("_indegree", [](const WrappedT& G, int64_t node) { return G.in_degree(static_cast<Int>(node)); });
+        wrapped.method("_outdegree", [](const WrappedT& G, int64_t node) { return G.out_degree(static_cast<Int>(node)); });
+        wrapped.method("_contract_edge", [](WrappedT& G, int64_t tail, int64_t head) { G.contract_edge(static_cast<Int>(tail), static_cast<Int>(head)); });
 
         wrapped.method("show_small_obj", [](const WrappedT& S) {
             return show_small_object<WrappedT>(S);

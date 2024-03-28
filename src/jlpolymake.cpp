@@ -71,8 +71,9 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_switchtable(jlpolymake);
 
-    // currently empty
-    // might be needed to resolve some order issues
+    add_decoration(jlpolymake);
+
+    // contains nodemap for decoration (depends on set and decoration)
     wrap_types_extra(jlpolymake);
 
     add_direct_calls(jlpolymake);
