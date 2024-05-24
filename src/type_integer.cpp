@@ -65,69 +65,69 @@ void add_integer(jlcxx::Module& jlpolymake)
         .add_type<pm::Integer>("Integer",
                                jlcxx::julia_type("Integer", "Base"))
         .constructor<int64_t>()
-        .method("<", [](pm::Integer& a, pm::Integer& b) { return a < b; })
-        .method("<", [](pm::Integer& a,
+        .method("<", [](const pm::Integer& a, const pm::Integer& b) { return a < b; })
+        .method("<", [](const pm::Integer& a,
                         int64_t      b) { return a < static_cast<pm::Int>(b); })
         .method("<", [](int64_t      a,
-                        pm::Integer& b) { return static_cast<pm::Int>(a) < b; })
-        .method("<=", [](pm::Integer& a, pm::Integer& b) { return a <= b; })
-        .method("<=", [](pm::Integer& a,
+                        const pm::Integer& b) { return static_cast<pm::Int>(a) < b; })
+        .method("<=", [](const pm::Integer& a, const pm::Integer& b) { return a <= b; })
+        .method("<=", [](const pm::Integer& a,
                          int64_t b) { return a <= static_cast<pm::Int>(b); })
         .method("<=",
-                [](int64_t a, pm::Integer& b) {
+                [](int64_t a, const pm::Integer& b) {
                     return static_cast<pm::Int>(a) <= b;
                 })
 
         .method("show_small_obj",
-                [](pm::Integer& i) {
+                [](const pm::Integer& i) {
                     return show_small_object<pm::Integer>(i, false);
                 })
         .method("isfinite", [](const pm::Integer& i) { return isfinite(i); })
-        .method("Float64", [](pm::Integer& a) { return double(a); })
-        .method("-", [](pm::Integer& a, pm::Integer& b) { return a - b; })
-        .method("-", [](pm::Integer& a,
+        .method("Float64", [](const pm::Integer& a) { return double(a); })
+        .method("-", [](const pm::Integer& a, const pm::Integer& b) { return a - b; })
+        .method("-", [](const pm::Integer& a,
                         int64_t      b) { return a - static_cast<pm::Int>(b); })
         .method("-", [](int64_t      a,
-                        pm::Integer& b) { return static_cast<pm::Int>(a) - b; })
+                        const pm::Integer& b) { return static_cast<pm::Int>(a) - b; })
         // unary minus
-        .method("-", [](pm::Integer& a) { return -a; })
+        .method("-", [](const pm::Integer& a) { return -a; })
 
-        .method("div", [](pm::Integer& a, pm::Integer& b) { return a / b; })
-        .method("div", [](pm::Integer& a,
+        .method("div", [](const pm::Integer& a, const pm::Integer& b) { return a / b; })
+        .method("div", [](const pm::Integer& a,
                           int64_t b) { return a / static_cast<pm::Int>(b); })
         .method("div",
-                [](int64_t a, pm::Integer& b) {
+                [](int64_t a, const pm::Integer& b) {
                     return static_cast<pm::Int>(a) / b;
                 })
 
-        .method("rem", [](pm::Integer& a, pm::Integer& b) { return a % b; })
-        .method("rem", [](pm::Integer& a,
+        .method("rem", [](const pm::Integer& a, const pm::Integer& b) { return a % b; })
+        .method("rem", [](const pm::Integer& a,
                           int64_t b) { return a % static_cast<pm::Int>(b); })
         .method("rem",
-                [](int64_t a, pm::Integer& b) {
+                [](int64_t a, const pm::Integer& b) {
                     return static_cast<pm::Int>(a) % b;
                 });
 
         jlpolymake.set_override_module(jlpolymake.julia_module());
-        jlpolymake.method("==", [](pm::Integer& a, pm::Integer& b) {
+        jlpolymake.method("==", [](const pm::Integer& a, const pm::Integer& b) {
             return a == b; });
-        jlpolymake.method("==", [](pm::Integer& a, int64_t b) {
+        jlpolymake.method("==", [](const pm::Integer& a, int64_t b) {
             return a == static_cast<pm::Int>(b); });
-        jlpolymake.method("==", [](int64_t a, pm::Integer& b) {
+        jlpolymake.method("==", [](int64_t a, const pm::Integer& b) {
             return static_cast<pm::Int>(a) == b; });
 
         // the symmetric definitions are on the julia side
-        jlpolymake.method("+", [](pm::Integer& a, pm::Integer& b) {
+        jlpolymake.method("+", [](const pm::Integer& a, const pm::Integer& b) {
             return a + b; });
-        jlpolymake.method("+", [](pm::Integer& a, int64_t b) {
+        jlpolymake.method("+", [](const pm::Integer& a, int64_t b) {
             return a + static_cast<pm::Int>(b); });
-        jlpolymake.method("+", [](int64_t a, pm::Integer& b) {
+        jlpolymake.method("+", [](int64_t a, const pm::Integer& b) {
             return static_cast<pm::Int>(a) + b; });
-        jlpolymake.method("*", [](pm::Integer& a, pm::Integer& b) {
+        jlpolymake.method("*", [](const pm::Integer& a, const pm::Integer& b) {
             return a * b; });
-        jlpolymake.method("*", [](pm::Integer& a, int64_t b) {
+        jlpolymake.method("*", [](const pm::Integer& a, int64_t b) {
             return a * static_cast<pm::Int>(b); });
-        jlpolymake.method("*", [](int64_t a, pm::Integer& b) {
+        jlpolymake.method("*", [](int64_t a, const pm::Integer& b) {
             return static_cast<pm::Int>(a) * b; });
         jlpolymake.unset_override_module();
 
