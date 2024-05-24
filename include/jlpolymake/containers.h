@@ -81,8 +81,8 @@ struct WrapMatrix
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("_getindex",
-            [](const WrappedT& f, int64_t i, int64_t j) {
-            return elemType(f(i - 1, j - 1));
+            [](const WrappedT& f, int64_t i, int64_t j) -> const elemType& {
+            return f(i - 1, j - 1);
             });
       wrapped.method("_setindex!",
             [](WrappedT& M, const elemType& r, int64_t i,
@@ -166,8 +166,8 @@ struct WrapVectorBase
       wrapped.template constructor<int64_t>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
-      wrapped.method("_getindex", [](const WrappedT& V, int64_t n) {
-            return elemType(V[n - 1]);
+      wrapped.method("_getindex", [](const WrappedT& V, int64_t n) -> const elemType& {
+            return V[n - 1];
             });
       wrapped.method("_setindex!",
             [](WrappedT& V, elemType val, int64_t n) {
@@ -251,8 +251,8 @@ struct WrapArrayImpl
       wrapped.template constructor<int64_t, const elemType&>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
-      wrapped.method("_getindex", [](const WrappedT& V, int64_t n) {
-            return elemType(V[static_cast<pm::Int>(n) - 1]);
+      wrapped.method("_getindex", [](const WrappedT& V, int64_t n) -> const elemType& {
+            return V[static_cast<pm::Int>(n) - 1];
             });
       wrapped.method("_setindex!",
             [](WrappedT& V, elemType val, int64_t n) {
@@ -289,8 +289,8 @@ struct WrapArrayImpl<pm::perl::BigObject::Array_element<readonly>>
       wrapped.template constructor<pm::perl::BigObjectType, int64_t>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
-      wrapped.method("_getindex", [](const WrappedT& V, int64_t n) {
-            return elemType(V[static_cast<pm::Int>(n) - 1]);
+      wrapped.method("_getindex", [](const WrappedT& V, int64_t n) -> elemType {
+            return V[static_cast<pm::Int>(n) - 1];
             });
       wrapped.method("_setindex!",
             [](WrappedT& V, elemType val, int64_t n) {
@@ -425,7 +425,7 @@ struct WrapMap
       using valT = typename TypeWrapperT::type::mapped_type;
 
       wrapped.module().set_override_module(pmwrappers::instance().module());
-      wrapped.method("_getindex", [](const WrappedT& M, const keyT& key) {
+      wrapped.method("_getindex", [](const WrappedT& M, const keyT& key) -> const valT& {
             return M[key];
             });
 
