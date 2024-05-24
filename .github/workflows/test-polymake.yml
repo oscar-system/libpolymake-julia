@@ -27,7 +27,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        julia-version: ['~1.6.0-0', '~1.10.0-0', '~1.11.0-0', 'nightly']
+        julia-version: ['1.6', '~1.10.0-0', '~1.11.0-0', 'nightly']
 
       fail-fast: true
 
@@ -50,6 +50,7 @@ jobs:
         uses: julia-actions/setup-julia@v1
         with:
           version: ${{ matrix.julia-version }}
+          arch: ${{ matrix.julia-version == '1.6' && 'x64' || runner.arch }}
       - name: "Build and set override"
         run: |
           julia --project=test/project test-prepare.jl --override --build --ignore-compat
