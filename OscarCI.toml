@@ -22,28 +22,28 @@ branches = [ "release", "<matching>" ]
   [include.master]
   Polymake = "master"
   Oscar = "master"
-  julia-version = "1.9"
+  julia-version = "1.10"
   os = "ubuntu-latest"
 
   [include.matching]
   Polymake = "<matching>"
-  julia-version = "1.9"
+  julia-version = "1.10"
   os = "ubuntu-latest"
 
   [include.oscar]
   Oscar = "<matching>"
   Polymake = "<matching>"
-  julia-version = "1.9"
+  julia-version = "1.10"
   os = "ubuntu-latest"
 
   [include.oscarmac]
   Oscar = "<matching>"
   Polymake = "<matching>"
-  julia-version = "1.9"
+  julia-version = "1.10"
   os = "macos-latest"
 
   [include.oscarstable]
   Oscar = "release"
   Polymake = "release"
-  julia-version = "1.9"
+  julia-version = "1.10"
   os = "ubuntu-latest"
