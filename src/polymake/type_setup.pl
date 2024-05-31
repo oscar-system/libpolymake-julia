@@ -11,6 +11,7 @@ my %added_types;
 my %needed_types;
 my $type_tuples = [];
 my $wrap_calls = [];
+my $core_calls = [];
 my $extra_calls = [];
 
 sub check_type {
@@ -73,6 +74,8 @@ sub Directed     { return ["Directed","pm::graph::Directed","Directed","directed
 sub Undirected   { return ["Undirected","pm::graph::Undirected","Undirected","undirected"]; }
 sub String    { return ["String","std::string","CxxWrap.StdString","string"]; }
 sub BigObject { return ["BigObject", "pm::perl::BigObject", "BigObject", "bigobject"]; }
+sub BigObjectType { return ["BigObjectType", "pm::perl::BigObjectType", "BigObjectType", "bigobjecttype"]; }
+sub BasicDecoration { return [ "BasicDecoration", "polymake::graph::lattice::BasicDecoration", "BasicDecoration", "basicdecoration"]; }
 
 sub QuadraticExtension {
    return template("QuadraticExtension", @_);
@@ -178,6 +181,7 @@ add_types(
         ["OptionSet", "pm::perl::OptionSet", "OptionSet", undef],
 
         BigObject,
+        BigObjectType,
 
         Pair(Array(Int),Array(Int)),
         Array(Pair(Array(Int),Array(Int))),
@@ -201,6 +205,9 @@ add_types(
         Array(Set(Int)),
         Array(Set(Set(Int))),
 
+        Pair(Set(Int),Int),
+        Array(Pair(Set(Int),Int)),
+
         Array(String),
         Array(Array(Int)),
         Array(Array(Integer)),
@@ -208,6 +215,9 @@ add_types(
         Array(Array(Set(Int))),
         Array(Matrix(Integer)),
         Array(BigObject),
+
+        Pair(Matrix(TropicalNumber(Max,Rational)),Matrix(TropicalNumber(Max,Rational))),
+        Pair(Matrix(TropicalNumber(Min,Rational)),Matrix(TropicalNumber(Min,Rational))),
      );
 
 # must be after Set{Int}
@@ -255,7 +265,6 @@ add_types(
         EdgeMap(Integer),
         EdgeMap(Rational),
 
-
         [
             "HomologyGroup_Integer",
             "polymake::topaz::HomologyGroup<pm::Integer>",
@@ -275,6 +284,18 @@ add_types(
             "switchtable",
         ],
      );
+
+# core calls done
+$core_calls = $wrap_calls;
+$wrap_calls = [];
+
+add_types(
+        BasicDecoration,
+        NodeMap(BasicDecoration),
+        Array(BasicDecoration),
+     );
+
+$extra_calls = $wrap_calls;
 
 my @keys = qw(type_string ctype jltype convert_f);
 
@@ -543,7 +564,7 @@ my %generated = (
 
 
 foreach (keys %generated) {
-   my $files = $generated{$_}->($type_hashes, $wrap_calls, $_);
+   my $files = $generated{$_}->($type_hashes, $core_calls, $_);
    $files = {$_ => $files} if ref($files) ne "HASH";
    while(my($k, $v) = each %$files) {
       open my $f, ">", "$k";

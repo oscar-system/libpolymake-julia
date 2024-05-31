@@ -27,6 +27,7 @@ void add_quadraticextension(jlcxx::Module& jlpolymake);
 void add_homologygroup(jlcxx::Module& jlpolymake);
 void add_incidencematrix(jlcxx::Module& jlpolymake);
 void add_switchtable(jlcxx::Module& jlpolymake);
+void add_decoration(jlcxx::Module& jlpolymake);
 
 void add_graph(jlcxx::Module& jlpolymake);
 

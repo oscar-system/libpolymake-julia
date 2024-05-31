@@ -57,51 +57,41 @@ struct Polymake_Data {
 extern Polymake_Data data;
 
 template <typename T> struct WrappedSetIterator {
+    const pm::Set<T>& set;
     typename pm::Set<T>::const_iterator iterator;
     using value_type = T;
-    WrappedSetIterator<T>(const pm::Set<T>& S)
-    {
-        iterator = pm::entire(S);
-    }
+    WrappedSetIterator<T>(const pm::Set<T>& S) : set(S), iterator(pm::entire(set)) { }
 };
 
 template<typename TDir>
 struct WrappedGraphNodeIterator {
+   const pm::graph::Graph<TDir>& graph;
    typename pm::Nodes<pm::graph::Graph<TDir>>::const_iterator iterator;
    using dir = TDir;
-   WrappedGraphNodeIterator<TDir>(const pm::graph::Graph<TDir>& G)
-   {
-      iterator = pm::entire(pm::nodes(G));
-   }
+   WrappedGraphNodeIterator<TDir>(const pm::graph::Graph<TDir>& G) : graph(G), iterator(pm::entire(pm::nodes(graph))) { }
 };
 
 template<typename TDir>
 struct WrappedGraphEdgeIterator {
+   const pm::graph::Graph<TDir>& graph;
    typename pm::Edges<pm::graph::Graph<TDir>>::const_iterator iterator;
    using dir = TDir;
-   WrappedGraphEdgeIterator<TDir>(const pm::graph::Graph<TDir>& G)
-   {
-      iterator = pm::entire(pm::edges(G));
-   }
+   WrappedGraphEdgeIterator<TDir>(const pm::graph::Graph<TDir>& G) : graph(G), iterator(pm::entire(pm::edges(graph))) { }
 };
 
 template <typename T> struct WrappedStdListIterator {
+    const std::list<T>& list;
     typename std::list<T>::const_iterator iterator;
     using value_type = T;
-    WrappedStdListIterator<T>(const std::list<T>& L)
-    {
-        iterator = L.begin();
-    }
+    WrappedStdListIterator<T>(const std::list<T>& L) : list(L), iterator(list.begin()) { }
 };
 
 template <typename S, typename T> struct WrappedMapIterator {
+    const pm::Map<S,T>& map;
     typename pm::Map<S,T>::const_iterator iterator;
     using key_type = S;
     using mapped_type = T;
-    WrappedMapIterator<S,T>(const pm::Map<S,T>& M)
-    {
-        iterator = M.begin();
-    }
+    WrappedMapIterator<S,T>(const pm::Map<S,T>& M) : map(M), iterator(map.begin()) { }
 };
 
 }
