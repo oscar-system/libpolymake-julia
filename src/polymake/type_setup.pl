@@ -214,6 +214,9 @@ add_types(
         Array(Array(Rational)),
         Array(Array(Set(Int))),
         Array(Matrix(Integer)),
+        Array(Matrix(Rational)),
+        Array(Vector(Integer)),
+        Array(Vector(Rational)),
         Array(BigObject),
 
         Pair(Matrix(TropicalNumber(Max,Rational)),Matrix(TropicalNumber(Max,Rational))),
@@ -249,8 +252,11 @@ add_types(
         Map(Set(Int),Rational),
         Map(Set(Int),Vector(Rational)),
         Map(Vector(Int),Integer),
+        Map(Pair(Int,Int),Int),
+        Map(Pair(Int,Int),Vector(Integer)),
 
         IncidenceMatrix,
+        Array(IncidenceMatrix),
 
         Graph,
 
@@ -258,12 +264,21 @@ add_types(
         NodeMap(double),
         NodeMap(Integer),
         NodeMap(Rational),
+        NodeMap(String),
         NodeMap(Set(Int)),
+        NodeMap(Array(Set(Int))),
+        NodeMap(Vector(double)),
+        NodeMap(Vector(Rational)),
+        NodeMap(IncidenceMatrix),
 
         EdgeMap(Int),
         EdgeMap(double),
         EdgeMap(Integer),
         EdgeMap(Rational),
+        EdgeMap(String),
+        EdgeMap(Vector(double)),
+        EdgeMap(Vector(Rational)),
+        EdgeMap(Array(Array(Int))),
 
         [
             "HomologyGroup_Integer",
