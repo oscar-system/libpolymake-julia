@@ -85,42 +85,60 @@ sub TropicalNumber {
 }
 
 sub Vector {
+   return () if @_ == 0;
    my $p = $_[0] eq "Sparse" ? shift : "";
-   push @$wrap_calls, [lc("wrap_${p}vector"), [$_[0]->[1]]];
-   return template("${p}Vector", @_);
+   my $e = shift;
+   push @$wrap_calls, [lc("wrap_${p}vector"), [$e->[1]]];
+   return (template("${p}Vector", $e), Vector(@_));
 }
 sub Matrix {
+   return () if @_ == 0;
    my $p = $_[0] eq "Sparse" ? shift : "";
-   push @$wrap_calls, [lc("wrap_${p}matrix"), [$_[0]->[1]]];
-   return template("${p}Matrix", @_);
+   my $e = shift;
+   push @$wrap_calls, [lc("wrap_${p}matrix"), [$e->[1]]];
+   return (template("${p}Matrix", $e), Matrix(@_));
 }
 sub Array {
-   push @$wrap_calls, ["wrap_array", [$_[0]->[1]]];
-   return template("Array", @_);
+   return () if @_ == 0;
+   my $e = shift;
+   push @$wrap_calls, ["wrap_array", [$e->[1]]];
+   return (template("Array", $e), Array(@_));
 }
 sub Set {
-   push @$wrap_calls, ["wrap_set", [$_[0]->[1]]];
-   return template("Set", @_);
+   return () if @_ == 0;
+   my $e = shift;
+   push @$wrap_calls, ["wrap_set", [$e->[1]]];
+   return (template("Set", $e), Set(@_));
 }
 sub Map {
-   push @$wrap_calls, ["wrap_map", [$_[0]->[1], $_[1]->[1]]];
-   return template("Map", @_);
+   return () if @_ == 0;
+   my $k = shift; my $v = shift;
+   push @$wrap_calls, ["wrap_map", [$k->[1], $v->[1]]];
+   return (template("Map", $k, $v), Map(@_));
 }
 sub Pair {
-   push @$wrap_calls, ["wrap_pair", [$_[0]->[1], $_[1]->[1]]];
-   return template(["Pair", "std::pair", "StdPair", "pair"], @_);
+   return () if @_ == 0;
+   my $f = shift; my $s = shift;
+   push @$wrap_calls, ["wrap_pair", [$f->[1], $s->[1]]];
+   return (template(["Pair", "std::pair", "StdPair", "pair"], $f, $s), Pair(@_));
 }
 sub List {
-   push @$wrap_calls, ["wrap_list", [$_[0]->[1]]];
-   return template(["List", "std::list", "StdList", "list"], @_);
+   return () if @_ == 0;
+   my $e = shift;
+   push @$wrap_calls, ["wrap_list", [$e->[1]]];
+   return (template(["List", "std::list", "StdList", "list"], $e), List(@_));
 }
 sub UniPolynomial {
-   push @$wrap_calls, ["wrap_unipolynomial", [$_[0]->[1], $_[1]->[1]]];
-   return template("UniPolynomial", @_);
+   return () if @_ == 0;
+   my $c = shift; my $e = shift;
+   push @$wrap_calls, ["wrap_unipolynomial", [$c->[1], $e->[1]]];
+   return (template("UniPolynomial", $c, $e), UniPolynomial(@_));
 }
 sub Polynomial {
-   push @$wrap_calls, ["wrap_polynomial", [$_[0]->[1], $_[1]->[1]]];
-   return template("Polynomial", @_);
+   return () if @_ == 0;
+   my $c = shift; my $e = shift;
+   push @$wrap_calls, ["wrap_polynomial", [$c->[1], $e->[1]]];
+   return (template("Polynomial", $c, $e), Polynomial(@_));
 }
 sub IncidenceMatrix {
    my $i = def("IncidenceMatrix");
@@ -137,18 +155,24 @@ sub Graph {
            template($g, Undirected));
 }
 sub NodeMap {
+   return () if @_ == 0;
+   my $e = shift;
    my $nm = ["NodeMap", "pm::graph::NodeMap", "NodeMap", "nodemap"];
-   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Undirected", $_[0]->[1]]];
-   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Directed"  , $_[0]->[1]]];
-   return (template($nm, Directed, @_),
-           template($nm, Undirected, @_));
+   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Undirected", $e->[1]]];
+   push @$wrap_calls, ["wrap_nodemap", ["pm::graph::Directed"  , $e->[1]]];
+   return (template($nm, Directed, $e),
+           template($nm, Undirected, $e),
+           NodeMap(@_));
 }
 sub EdgeMap {
+   return () if @_ == 0;
+   my $e = shift;
    my $em = ["EdgeMap", "pm::graph::EdgeMap", "EdgeMap", "edgemap"];
-   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Undirected", $_[0]->[1]]];
-   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Directed"  , $_[0]->[1]]];
-   return (template($em, Directed, @_),
-           template($em, Undirected, @_));
+   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Undirected", $e->[1]]];
+   push @$wrap_calls, ["wrap_edgemap", ["pm::graph::Directed"  , $e->[1]]];
+   return (template($em, Directed, $e),
+           template($em, Undirected, $e),
+           EdgeMap(@_));
 }
 
 # mapped name, C++, CxxWrap, helper (to_...)
