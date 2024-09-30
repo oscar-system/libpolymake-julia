@@ -13,7 +13,10 @@ find_package(Polymake REQUIRED ${POLYMAKE_MIN_VERSION})
 include(CheckCXXCompilerFlag)
 include(GNUInstallDirs)
 
-set(CMAKE_CXX_STANDARD 14)
+# override c++ compat, the interface doesn't really need c++20 and
+# the c++ library in some sys-roots doesn't support full c++20
+set_target_properties(JlCxx::cxxwrap_julia PROPERTIES INTERFACE_COMPILE_FEATURES "")
+set(CMAKE_CXX_STANDARD 17)
 
 SET( CMAKE_CXX_COMPILER "${Polymake_CXX}")
 # this is to allow filtering of the -fopenmp flag when building natively
@@ -22,7 +25,7 @@ if(POLYMAKE_DISABLE_OPENMP)
     string(REPLACE "-fopenmp" "" Polymake_CFLAGS ${Polymake_CFLAGS})
     string(REPLACE "-fopenmp" "" Polymake_LDFLAGS ${Polymake_LDFLAGS})
 endif()
-SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g -std=c++14 ${Polymake_CFLAGS}" )
+SET( CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -g ${Polymake_CFLAGS}" )
 SET( CMAKE_SHARED_LINKER_FLAGS  "${CMAKE_SHARED_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
 SET( CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} ${Polymake_LDFLAGS}" )
 
