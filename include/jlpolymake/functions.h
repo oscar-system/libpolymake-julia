@@ -17,7 +17,8 @@ jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle
 
 template <typename T> T to_SmallObject(const pm::perl::PropertyValue& pv)
 {
-    T obj = pv;
+    T obj;
+    pv >> obj;
     return obj;
 };
 

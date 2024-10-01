@@ -1,8 +1,8 @@
 using Pkg
 
-Pkg.add(name="libcxxwrap_julia_jll", version="0.11.2")
+Pkg.add(name="libcxxwrap_julia_jll", version="0.13.2")
 Pkg.pin("libcxxwrap_julia_jll")
-Pkg.add(name="polymake_jll", version="400.1200.1")
+Pkg.add(name="polymake_jll", version="400.1300.1")
 
 using polymake_jll
 using libcxxwrap_julia_jll
@@ -100,6 +100,7 @@ if "--ignore-compat" in ARGS
     end
     run(`sed -i -e '/^polymake_jll = "~/d' $(jlldir)/Project.toml`)
     run(`sed -i -e '/^FLINT_jll = "~/d' $(jlldir)/Project.toml`)
+    run(`sed -i -e '/^libcxxwrap_julia_jll = "~/d' $(jlldir)/Project.toml`)
     Pkg.develop(path="$(jlldir)")
 else
     Pkg.add("libpolymake_julia_jll")
