@@ -39,6 +39,10 @@ void add_quadraticextension(jlcxx::Module& jlpolymake)
             wrapped.method("show_small_obj", [](const WrappedT& S) {
                 return show_small_object<WrappedT>(S);
             });
+            wrapped.method("take",
+                [](pm::perl::BigObject& p, const std::string& s, const WrappedT& q) {
+                   p.take(s) << q;
+                });
         });
 
 }

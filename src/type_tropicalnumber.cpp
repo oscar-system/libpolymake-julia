@@ -37,6 +37,8 @@ void add_tropicalnumber(jlcxx::Module& jlpolymake)
                     wrapped.method("show_small_obj", [](const tropType& S) {
                         return show_small_object<tropType>(S);
                     });
+                    wrapped.method("take", [](pm::perl::BigObject& p, const std::string& s,
+                            const tropType& v) { p.take(s) << v; });
             });
 }
 

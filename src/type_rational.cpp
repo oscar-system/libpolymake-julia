@@ -109,6 +109,10 @@ void add_rational(jlcxx::Module& jlpolymake)
                 [](const pm::Rational& r) {
                     return show_small_object<pm::Rational>(r, false);
                 })
+        .method("take",
+                [](pm::perl::BigObject& p, const std::string& s, const pm::Rational& r) {
+                   p.take(s) << r;
+                })
         .method("isfinite", [](const pm::Rational& r) { return isfinite(r); })
         .method("Float64", [](const pm::Rational& a) { return double(a); })
         .method("-", [](const pm::Rational& a, const pm::Rational& b) { return a - b; })
