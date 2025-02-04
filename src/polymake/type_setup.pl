@@ -255,10 +255,12 @@ add_types(
         UniPolynomial(Int,Int),
         UniPolynomial(Integer,Int),
         UniPolynomial(Rational,Int),
+        UniPolynomial(Rational,Rational),
         UniPolynomial(QuadraticExtension(Rational),Int),
         Polynomial(Int,Int),
         Polynomial(Integer,Int),
         Polynomial(Rational,Int),
+        Polynomial(Rational,Rational),
         Polynomial(double,Int),
         Polynomial(QuadraticExtension(Rational),Int),
 
