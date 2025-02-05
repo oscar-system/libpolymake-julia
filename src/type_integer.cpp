@@ -82,6 +82,10 @@ void add_integer(jlcxx::Module& jlpolymake)
                 [](const pm::Integer& i) {
                     return show_small_object<pm::Integer>(i, false);
                 })
+        .method("take",
+                [](pm::perl::BigObject& p, const std::string& s, const pm::Integer& i) {
+                   p.take(s) << i;
+                })
         .method("isfinite", [](const pm::Integer& i) { return isfinite(i); })
         .method("Float64", [](const pm::Integer& a) { return double(a); })
         .method("-", [](const pm::Integer& a, const pm::Integer& b) { return a - b; })

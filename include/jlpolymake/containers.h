@@ -624,7 +624,7 @@ struct WrapPolynomialBase
       wrapped.method("_add", [](const WrappedT& a, const WrappedT& b) { return a + b; });
       wrapped.method("_sub", [](const WrappedT& a, const WrappedT& b) { return a - b; });
       wrapped.method("_mul", [](const WrappedT& a, const WrappedT& b) { return a * b; });
-      wrapped.method("^", [](const WrappedT& a, int64_t b) { return a ^ b; });
+      wrapped.method("^", [](const WrappedT& a, int64_t b) { return a ^ static_cast<pm::Int>(b); });
       wrapped.method("/", [](const WrappedT& a, const coeffT& c) { return a / c; });
       wrapped.method("coefficients_as_vector", &WrappedT::coefficients_as_vector);
       wrapped.method("set_var_names", [](const WrappedT& a, const Array<std::string>& names) { a.set_var_names(names); });
