@@ -25,11 +25,6 @@ branches = [ "release", "<matching>" ]
   julia-version = "1.10"
   os = "ubuntu-latest"
 
-  [include.lts]
-  Polymake = "<matching>"
-  julia-version = "1.6"
-  os = "ubuntu-latest"
-
   [include.oscar]
   Oscar = "<matching>"
   Polymake = "<matching>"
