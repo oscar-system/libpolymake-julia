@@ -6,8 +6,6 @@
 
 #include "jlpolymake/type_modules.h"
 
-#include <polymake/tropical/covectors.h>
-
 namespace jlpolymake {
 
 void add_decoration(jlcxx::Module& jlpolymake)

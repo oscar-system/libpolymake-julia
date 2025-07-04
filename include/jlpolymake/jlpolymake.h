@@ -32,6 +32,7 @@
 #include <polymake/group/switch_table.h>
 #include <polymake/graph/Decoration.h>
 #include <polymake/RandomGenerators.h>
+#include <polymake/tropical/covectors.h>
 
 #include <polymake/perl/calls.h>
 
