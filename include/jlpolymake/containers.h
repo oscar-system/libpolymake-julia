@@ -170,7 +170,7 @@ struct WrapVectorBase
             return elemType(V[n - 1]);
             });
       wrapped.method("_setindex!",
-            [](WrappedT& V, elemType val, int64_t n) {
+            [](WrappedT& V, const elemType& val, int64_t n) {
             V[n - 1] = val;
             });
       wrapped.method("length", &WrappedT::dim);
@@ -255,7 +255,7 @@ struct WrapArrayImpl
             return elemType(V[static_cast<pm::Int>(n) - 1]);
             });
       wrapped.method("_setindex!",
-            [](WrappedT& V, elemType val, int64_t n) {
+            [](WrappedT& V, const elemType& val, int64_t n) {
             V[static_cast<pm::Int>(n) - 1] = val;
             });
       wrapped.method("length", &WrappedT::size);
@@ -293,7 +293,7 @@ struct WrapArrayImpl<pm::perl::BigObject::Array_element<readonly>>
             return elemType(V[static_cast<pm::Int>(n) - 1]);
             });
       wrapped.method("_setindex!",
-            [](WrappedT& V, elemType val, int64_t n) {
+            [](WrappedT& V, const elemType& val, int64_t n) {
             V[static_cast<pm::Int>(n) - 1] = val;
             });
       wrapped.method("length", &WrappedT::size);
