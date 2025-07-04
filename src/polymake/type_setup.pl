@@ -319,6 +319,18 @@ add_types(
             "array_homologygroup_integer",
         ],
         [
+            "CycleGroup_Integer",
+            "polymake::topaz::CycleGroup<pm::Integer>",
+            "CycleGroup{Integer}",
+            "cyclegroup_integer",
+        ],
+        [
+            "Array_CycleGroup_Integer",
+            "pm::Array<polymake::topaz::CycleGroup<pm::Integer>>",
+            "Array{CycleGroup{Integer}}",
+            "array_cyclegroup_integer",
+        ],
+        [
             "SwitchTable",
             "polymake::group::SwitchTable",
             "SwitchTable",

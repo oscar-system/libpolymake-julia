@@ -68,6 +68,7 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
     // extra types
     add_homologygroup(jlpolymake);
     wrap_array<polymake::topaz::HomologyGroup<pm::Integer>>(jlpolymake);
+    wrap_array<polymake::topaz::CycleGroup<pm::Integer>>(jlpolymake);
 
     add_switchtable(jlpolymake);
 
