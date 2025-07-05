@@ -76,6 +76,7 @@ sub String    { return ["String","std::string","CxxWrap.StdString","string"]; }
 sub BigObject { return ["BigObject", "pm::perl::BigObject", "BigObject", "bigobject"]; }
 sub BigObjectType { return ["BigObjectType", "pm::perl::BigObjectType", "BigObjectType", "bigobjecttype"]; }
 sub BasicDecoration { return [ "BasicDecoration", "polymake::graph::lattice::BasicDecoration", "BasicDecoration", "basicdecoration"]; }
+sub CovectorDecoration { return [ "CovectorDecoration", "polymake::tropical::CovectorDecoration", "CovectorDecoration", "covectordecoration"]; }
 
 sub QuadraticExtension {
    return template("QuadraticExtension", @_);
@@ -319,6 +320,18 @@ add_types(
             "array_homologygroup_integer",
         ],
         [
+            "CycleGroup_Integer",
+            "polymake::topaz::CycleGroup<pm::Integer>",
+            "CycleGroup{Integer}",
+            "cyclegroup_integer",
+        ],
+        [
+            "Array_CycleGroup_Integer",
+            "pm::Array<polymake::topaz::CycleGroup<pm::Integer>>",
+            "Array{CycleGroup{Integer}}",
+            "array_cyclegroup_integer",
+        ],
+        [
             "SwitchTable",
             "polymake::group::SwitchTable",
             "SwitchTable",
@@ -334,6 +347,9 @@ add_types(
         BasicDecoration,
         NodeMap(BasicDecoration),
         Array(BasicDecoration),
+        CovectorDecoration,
+        NodeMap(CovectorDecoration),
+        Array(CovectorDecoration),
      );
 
 $extra_calls = $wrap_calls;

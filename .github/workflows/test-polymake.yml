@@ -27,12 +27,12 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macOS-latest]
-        julia-version: ['1.6', '~1.10.0-0', '~1.11.0-0', '1.12-nightly']
+        julia-version: ['~1.10.0-0', '~1.11.0-0', '1.12-nightly']
 
       fail-fast: false
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Cache artifacts
         uses: actions/cache@v3
         env:
@@ -47,16 +47,13 @@ jobs:
             ${{ runner.os }}-test-
             ${{ runner.os }}-
       - name: "Set up Julia"
-        uses: julia-actions/setup-julia@v1
+        uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
-          arch: ${{ matrix.julia-version == '1.6' && 'x64' || runner.arch }}
+          arch: ${{ runner.arch }}
       - name: "Build and set override"
         run: |
           julia --project=test/project test-prepare.jl --override --build --ignore-compat
-      - name: "Work around glibcxx issue"
-        if: matrix.os == 'ubuntu-20.04'
-        run: echo "LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libstdc++.so.6" >> $GITHUB_ENV
       - name: "Test polymake"
         env:
            TERM: linux

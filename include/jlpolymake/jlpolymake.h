@@ -32,6 +32,7 @@
 #include <polymake/group/switch_table.h>
 #include <polymake/graph/Decoration.h>
 #include <polymake/RandomGenerators.h>
+#include <polymake/tropical/covectors.h>
 
 #include <polymake/perl/calls.h>
 
@@ -43,8 +44,8 @@
 #endif
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
-#define JLPOLYMAKE_VERSION_MINOR 13
-#define JLPOLYMAKE_VERSION_PATCH 1
+#define JLPOLYMAKE_VERSION_MINOR 14
+#define JLPOLYMAKE_VERSION_PATCH 0
 
 #define __JLPOLYMAKE_STR_HELPER(x) #x
 #define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)
