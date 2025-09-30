@@ -24,10 +24,18 @@ function full_artifact_dir(m::Module)
    end
 end
 
-function force_symlink(source::AbstractString, target::AbstractString)
-   tmpfile = tempname(dirname(target); cleanup=false)
-   symlink(source, tmpfile)
-   Base.Filesystem.rename(tmpfile, target)
+function force_symlink(target::AbstractString, link::AbstractString)
+   # the rename operation below should be atomic and make sure the link always points
+   # to a valid directory
+   # but macos disagrees and sometimes reading files below this path fails with `EINVAL`
+   # see also: http://www.weirdnet.nl/apple/rename.html
+   # (it seems to be fixed on hfs+ but not on apfs...)
+   # to reduce the frequency of this we only write the symlink if necessary
+   # (note this does not fully avoid the error)
+   islink(link) && readlink(link) == target && return
+   tmpfile = tempname(dirname(link); cleanup=false)
+   symlink(target, tmpfile)
+   Base.Filesystem.rename(tmpfile, link)
 end
 
 function prepare_deps_tree(targetdir::String)

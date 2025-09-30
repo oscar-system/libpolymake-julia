@@ -272,6 +272,7 @@ add_types(
 
         Map(String,String),
         Map(String,Int),
+        Map(Int,String),
         Map(Int,Int),
         Map(Integer,Int),
         Map(Rational,Rational),
