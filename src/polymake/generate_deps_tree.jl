@@ -3,12 +3,12 @@ using Pkg.Artifacts
 
 # adapted from https://github.com/JuliaLang/julia/pull/38797
 function full_artifact_dir(m::Module)
-   artifacts_toml = joinpath(dirname(dirname(Base.pathof(m))), "StdlibArtifacts.toml")
+   artifacts_toml = joinpath(dirname(dirname(Base.pathof(m)::String)), "StdlibArtifacts.toml")
 
    # If this file exists, it's a stdlib JLL and we must download the artifact ourselves
    if isfile(artifacts_toml)
        # we need to remove the _jll for the artifact name
-       meta = artifact_meta(string(m)[1:end-4], artifacts_toml)
+       meta::Dict{String,Any} = artifact_meta(string(m)[1:end-4], artifacts_toml)
        hash = Base.SHA1(meta["git-tree-sha1"])
        if !artifact_exists(hash)
            dl_info = first(meta["download"])

@@ -29,6 +29,7 @@
 #include <polymake/Map.h>
 #include <polymake/Graph.h>
 #include <polymake/topaz/HomologyComplex.h>
+#include <polymake/graph/GraphIso.h>
 #include <polymake/group/switch_table.h>
 #include <polymake/graph/Decoration.h>
 #include <polymake/RandomGenerators.h>
