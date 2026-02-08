@@ -1,8 +1,8 @@
 using Pkg
 
-Pkg.add(name="libcxxwrap_julia_jll", version="0.14.3")
+Pkg.add(name="libcxxwrap_julia_jll", version="0.14.9")
 Pkg.pin("libcxxwrap_julia_jll")
-Pkg.add(name="polymake_jll", version="400.1500.0")
+Pkg.add(name="polymake_jll", version="400.1500.2")
 
 using polymake_jll
 using libcxxwrap_julia_jll
