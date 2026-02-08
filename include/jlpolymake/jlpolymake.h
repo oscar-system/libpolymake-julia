@@ -29,6 +29,7 @@
 #include <polymake/Map.h>
 #include <polymake/Graph.h>
 #include <polymake/topaz/HomologyComplex.h>
+#include <polymake/graph/GraphIso.h>
 #include <polymake/group/switch_table.h>
 #include <polymake/graph/Decoration.h>
 #include <polymake/RandomGenerators.h>
@@ -45,7 +46,7 @@
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
 #define JLPOLYMAKE_VERSION_MINOR 14
-#define JLPOLYMAKE_VERSION_PATCH 2
+#define JLPOLYMAKE_VERSION_PATCH 5
 
 #define __JLPOLYMAKE_STR_HELPER(x) #x
 #define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)

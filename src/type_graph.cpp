@@ -44,6 +44,41 @@ void add_graph(jlcxx::Module& jlpolymake)
         wrapped.method("show_small_obj", [](const WrappedT& S) {
             return show_small_object<WrappedT>(S);
         });
+
+        wrapped.method("_canonical_hash", [](const WrappedT& G, const Array<Int>& col, long key) {
+            graph::GraphIso gi;
+            graph::GraphIso::prepare_colored(gi, G, col);
+            return gi.hash(key);
+        });
+        wrapped.method("_canonical_hash", [](const WrappedT& G, long key) {
+            return graph::canonical_hash(G, key);
+        });
+        wrapped.method("_canonical_perm", [](const WrappedT& G, const Array<Int>& col) {
+            graph::GraphIso gi;
+            graph::GraphIso::prepare_colored(gi, G, col);
+            return gi.canonical_perm();
+        });
+        wrapped.method("_canonical_form", [](const WrappedT& G) {
+            return graph::canonical_form(G);
+        });
+        wrapped.method("_is_isomorphic", [](const WrappedT& G1, const WrappedT& G2) {
+            return graph::isomorphic(G1, G2);
+        });
+        wrapped.method("_is_isomorphic_with_colors", [](const WrappedT& G1, const Array<Int>& col1, const WrappedT& G2, const Array<Int>& col2) {
+            return graph::isomorphic(G1, col1, G2, col2);
+        });
+        wrapped.method("_permute_nodes", [](const WrappedT& G, const Array<Int>& perm) {
+            return pm::permuted_nodes(G, perm);
+        });
+        wrapped.method("_permute_nodes!", [](WrappedT& G, const Array<Int>& perm) {
+            G.permute_nodes(perm);
+        });
+        wrapped.method("_automorphisms", [](const WrappedT& G, const Array<Int>& col) {
+            return graph::automorphisms(G, col);
+        });
+        wrapped.method("_automorphisms", [](const WrappedT& G) {
+            return graph::automorphisms(G);
+        });
     });
 
     jlpolymake.add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>("GraphEdgeIterator")

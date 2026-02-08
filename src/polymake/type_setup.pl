@@ -269,6 +269,10 @@ add_types(
         Vector(Polynomial(Rational,Int)),
         Array(Polynomial(Integer,Int)),
         Array(Polynomial(Rational,Int)),
+        Matrix(UniPolynomial(Rational,Int)),
+        Vector(UniPolynomial(Rational,Int)),
+        Array(UniPolynomial(Integer,Int)),
+        Array(UniPolynomial(Rational,Int)),
 
         Map(String,String),
         Map(String,Int),
@@ -281,7 +285,12 @@ add_types(
         Map(Set(Int),Vector(Rational)),
         Map(Vector(Int),Integer),
         Map(Pair(Int,Int),Int),
+        Map(Pair(Int,Int),double),
+        Map(Pair(Int,Int),Integer),
+        Map(Pair(Int,Int),Rational),
+        Map(Pair(Int,Int),String),
         Map(Pair(Int,Int),Vector(Integer)),
+        Map(Pair(Int,Int),Vector(Rational)),
 
         IncidenceMatrix,
         Array(IncidenceMatrix),
