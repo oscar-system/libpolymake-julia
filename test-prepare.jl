@@ -1,6 +1,6 @@
 using Pkg
 
-Pkg.add(name="libcxxwrap_julia_jll", version="0.14.9")
+Pkg.add(name="libcxxwrap_julia_jll", version="0.14.8")
 Pkg.pin("libcxxwrap_julia_jll")
 Pkg.add(name="polymake_jll", version="400.1500.2")
 
