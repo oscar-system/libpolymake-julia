@@ -101,6 +101,8 @@ if "--ignore-compat" in ARGS
     run(`sed -i -e '/^polymake_jll = "~/d' $(jlldir)/Project.toml`)
     run(`sed -i -e '/^FLINT_jll = "~/d' $(jlldir)/Project.toml`)
     run(`sed -i -e '/^libcxxwrap_julia_jll = "~/d' $(jlldir)/Project.toml`)
+    # WIP
+    run(`sed -i -e 's/^version = .*/version="0.14.4+0"/' $(jlldir)/Project.toml`)
     Pkg.develop(path="$(jlldir)")
 else
     Pkg.add("libpolymake_julia_jll")
