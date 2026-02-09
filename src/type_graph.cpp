@@ -13,7 +13,7 @@ void add_graph(jlcxx::Module& jlpolymake)
     jlpolymake.add_type<pm::graph::Undirected>("Undirected");
     jlpolymake.add_type<pm::graph::Directed>("Directed");
     jlpolymake
-    .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>, jlcxx::ParameterList<bool>>(
+    .add_type<jlcxx::Parametric<jlcxx::TypeVar<1>>>(
         "Graph")
         .apply_combination<pm::graph::Graph, jlcxx::ParameterList<pm::graph::Undirected,pm::graph::Directed>>(
             [](auto wrapped) {
