@@ -74,6 +74,8 @@ JLCXX_MODULE define_module_polymake(jlcxx::Module& jlpolymake)
 
     add_decoration(jlpolymake);
 
+    add_puiseuxfraction(jlpolymake);
+
     // contains nodemap for decoration (depends on set and decoration)
     wrap_types_extra(jlpolymake);
 

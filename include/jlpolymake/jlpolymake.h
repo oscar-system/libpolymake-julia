@@ -24,6 +24,7 @@
 #include <polymake/TropicalNumber.h>
 #include <polymake/IncidenceMatrix.h>
 #include <polymake/Polynomial.h>
+#include <polymake/PuiseuxFraction.h>
 #include <polymake/polytope/solve_LP.h>
 #include <polymake/SparseVector.h>
 #include <polymake/Map.h>
@@ -46,7 +47,7 @@
 
 #define JLPOLYMAKE_VERSION_MAJOR 0
 #define JLPOLYMAKE_VERSION_MINOR 14
-#define JLPOLYMAKE_VERSION_PATCH 5
+#define JLPOLYMAKE_VERSION_PATCH 6
 
 #define __JLPOLYMAKE_STR_HELPER(x) #x
 #define __JLPOLYMAKE_STR(x) __JLPOLYMAKE_STR_HELPER(x)
