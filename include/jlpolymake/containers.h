@@ -630,6 +630,8 @@ struct WrapPolynomialBase
       wrapped.method("set_var_names", [](const WrappedT& a, const Array<std::string>& names) { a.set_var_names(names); });
       wrapped.method("get_var_names", [](const WrappedT& a) { return a.get_var_names(); });
       wrapped.method("nvars", [] (const WrappedT& a) -> pm::Int { return a.n_vars(); });
+      wrapped.method("deg", [] (const WrappedT& a) { return a.deg(); });
+      wrapped.method("lower_deg", [] (const WrappedT& a) { return a.lower_deg(); });
 
       wrapped.module().unset_override_module();
       wrap_common(wrapped);
@@ -645,6 +647,7 @@ struct WrapUniPolynomial
       using coeffT = typename TypeWrapperT::type::coefficient_type;
       using expT = typename TypeWrapperT::type::monomial_type;
 
+      wrapped.template constructor<const coeffT&>();
       wrapped.template constructor<const pm::Vector<coeffT>&, const pm::Vector<expT>&>();
 
       wrapped.module().set_override_module(pmwrappers::instance().module());

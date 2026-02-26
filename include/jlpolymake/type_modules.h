@@ -24,6 +24,8 @@ void add_rational(jlcxx::Module& jlpolymake);
 void add_tropicalnumber(jlcxx::Module& jlpolymake);
 void add_quadraticextension(jlcxx::Module& jlpolymake);
 
+void add_puiseuxfraction(jlcxx::Module& jlpolymake);
+
 void add_homologygroup(jlcxx::Module& jlpolymake);
 void add_incidencematrix(jlcxx::Module& jlpolymake);
 void add_switchtable(jlcxx::Module& jlpolymake);

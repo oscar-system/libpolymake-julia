@@ -44,10 +44,15 @@ sub joinjlt  { return shift."{".join(",",@_)."}"; }
 sub jointo   { return lc(join("_",@_)); }
 
 sub template {
-   my ($name, $arr1, $arr2) = @_;
-   check_type($arr1, $arr2);
+   my ($name, $arr1, $arr2, $arr3) = @_;
+   check_type($arr1, $arr2, $arr3);
    my @names = ref($name) eq "ARRAY" ? @$name : (($name) x 4);
-   if (defined($arr2)) {
+   if (defined($arr3)) {
+      return [ joinname($names[0],$arr1->[0],$arr2->[0],$arr3->[0]),
+               joincxxt($names[1],$arr1->[1],$arr2->[1],$arr3->[1]),
+               joinjlt ($names[2],$arr1->[2],$arr2->[2],$arr3->[2]),
+               jointo  ($names[3],$arr1->[3],$arr2->[3],$arr3->[3])];
+   } elsif (defined($arr2)) {
       return [ joinname($names[0],$arr1->[0],$arr2->[0]),
                joincxxt($names[1],$arr1->[1],$arr2->[1]),
                joinjlt ($names[2],$arr1->[2],$arr2->[2]),
@@ -83,6 +88,9 @@ sub QuadraticExtension {
 }
 sub TropicalNumber {
    return template("TropicalNumber", @_);
+}
+sub PuiseuxFraction {
+   return template("PuiseuxFraction", @_);
 }
 
 sub Vector {
@@ -180,7 +188,7 @@ sub EdgeMap {
 my $scalars = [ Int, Integer, Rational, double,
                 QuadraticExtension(Rational),
                 TropicalNumber(Min,Rational),
-                TropicalNumber(Max,Rational)
+                TropicalNumber(Max,Rational),
               ];
 
 my $simplecontainers = [ \&Matrix, \&Vector, \&Array, ];
@@ -256,14 +264,18 @@ add_types(
         UniPolynomial(Int,Int),
         UniPolynomial(Integer,Int),
         UniPolynomial(Rational,Int),
-        UniPolynomial(Rational,Rational),
+        UniPolynomial(double,Int),
         UniPolynomial(QuadraticExtension(Rational),Int),
+        UniPolynomial(Rational,Rational),
         Polynomial(Int,Int),
         Polynomial(Integer,Int),
         Polynomial(Rational,Int),
-        Polynomial(Rational,Rational),
         Polynomial(double,Int),
         Polynomial(QuadraticExtension(Rational),Int),
+        Polynomial(Rational,Rational),
+
+        PuiseuxFraction(Min,Rational,Rational),
+        PuiseuxFraction(Max,Rational,Rational),
 
         Matrix(Polynomial(Rational,Int)),
         Vector(Polynomial(Rational,Int)),
@@ -352,6 +364,14 @@ add_types(
 # core calls done
 $core_calls = $wrap_calls;
 $wrap_calls = [];
+
+my @pft = map {PuiseuxFraction($_,Rational,Rational)} (Min,Max);
+for my $c (@$simplecontainers) {
+   add_types(map {$c->($_)} @pft);
+}
+add_types(map { Matrix("Sparse", $_) } @pft);
+add_types(map { Vector("Sparse", $_) } @pft);
+
 
 add_types(
         BasicDecoration,
