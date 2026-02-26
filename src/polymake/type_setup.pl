@@ -360,6 +360,11 @@ add_types(
             "switchtable",
         ],
      );
+
+# core calls done
+$core_calls = $wrap_calls;
+$wrap_calls = [];
+
 my @pft = map {PuiseuxFraction($_,Rational,Rational)} (Min,Max);
 for my $c (@$simplecontainers) {
    add_types(map {$c->($_)} @pft);
@@ -367,9 +372,6 @@ for my $c (@$simplecontainers) {
 add_types(map { Matrix("Sparse", $_) } @pft);
 add_types(map { Vector("Sparse", $_) } @pft);
 
-# core calls done
-$core_calls = $wrap_calls;
-$wrap_calls = [];
 
 add_types(
         BasicDecoration,
