@@ -28,7 +28,7 @@ void add_puiseuxfraction(jlcxx::Module& jlpolymake)
             [](const pf& r) { return unipoly(denominator(r)); });
         wrapped.method("show_small_obj",
                 [](const pf& r) {
-                    return show_small_object<pf>(r, true);
+                    return show_small_object<pf>(r, false);
                 });
         wrapped.method("take",
                 [](pm::perl::BigObject& p, const std::string& s, const pf& r) {
