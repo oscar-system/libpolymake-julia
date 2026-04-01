@@ -493,6 +493,24 @@ struct WrapNodeMap
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("_set_entry", [](WrappedT& NM, int64_t node, const E& val) { NM[node] = val; });
       wrapped.method("_get_entry", [](const WrappedT& NM, int64_t node) { return NM[node]; });
+      wrapped.method("_isequal", [](const WrappedT& a, const WrappedT& b) {
+            if (a.get_container().size() != b.get_container().size())
+               return false;
+            for (Int n : a.get_container())
+               if (a[n] != b[n])
+                  return false;
+            return true;
+         });
+      wrapped.method("_get_hash", [](const WrappedT& a) {
+            static auto hashint = std::hash<Int>();
+            static auto hashelem = pm::hash_func<E>();
+            size_t h = hashint(a.get_container().size());
+            for (Int n : a.get_container()) {
+               pm::hash_combine(h, hashint(n));
+               pm::hash_combine(h, hashelem(a[n]));
+            }
+            return h;
+         });
       wrapped.module().unset_override_module();
       wrap_common(wrapped);
    }
@@ -540,6 +558,25 @@ struct WrapEdgeMap
       wrapped.module().set_override_module(pmwrappers::instance().module());
       wrapped.method("_set_entry", [](WrappedT& EM, int64_t tail, int64_t head, const E& val) { wary(EM)(tail, head) = val; });
       wrapped.method("_get_entry", [](const WrappedT& EM, int64_t tail, int64_t head) { return wary(EM)(tail, head); });
+      wrapped.method("_isequal", [](const WrappedT& a, const WrappedT& b) {
+            if (a.get_container().size() != b.get_container().size())
+               return false;
+            for (auto e = entire(a.get_container()); !e.at_end(); ++e)
+               if (a(e.from_node(),e.to_node()) != b(e.from_node(),e.to_node()))
+                  return false;
+            return true;
+         });
+      wrapped.method("_get_hash", [](const WrappedT& a) {
+            static auto hashint = std::hash<Int>();
+            static auto hashelem = pm::hash_func<E>();
+            size_t h = hashint(a.get_container().size());
+            for (auto e = entire(a.get_container()); !e.at_end(); ++e) {
+               pm::hash_combine(h, hashint(e.from_node()));
+               pm::hash_combine(h, hashint(e.to_node()));
+               pm::hash_combine(h, hashelem(a(e.from_node(),e.to_node())));
+            }
+            return h;
+         });
 
       add_dijkstra<TypeWrapperT, E>(wrapped);
 
