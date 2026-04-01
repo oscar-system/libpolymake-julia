@@ -22,6 +22,22 @@ struct iterator_cross_const_helper<jlcxx::array_iterator_base<PointedT, CppT>,
                                        std::add_const_t<CppT>>
         const_iterator;
 };
+
+template <typename Symm>
+struct hash_func<IncidenceMatrix<Symm>, is_incidence_matrix> {
+   size_t operator() (const IncidenceMatrix<Symm>& m) const
+   {
+      static auto hashint = std::hash<Int>();
+      static auto hashelem = pm::hash_func<decltype(m.row(0))>();
+      size_t hash = hashint(m.rows());
+      hash_combine(hash, hashint(m.rows()));
+      hash_combine(hash, hashint(m.cols()));
+      for (const auto& r : rows(m))
+         hash_combine(hash, hashelem(r));
+      return hash;
+   }
+};
+
 }    // namespace pm
 
 namespace jlpolymake {

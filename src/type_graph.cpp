@@ -40,6 +40,7 @@ void add_graph(jlcxx::Module& jlpolymake)
         wrapped.method("_indegree", [](const WrappedT& G, int64_t node) { return G.in_degree(static_cast<Int>(node)); });
         wrapped.method("_outdegree", [](const WrappedT& G, int64_t node) { return G.out_degree(static_cast<Int>(node)); });
         wrapped.method("_contract_edge", [](WrappedT& G, int64_t tail, int64_t head) { G.contract_edge(static_cast<Int>(tail), static_cast<Int>(head)); });
+        wrapped.method("_isequal", [](const WrappedT& G, const WrappedT& GG) { return G == GG; });
 
         wrapped.method("show_small_obj", [](const WrappedT& S) {
             return show_small_object<WrappedT>(S);
