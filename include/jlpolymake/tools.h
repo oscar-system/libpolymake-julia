@@ -27,11 +27,13 @@ template <typename Symm>
 struct hash_func<IncidenceMatrix<Symm>, is_incidence_matrix> {
    size_t operator() (const IncidenceMatrix<Symm>& m) const
    {
-      size_t hash = hash_func<Int>()(m.rows());
-      hash_combine(hash, hash_func<Int>()(m.rows()));
-      hash_combine(hash, hash_func<Int>()(m.cols()));
+      static auto hashint = std::hash<Int>();
+      static auto hashelem = pm::hash_func<decltype(m.row(0))>();
+      size_t hash = hashint(m.rows());
+      hash_combine(hash, hashint(m.rows()));
+      hash_combine(hash, hashint(m.cols()));
       for (const auto& r : rows(m))
-         hash_combine(hash, hash_func<decltype(m.row(0))>()(r));
+         hash_combine(hash, hashelem(r));
       return hash;
    }
 };
