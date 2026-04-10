@@ -23,17 +23,22 @@ struct iterator_cross_const_helper<jlcxx::array_iterator_base<PointedT, CppT>,
         const_iterator;
 };
 
-template <typename Symm>
-struct hash_func<IncidenceMatrix<Symm>, is_incidence_matrix> {
-   size_t operator() (const IncidenceMatrix<Symm>& m) const
+template <typename SetT>
+size_t hash_helper(const GenericSet<SetT>& s) {
+   static auto hash_set = pm::hash_func<SetT>();
+   return hash_set(s.top());
+}
+
+template <typename IM>
+struct hash_func<IM, is_incidence_matrix> {
+   size_t operator() (const IM& m) const
    {
       static auto hashint = std::hash<Int>();
-      static auto hashelem = pm::hash_func<decltype(m.row(0))>();
       size_t hash = hashint(m.rows());
       hash_combine(hash, hashint(m.rows()));
       hash_combine(hash, hashint(m.cols()));
       for (const auto& r : rows(m))
-         hash_combine(hash, hashelem(r));
+         hash_combine(hash, hash_helper(r));
       return hash;
    }
 };
