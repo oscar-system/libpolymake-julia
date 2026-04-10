@@ -41,6 +41,10 @@ void add_graph(jlcxx::Module& jlpolymake)
         wrapped.method("_outdegree", [](const WrappedT& G, int64_t node) { return G.out_degree(static_cast<Int>(node)); });
         wrapped.method("_contract_edge", [](WrappedT& G, int64_t tail, int64_t head) { G.contract_edge(static_cast<Int>(tail), static_cast<Int>(head)); });
         wrapped.method("_isequal", [](const WrappedT& G, const WrappedT& GG) { return G == GG; });
+        wrapped.method("_get_hash", [](const WrappedT& G) {
+              static auto hf = pm::hash_func<GenericIncidenceMatrix<AdjacencyMatrix<WrappedT, false>>>();
+              return hf(adjacency_matrix(G));
+        });
 
         wrapped.method("show_small_obj", [](const WrappedT& S) {
             return show_small_object<WrappedT>(S);
