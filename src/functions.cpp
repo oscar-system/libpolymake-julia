@@ -5,6 +5,7 @@
 
 #include <typeinfo>
 #include <cxxabi.h>
+#include <unordered_map>
 
 namespace jlpolymake {
 
@@ -49,6 +50,29 @@ std::string filter_spaces(const std::string& str)
     return res.str();
 }
 
+// Demangling and interning cost about 1 µs per call, so cache the symbol per
+// type. type_info objects live as long as their library, which polymake never
+// unloads, and julia symbols are never freed. Not locked: calls into the perl
+// interpreter are not thread-safe anyway.
+jl_sym_t* canned_typeinfo_symbol(const std::type_info* ti, bool demangle)
+{
+    static std::unordered_map<const std::type_info*, jl_sym_t*> cache[2];
+    auto& symbols = cache[demangle];
+
+    auto it = symbols.find(ti);
+    if (it != symbols.end()) {
+        return it->second;
+    }
+
+    int status = -1;
+    std::unique_ptr<char, void (*)(void*)> res{
+        abi::__cxa_demangle(ti->name(), nullptr, nullptr, &status),
+        std::free};
+    jl_sym_t* sym = (status == 0 && demangle) ? jl_symbol(filter_spaces(res.get()).c_str()) : jl_symbol(filter_spaces(ti->name()).c_str());
+    symbols.emplace(ti, sym);
+    return sym;
+}
+
 jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle)
 {
     PropertyValueHelper ph(p);
@@ -78,12 +102,7 @@ jl_sym_t* typeinfo_symbol_helper(const pm::perl::PropertyValue& p, bool demangle
                     // check some perl based types via custom perl code
                     return jl_symbol(filter_spaces(call_function("classify_perl_pv", p)).c_str());
                 }
-                // demangle:
-                int status = -1;
-                std::unique_ptr<char, void (*)(void*)> res{
-                    abi::__cxa_demangle(ti->name(), nullptr, nullptr, &status),
-                    std::free};
-                return (status == 0 && demangle) ? jl_symbol(filter_spaces(res.get()).c_str()) : jl_symbol(filter_spaces(ti->name()).c_str());
+                return canned_typeinfo_symbol(ti, demangle);
             }
     }
     return jl_symbol("unknown");
