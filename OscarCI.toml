@@ -1,7 +1,8 @@
 title = "metadata for oscar CI run"
 
 [env]
-os = [ "ubuntu-latest", "macos-latest" ]
+# AppleClang 21 on macos-26 cannot compile the polymake 4.15 headers
+os = [ "ubuntu-latest", "macos-15" ]
 # 1.6 is done with some extra combinations in include
 # also to avoid some weird behaviour by github actions which seems to merge
 # the includes with the normal matrix entries
@@ -35,7 +36,7 @@ branches = [ "release", "<matching>" ]
   Oscar = "<matching>"
   Polymake = "<matching>"
   julia-version = "1.10"
-  os = "macos-latest"
+  os = "macos-15"
 
   [include.oscarstable]
   Oscar = "release"
