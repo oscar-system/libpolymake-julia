@@ -1,11 +1,11 @@
 title = "metadata for oscar CI run"
 
 [env]
-os = [ "ubuntu-latest", "macos-latest" ]
-# 1.6 is done with some extra combinations in include
+os = [ "ubuntu-latest", "macos-15" ]
+# lts is done with some extra combinations in include
 # also to avoid some weird behaviour by github actions which seems to merge
 # the includes with the normal matrix entries
-julia-version = [ "~1.10.0-0", "1.12-nightly" ]
+julia-version = [ "~1.10.0-0", "1.13", "1.14-nightly" ]
 branches = [ "release", "<matching>" ]
 
 [pkgs]
@@ -19,12 +19,6 @@ branches = [ "release", "<matching>" ]
   branches = []
 
 [include]
-  [include.master]
-  Polymake = "master"
-  Oscar = "master"
-  julia-version = "1.10"
-  os = "ubuntu-latest"
-
   [include.oscar]
   Oscar = "<matching>"
   Polymake = "<matching>"
@@ -35,7 +29,7 @@ branches = [ "release", "<matching>" ]
   Oscar = "<matching>"
   Polymake = "<matching>"
   julia-version = "1.10"
-  os = "macos-latest"
+  os = "macos-15"
 
   [include.oscarstable]
   Oscar = "release"
